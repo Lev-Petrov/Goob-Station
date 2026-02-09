@@ -1,0 +1,12 @@
+- type: startingGear
+  id: SkeletonDeathGear
+  equipment:
+    outerClothing: ClothingOuterPlagueSuitDeath
+    jumpsuit: ClothingUniformJumpsuitChaplain
+    shoes: ClothingShoesChameleonNoSlips
+    mask: ClothingMaskPlague
+    head: ClothingHeadHatPlaguedoctor
+    id: ERTChaplainIDCard
+    back: WeaponScytheDeath
+    belt: BoxFolderCentComClipboardDeath
+    ears: ClothingHeadsetAltCentCom
