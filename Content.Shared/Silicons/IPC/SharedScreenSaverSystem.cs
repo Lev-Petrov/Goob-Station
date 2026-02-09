@@ -6,7 +6,6 @@ using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization;
 using Robust.Shared.GameObjects;
 using Robust.Shared.Network;
-using Robust.Shared.Network;
 using System.Linq;
 using Content.Shared.Mobs;
 using Content.Shared.Mobs.Systems;
@@ -32,8 +31,8 @@ public abstract class SharedScreenSaverSystem : EntitySystem
 {
     [Dependency] protected readonly INetManager NetManager = default!;
     [Dependency] protected readonly SharedActionsSystem Actions = default!;
-    [Dependency] private readonly MarkingManager _markingManager = default!;
-    [Dependency] private readonly SharedHumanoidAppearanceSystem _humanoid = default!;
+    [Dependency] protected readonly MarkingManager MarkingManager = default!;
+    [Dependency] protected readonly SharedHumanoidAppearanceSystem Humanoid = default!;
     [Dependency] private readonly MobStateSystem _mobState = default!;
 
     public override void Initialize()
@@ -72,7 +71,7 @@ public abstract class SharedScreenSaverSystem : EntitySystem
             }
         }
         
-        _humanoid.AddMarking(uid, component.DeathScreen, color, forced: false);
+        Humanoid.AddMarking(uid, component.DeathScreen, color, forced: false);
     }
 
     private void OnStartup(EntityUid uid, ScreenSaverComponent component, ComponentStartup args)
@@ -125,7 +124,7 @@ public abstract class SharedScreenSaverSystem : EntitySystem
         if (component.ActionEntity == null || string.IsNullOrEmpty(component.CurrentScreen))
             return;
 
-        if (!_markingManager.Markings.TryGetValue(component.CurrentScreen, out var proto) || proto.Sprites.Count == 0)
+        if (!MarkingManager.Markings.TryGetValue(component.CurrentScreen, out var proto) || proto.Sprites.Count == 0)
             return;
 
         Actions.SetIcon(component.ActionEntity.Value, proto.Sprites[0]);

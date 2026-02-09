@@ -5,7 +5,7 @@ using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom.Prototy
 
 namespace Content.Shared.Silicons.IPC;
 
-[RegisterComponent, NetworkedComponent]
+[RegisterComponent, NetworkedComponent, Access(typeof(SharedScreenSaverSystem))]
 [AutoGenerateComponentState(true)]
 public sealed partial class ScreenSaverComponent : Component
 {

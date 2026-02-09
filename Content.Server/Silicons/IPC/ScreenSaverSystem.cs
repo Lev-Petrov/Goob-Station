@@ -16,8 +16,6 @@ namespace Content.Server.Silicons.IPC;
 public sealed class ScreenSaverSystem : SharedScreenSaverSystem
 {
     [Dependency] private readonly SharedActionsSystem _actions = default!;
-    [Dependency] private readonly HumanoidAppearanceSystem _humanoid = default!;
-    [Dependency] private readonly MarkingManager _markingManager = default!;
     [Dependency] private readonly SharedAudioSystem _audio = default!;
 
     public override void Initialize()
@@ -52,14 +50,14 @@ public sealed class ScreenSaverSystem : SharedScreenSaverSystem
         if (!TryComp<HumanoidAppearanceComponent>(uid, out var humanoid))
             return;
 
-        if (!_markingManager.Markings.TryGetValue(msg.MarkingId, out var markingPrototype))
+        if (!MarkingManager.Markings.TryGetValue(msg.MarkingId, out var markingPrototype))
             return;
         
-         if (markingPrototype.MarkingCategory != MarkingCategories.Face)
-             return;
+        if (markingPrototype.MarkingCategory != MarkingCategories.Face)
+            return;
          
-         if (markingPrototype.SpeciesRestrictions != null && !markingPrototype.SpeciesRestrictions.Contains("IPC"))
-             return;
+        if (markingPrototype.SpeciesRestrictions != null && !markingPrototype.SpeciesRestrictions.Contains("IPC"))
+            return;
 
         var color = Color.White;
         if (humanoid.MarkingSet.Markings.TryGetValue(MarkingCategories.Face, out var faceMarkings))
@@ -76,15 +74,29 @@ public sealed class ScreenSaverSystem : SharedScreenSaverSystem
              var toRemove = new List<Marking>(humanoid.MarkingSet.Markings[MarkingCategories.Face]);
              foreach (var m in toRemove)
              {
-                 _humanoid.RemoveMarking(uid.Value, m.MarkingId);
+                 RemoveMarking(uid.Value, m.MarkingId);
              }
         }
 
-        _humanoid.AddMarking(uid.Value, msg.MarkingId, color);
+        Humanoid.AddMarking(uid.Value, msg.MarkingId, color);
         
         component.CurrentScreen = msg.MarkingId;
         _audio.PlayPvs(new SoundPathSpecifier("/Audio/Machines/terminal_prompt.ogg"), uid.Value);
         UpdateVisuals(uid.Value, component);
         Dirty(uid.Value, component);
+    }
+
+    private void RemoveMarking(EntityUid uid, string marking, bool sync = true, HumanoidAppearanceComponent? humanoid = null)
+    {
+        if (!Resolve(uid, ref humanoid)
+            || !MarkingManager.Markings.TryGetValue(marking, out var prototype))
+        {
+            return;
+        }
+
+        humanoid.MarkingSet.Remove(prototype.MarkingCategory, marking);
+
+        if (sync)
+            Dirty(uid, humanoid);
     }
 }

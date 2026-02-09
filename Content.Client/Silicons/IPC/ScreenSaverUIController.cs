@@ -21,10 +21,7 @@ public sealed class ScreenSaverUIController : UIController
     private PaginatedRadialMenu? _menu;
     private EntityUid? _lastUser;
 
-    public override void Initialize()
-    {
-        base.Initialize();
-    }
+
 
     public void ToggleMenu(EntityUid user)
     {
@@ -41,6 +38,9 @@ public sealed class ScreenSaverUIController : UIController
                     {
                         if (proto.MarkingCategory == MarkingCategories.Head)
                         {
+                            if (proto.Sprites.Count == 0)
+                                continue;
+
                             headSprite = proto.Sprites[0];
                             if (marking.MarkingColors.Count > 0)
                                 headColor = marking.MarkingColors[0];
@@ -52,7 +52,7 @@ public sealed class ScreenSaverUIController : UIController
 
             if (headSprite == null)
             {
-                if (_prototypeManager.TryIndex("MobIPCHeadDefault", out MarkingPrototype? defaultHead))
+                if (_prototypeManager.TryIndex("MobIPCHeadDefault", out MarkingPrototype? defaultHead) && defaultHead.Sprites.Count > 0)
                 {
                     headSprite = defaultHead.Sprites[0];
                 }
@@ -68,6 +68,9 @@ public sealed class ScreenSaverUIController : UIController
 
                 if (markingPrototype.SpeciesRestrictions != null &&
                     !markingPrototype.SpeciesRestrictions.Contains("IPC"))
+                    continue;
+
+                if (markingPrototype.Sprites.Count == 0)
                     continue;
 
                 var screenSprite = markingPrototype.Sprites[0];
@@ -118,5 +121,6 @@ public sealed class ScreenSaverUIController : UIController
 
         _menu.Close();
         _menu = null;
+        _lastUser = null;
     }
 }

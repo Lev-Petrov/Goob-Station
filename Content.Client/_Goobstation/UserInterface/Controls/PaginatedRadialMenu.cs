@@ -18,6 +18,9 @@ namespace Content.Client._Goobstation.UserInterface.Controls;
 public sealed partial class PaginatedRadialMenu : RadialMenu
 {
     private const int ItemsPerPage = 5;
+    private const float StandardButtonSize = 64f;
+    private const float ScreenSaverButtonSize = 128f;
+    private static readonly Thickness ScreenSaverSpriteMargin = new(0, 50, 0, 0);
 
     public PaginatedRadialMenu()
     {
@@ -123,13 +126,13 @@ public sealed partial class PaginatedRadialMenu : RadialMenu
             : new RadialMenuTextureButton();
 
         // Standard size 64x64
-        button.SetSize = new Vector2(64f, 64f);
+        button.SetSize = new Vector2(StandardButtonSize, StandardButtonSize);
         button.ToolTip = model.ToolTip;
 
         // Screen Saver specific handling: 2x size (128x128) + Composite Sprite
         if (model is RadialMenuScreenSaverOption ssOption)
         {
-            button.SetSize = new Vector2(128f, 128f);
+            button.SetSize = new Vector2(ScreenSaverButtonSize, ScreenSaverButtonSize);
             
             // Add Head Sprite
             if (ssOption.HeadSprite != null)
@@ -141,10 +144,10 @@ public sealed partial class PaginatedRadialMenu : RadialMenu
                     VerticalAlignment = VAlignment.Center,
                     HorizontalAlignment = HAlignment.Center,
                     Stretch = TextureRect.StretchMode.KeepAspectCentered,
-                    SetSize = new Vector2(128f, 128f), // Fill button
+                    SetSize = new Vector2(ScreenSaverButtonSize, ScreenSaverButtonSize), // Fill button
                     MouseFilter = MouseFilterMode.Ignore,
                     Modulate = ssOption.HeadColor ?? Color.White,
-                    Margin = new Thickness(0, 50, 0, 0) // Shift down heavily (2x previous)
+                    Margin = ScreenSaverSpriteMargin // Shift down heavily (2x previous)
                 };
                 button.AddChild(textureRect);
             }
@@ -159,9 +162,9 @@ public sealed partial class PaginatedRadialMenu : RadialMenu
                     VerticalAlignment = VAlignment.Center,
                     HorizontalAlignment = HAlignment.Center,
                     Stretch = TextureRect.StretchMode.KeepAspectCentered,
-                    SetSize = new Vector2(128f, 128f), // Fill button
+                    SetSize = new Vector2(ScreenSaverButtonSize, ScreenSaverButtonSize), // Fill button
                     MouseFilter = MouseFilterMode.Ignore,
-                    Margin = new Thickness(0, 50, 0, 0) // Shift down heavily (2x previous)
+                    Margin = ScreenSaverSpriteMargin // Shift down heavily (2x previous)
                 };
                 button.AddChild(textureRect);
             }

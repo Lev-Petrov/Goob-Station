@@ -312,11 +312,11 @@ public sealed class ActionButton : Control, IEntityControl
             _bigActionIcon.Visible = false;
             _smallActionIcon.Texture = null;
             _smallActionIcon.Visible = false;
-            resetIconContainer();
+            ResetIconContainer();
         }
         else if (action.ItemIconStyle == ItemActionIconStyle.ScaledAction)
         {
-            resetScaledIcon(action, texture);
+            ResetScaledIcon(action, texture);
         #endregion
             _bigActionIcon.Texture = null;
             _bigActionIcon.Visible = false;
@@ -330,7 +330,7 @@ public sealed class ActionButton : Control, IEntityControl
             _smallActionIcon.Visible = true;
             _bigActionIcon.Texture = null;
             _bigActionIcon.Visible = false;
-            resetIconContainer(); // DOWNSTREAM-TPirates: IPC screens
+            ResetIconContainer(); // DOWNSTREAM-TPirates: IPC screens
         }
         else
         {
@@ -339,7 +339,7 @@ public sealed class ActionButton : Control, IEntityControl
             _bigActionIcon.Visible = true;
             _smallActionIcon.Texture = null;
             _smallActionIcon.Visible = false;
-            resetIconContainer(); // DOWNSTREAM-TPirates: IPC screens
+            ResetIconContainer(); // DOWNSTREAM-TPirates: IPC screens
         }
     }
 
@@ -509,13 +509,13 @@ public sealed class ActionButton : Control, IEntityControl
 
     EntityUid? IEntityControl.UiEntity => Action;
     #region DOWNSTREAM-TPirates: IPC screens
-    public void resetIconContainer()
+    public void ResetIconContainer()
     {
         _scaledActionIcon.Texture = null;
         _scaledIconContainer.Visible = false;
     }
 
-    public void resetScaledIcon(ActionComponent action, Texture? texture)
+    public void ResetScaledIcon(ActionComponent action, Texture? texture)
     {
         _scaledActionIcon.Texture = texture;
         _scaledActionIcon.Modulate = action.IconColor;

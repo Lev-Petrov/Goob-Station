@@ -6,7 +6,8 @@ namespace Content.Client.Silicons.IPC;
 
 public sealed class ScreenSaverSystem : EntitySystem
 {
-    [Dependency] private readonly UserInterfaceSystem _uiSystem = default!;
+
+    [Dependency] private readonly Robust.Client.UserInterface.IUserInterfaceManager _uiManager = default!;
     [Dependency] private readonly MobStateSystem _mobState = default!;
 
     public override void Initialize()
@@ -23,7 +24,7 @@ public sealed class ScreenSaverSystem : EntitySystem
         if (!_mobState.IsAlive(args.Performer))
             return;
 
-        var uiController = IoCManager.Resolve<Robust.Client.UserInterface.IUserInterfaceManager>().GetUIController<ScreenSaverUIController>();
+        var uiController = _uiManager.GetUIController<ScreenSaverUIController>();
         uiController.ToggleMenu(args.Performer);
         
         args.Handled = true;
