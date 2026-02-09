@@ -20286,3 +20286,205 @@ Entries:
       message: Wizden E Chem 1984!
   id: 2365
   time: '2026-01-30T05:04:35.0000000+00:00'
+- author: misandrie
+  changes:
+    - type: Tweak
+      message: >-
+        Керування на високих швидкостях у невагомості для молей стало
+        значно гіршим. Подумайте про гальмування.
+  id: 2366
+  time: '2026-01-31T06:43:55.0000000+00:00'
+- author: Beanyboi69
+  changes:
+    - type: Add
+      message: Додано більше риб у вузол артефактів.
+  id: 2367
+  time: '2026-01-31T06:50:00.0000000+00:00'
+- author: TheNumberRus
+  changes:
+    - type: Tweak
+      message: Броню аколіта прибрано з венду благочестя.
+  id: 2368
+  time: '2026-01-31T06:50:26.0000000+00:00'
+- author: FloatingFeeling
+  changes:
+    - type: Tweak
+      message: >-
+        Estoc підлаштовано, щоб він краще відповідав своїй ролі гвинтівки
+        призначеного стрільця.
+  id: 2369
+  time: '2026-01-31T06:51:17.0000000+00:00'
+- author: H2Owe
+  changes:
+    - type: Fix
+      message: Виправлено повторення текстури кастомної теми при запуску.
+  id: 2370
+  time: '2026-02-01T05:20:25.0000000+00:00'
+- author: H2Owe
+  changes:
+    - type: Add
+      message: Додано різні предмети контракторів.
+    - type: Tweak
+      message: Перефарбовано кийок підрядника.
+  id: 2371
+  time: '2026-02-01T05:27:06.0000000+00:00'
+- author: DeusMaldPr
+  changes:
+    - type: Tweak
+      message: Маппінг Chloris (занадто багато змін для журналу змін)
+  id: 2372
+  time: '2026-02-01T19:51:53.0000000+00:00'
+- author: Beanyboi69
+  changes:
+    - type: Remove
+      message: Станцію Submarine повністю видалено.
+  id: 2373
+  time: '2026-02-02T06:08:58.0000000+00:00'
+- author: Sarahon
+  changes:
+    - type: Remove
+      message: Omnimed прибрано з шафи BSO.
+  id: 2374
+  time: '2026-02-03T18:43:02.0000000+00:00'
+- author: pheenty
+  changes:
+    - type: Tweak
+      message: Броня з дюратканини тепер прикриває пах.
+  id: 2375
+  time: '2026-02-05T11:13:37.0000000+00:00'
+- author: Muppet
+  changes:
+    - type: Tweak
+      message: Серця голіафа тепер вважаються значною контрабандою.
+  id: 2376
+  time: '2026-02-05T11:14:31.0000000+00:00'
+- author: Syoga23
+  changes:
+    - type: Add
+      message: Додано режим хамелеона для термальних окулярів ядерних оперативників та агентів.
+  id: 2377
+  time: '2026-02-05T11:15:04.0000000+00:00'
+- author: LuciferEOS, bloodyspy
+  changes:
+    - type: Add
+      message: Додано ще 3 арти для лобі.
+  id: 2378
+  time: '2026-02-05T11:21:03.0000000+00:00'
+- author: DeusMaldPr
+  changes:
+    - type: Fix
+      message: >-
+        Прибрано дублікати поясів охорони та гарнітур із шафок охорони; загалом
+        проведено прибирання вмісту цих шафок.
+  id: 2379
+  time: '2026-02-05T11:49:07.0000000+00:00'
+- author: FloatingFeeling
+  changes:
+    - type: Add
+      message: M-90 знову додано до аплінку.
+  id: 2380
+  time: '2026-02-05T12:55:05.0000000+00:00'
+- author: Thatonestomf
+  changes:
+    - type: Tweak
+      message: >-
+        Рюкзачні баки з водою тепер можна носити в слоті suitstorage, а також у
+        слоті спини.
+  id: 2381
+  time: '2026-02-05T12:57:40.0000000+00:00'
+- author: RedTerrorDark
+  changes:
+    - type: Tweak
+      message: >-
+        Перемальовано спрайти Ion/Temp/Plasma Rifle, Hardlight Bow, WSPR,
+        Chester, m172, Shmel, alien pistol, decloner та зброї x-00.
+  id: 2382
+  time: '2026-02-05T12:59:01.0000000+00:00'
+- author: H2Owe
+  changes:
+    - type: Tweak
+      message: Змінено шкоду кепки з лезом.
+    - type: Add
+      message: Додано варіанти кепки з лезом.
+  id: 2383
+  time: '2026-02-05T13:02:58.0000000+00:00'
+- author: Armok
+  changes:
+    - type: Add
+      message: Додано вільноформатну плату законів для екіпажу.
+  id: 2384
+  time: '2026-02-06T10:30:27.0000000+00:00'
+- author: DeusMaldPr
+  changes:
+    - type: Fix
+      message: 'Фальшиве спорядження єретика тепер має інший спрайт.'
+    - type: Remove
+      message: >-
+        Прибрано варіанти фальшивого спорядження єретика, рецепт крафту,
+        фальшивий Mansus Grasp та фальшиву книгу.
+  id: 2385
+  time: '2026-02-07T20:20:16.0000000+00:00'
+- author: thebiggestbruh
+  changes:
+    - type: Add
+      message: >-
+        Капелан отримав кілька нових предметів у драконячій тематиці:
+        драконячий костюм, nullrod «хвіст дракона» та драконічний вівтар
+  id: 2386
+  time: '2026-02-07T20:22:48.0000000+00:00'
+- author: RomiGur
+  changes:
+    - type: Tweak
+      message: >-
+        Тепер у всі типи поясів охорони можна класти магазини енергогвинтівки
+        (усі типи).
+  id: 2387
+  time: '2026-02-08T07:04:20.0000000+00:00'
+- author: LuciferEOS
+  changes:
+    - type: Add
+      message: >-
+        Поліцейські кийки — альтернативна версія шокової дубинки, яку можна
+        знайти в шафі детектива.
+  id: 2388
+  time: '2026-02-08T07:36:51.0000000+00:00'
+- author: UmbiMax
+  changes:
+    - type: Tweak
+      message: >-
+        Місткість портативного хімічного міксера збільшено у 1.5 раза, і тепер
+        він має спрайт мензурки.
+  id: 2389
+  time: '2026-02-08T08:00:14.0000000+00:00'
+- author: UmbiMax
+  changes:
+    - type: Tweak
+      message: >-
+        Медик ядерних оперативників тепер корисніший для команди: у візорі є HUD
+        здоров'я та хімічний HUD.
+  id: 2390
+  time: '2026-02-08T08:21:26.0000000+00:00'
+- author: LuciferEOS
+  changes:
+    - type: Tweak
+      message: Зменшено маневреність у невагомості для всіх.
+  id: 2391
+  time: '2026-02-08T23:26:27.0000000+00:00'
+- author: FloatingFeeling
+  changes:
+    - type: Tweak
+      message: Лазерну гвинтівку та лазерну гармату посилено.
+  id: 2392
+  time: '2026-02-09T02:58:40.0000000+00:00'
+- author: TheNumberRus
+  changes:
+    - type: Remove
+      message: Плата вільноформатних законів більше не лежить у шафі RD і не доступна для дослідження.
+  id: 2393
+  time: '2026-02-09T07:52:24.0000000+00:00'
+- author: FloatingFeeling
+  changes:
+    - type: Add
+      message: Додано рятувальні капсули на станції Delta.
+  id: 2394
+  time: '2026-02-09T07:54:00.0000000+00:00'

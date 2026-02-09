@@ -678,6 +678,7 @@
         - BolaEnergy # Goobstation
         - EnergySpeedloader # Goobstation
         - MilitaryPowerCell # Goobstation
+        - EnergyMagAmmo # Goobstation
         - HandGrenade
       components:
         - Stunbaton
