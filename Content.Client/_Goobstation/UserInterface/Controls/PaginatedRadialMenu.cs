@@ -225,18 +225,11 @@ public sealed partial class PaginatedRadialMenu : RadialMenu
 
     private void ClearExistingChildrenRadialButtons()
     {
-        var toRemove = new List<Control>(ChildCount);
-        foreach (var child in Children)
+        for (var i = ChildCount - 1; i >= 0; i--)
         {
+            var child = GetChild(i);
             if (child != ContextualButton && child != MenuOuterAreaButton)
-            {
-                toRemove.Add(child);
-            }
-        }
-
-        foreach (var control in toRemove)
-        {
-            Children.Remove(control);
+                RemoveChild(child);
         }
     }
 }

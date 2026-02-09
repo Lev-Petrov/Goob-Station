@@ -68,6 +68,7 @@ public abstract class SharedScreenSaverSystem : EntitySystem
                 }
                 
                 humanoid.MarkingSet.Remove(MarkingCategories.Face, component.CurrentScreen);
+                Dirty(uid, humanoid);
             }
         }
         

@@ -31,7 +31,7 @@ public sealed class ScreenSaverSystem : SharedScreenSaverSystem
         SubscribeLocalEvent<ScreenSaverComponent, MapInitEvent>(OnMapInit);
         SubscribeLocalEvent<ScreenSaverComponent, ComponentShutdown>(OnShutdown);
         SubscribeNetworkEvent<SelectScreenSaverMessage>(OnSelectScreen);
-        SubscribeLocalEvent<BodyPartComponent, DamageChangedEvent>(OnBodyPartDamage);
+        SubscribeLocalEvent<ScreenSaverComponent, DamageChangedEvent>(OnBodyPartDamage);
     }
 
     private void OnMapInit(EntityUid uid, ScreenSaverComponent component, MapInitEvent args)
@@ -66,6 +66,11 @@ public sealed class ScreenSaverSystem : SharedScreenSaverSystem
         if (markingPrototype.SpeciesRestrictions != null && !markingPrototype.SpeciesRestrictions.Contains("IPC"))
             return;
 
+        ReplaceScreenMarking(uid.Value, msg.MarkingId, component, humanoid, true);
+    }
+
+    private void ReplaceScreenMarking(EntityUid uid, string newMarkingId, ScreenSaverComponent screenSaver, HumanoidAppearanceComponent humanoid, bool sound = false)
+    {
         var color = Color.White;
         if (humanoid.MarkingSet.Markings.TryGetValue(MarkingCategories.Face, out var faceMarkings))
         {
@@ -76,21 +81,23 @@ public sealed class ScreenSaverSystem : SharedScreenSaverSystem
             }
         }
 
-        if (humanoid.MarkingSet.Markings.ContainsKey(MarkingCategories.Face))
+        if (humanoid.MarkingSet.Markings.TryGetValue(MarkingCategories.Face, out var existing))
         {
-             var toRemove = new List<Marking>(humanoid.MarkingSet.Markings[MarkingCategories.Face]);
-             foreach (var m in toRemove)
-             {
-                 RemoveMarking(uid.Value, m.MarkingId);
-             }
+            var toRemove = new List<Marking>(existing);
+            foreach (var m in toRemove)
+            {
+                RemoveMarking(uid, m.MarkingId);
+            }
         }
 
-        Humanoid.AddMarking(uid.Value, msg.MarkingId, color);
-        
-        component.CurrentScreen = msg.MarkingId;
-        _audio.PlayPvs(new SoundPathSpecifier("/Audio/Machines/terminal_prompt.ogg"), uid.Value);
-        UpdateVisuals(uid.Value, component);
-        Dirty(uid.Value, component);
+        Humanoid.AddMarking(uid, newMarkingId, color);
+
+        screenSaver.CurrentScreen = newMarkingId;
+        if (sound) {
+            _audio.PlayPvs(new SoundPathSpecifier("/Audio/Machines/terminal_prompt.ogg"), uid);
+        }
+        UpdateVisuals(uid, screenSaver);
+        Dirty(uid, screenSaver);
     }
 
     private void RemoveMarking(EntityUid uid, string marking, bool sync = true, HumanoidAppearanceComponent? humanoid = null)
@@ -107,14 +114,13 @@ public sealed class ScreenSaverSystem : SharedScreenSaverSystem
             Dirty(uid, humanoid);
     }
     
-    private void OnBodyPartDamage(EntityUid uid, BodyPartComponent component, DamageChangedEvent args)
+    private void OnBodyPartDamage(EntityUid uid, ScreenSaverComponent component, DamageChangedEvent args)
     {
-        if (!args.DamageIncreased || component.PartType != BodyPartType.Head || component.Body is not { } body)
+        if (!args.DamageIncreased)
             return;
 
-        if (!TryComp<ScreenSaverComponent>(body, out var screenSaver)
-            || !TryComp<HumanoidAppearanceComponent>(body, out var humanoid)
-            || !_mobState.IsAlive(body))
+        if (!TryComp<HumanoidAppearanceComponent>(uid, out var humanoid)
+            || !_mobState.IsAlive(uid))
             return;
 
         var markings = MarkingManager.Markings.Values.Where(m =>
@@ -127,30 +133,6 @@ public sealed class ScreenSaverSystem : SharedScreenSaverSystem
 
         var randomMarking = _random.Pick(markings);
 
-        // Preserve color if possible
-        var color = Color.White;
-        if (humanoid.MarkingSet.Markings.TryGetValue(MarkingCategories.Face, out var faceMarkings))
-        {
-            var lastMarking = faceMarkings.LastOrDefault();
-            if (lastMarking != null && lastMarking.MarkingColors.Count > 0)
-            {
-                color = lastMarking.MarkingColors[0];
-            }
-        }
-
-        // Remove old markings
-        if (humanoid.MarkingSet.Markings.ContainsKey(MarkingCategories.Face))
-        {
-            var toRemove = new List<Marking>(humanoid.MarkingSet.Markings[MarkingCategories.Face]);
-            foreach (var m in toRemove)
-            {
-                RemoveMarking(body, m.MarkingId);
-            }
-        }
-
-        Humanoid.AddMarking(body, randomMarking.ID, color);
-        screenSaver.CurrentScreen = randomMarking.ID;
-        UpdateVisuals(body, screenSaver);
-        Dirty(body, screenSaver);
+        ReplaceScreenMarking(uid, randomMarking.ID, component, humanoid);
     }
 }
