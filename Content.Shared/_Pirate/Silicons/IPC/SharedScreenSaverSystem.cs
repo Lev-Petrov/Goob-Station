@@ -55,6 +55,9 @@ public abstract class SharedScreenSaverSystem : EntitySystem
         if (args.NewMobState != MobState.Dead || args.OldMobState == MobState.Dead)
             return;
 
+        if (!NetManager.IsServer)
+            return;
+
         Color? color = null;
 
         if (TryComp<HumanoidAppearanceComponent>(uid, out var humanoid))

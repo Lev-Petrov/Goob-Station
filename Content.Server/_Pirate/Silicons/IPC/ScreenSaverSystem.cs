@@ -31,7 +31,7 @@ public sealed class ScreenSaverSystem : SharedScreenSaverSystem
         SubscribeLocalEvent<ScreenSaverComponent, MapInitEvent>(OnMapInit);
         SubscribeLocalEvent<ScreenSaverComponent, ComponentShutdown>(OnShutdown);
         SubscribeNetworkEvent<SelectScreenSaverMessage>(OnSelectScreen);
-        SubscribeLocalEvent<ScreenSaverComponent, DamageChangedEvent>(OnBodyPartDamage);
+        SubscribeLocalEvent<BodyPartComponent, DamageChangedEvent>(OnBodyPartDamage);
     }
 
     private void OnMapInit(EntityUid uid, ScreenSaverComponent component, MapInitEvent args)
@@ -72,17 +72,14 @@ public sealed class ScreenSaverSystem : SharedScreenSaverSystem
     private void ReplaceScreenMarking(EntityUid uid, string newMarkingId, ScreenSaverComponent screenSaver, HumanoidAppearanceComponent humanoid, bool sound = false)
     {
         var color = Color.White;
-        if (humanoid.MarkingSet.Markings.TryGetValue(MarkingCategories.Face, out var faceMarkings))
+        if (humanoid.MarkingSet.Markings.TryGetValue(MarkingCategories.Face, out var existing))
         {
-            var lastMarking = faceMarkings.LastOrDefault();
+            var lastMarking = existing.LastOrDefault();
             if (lastMarking != null && lastMarking.MarkingColors.Count > 0)
             {
                 color = lastMarking.MarkingColors[0];
             }
-        }
 
-        if (humanoid.MarkingSet.Markings.TryGetValue(MarkingCategories.Face, out var existing))
-        {
             var toRemove = new List<Marking>(existing);
             foreach (var m in toRemove)
             {
@@ -114,13 +111,14 @@ public sealed class ScreenSaverSystem : SharedScreenSaverSystem
             Dirty(uid, humanoid);
     }
     
-    private void OnBodyPartDamage(EntityUid uid, ScreenSaverComponent component, DamageChangedEvent args)
+    private void OnBodyPartDamage(EntityUid uid, BodyPartComponent component, DamageChangedEvent args)
     {
-        if (!args.DamageIncreased)
+        if (!args.DamageIncreased || component.PartType != BodyPartType.Head || component.Body is not { } body)
             return;
 
-        if (!TryComp<HumanoidAppearanceComponent>(uid, out var humanoid)
-            || !_mobState.IsAlive(uid))
+        if (!TryComp<ScreenSaverComponent>(body, out var screenSaver)
+            || !TryComp<HumanoidAppearanceComponent>(body, out var humanoid)
+            || !_mobState.IsAlive(body))
             return;
 
         var markings = MarkingManager.Markings.Values.Where(m =>
@@ -132,7 +130,6 @@ public sealed class ScreenSaverSystem : SharedScreenSaverSystem
             return;
 
         var randomMarking = _random.Pick(markings);
-
-        ReplaceScreenMarking(uid, randomMarking.ID, component, humanoid);
+        ReplaceScreenMarking(body, randomMarking.ID, screenSaver, humanoid);
     }
 }

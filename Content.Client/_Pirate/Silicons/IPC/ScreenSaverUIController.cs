@@ -3,7 +3,7 @@ using Content.Client.UserInterface;
 using Content.Shared.Humanoid;
 using Content.Shared.Humanoid.Markings;
 using Content.Shared.Silicons.IPC;
-using Robust.Client.Player;
+
 using Robust.Client.UserInterface;
 using Robust.Client.UserInterface.Controllers;
 using Robust.Shared.Prototypes;
@@ -15,7 +15,7 @@ public sealed class ScreenSaverUIController : UIController
 {
     [Dependency] private readonly IEntityManager _entityManager = default!;
     [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
-    [Dependency] private readonly IPlayerManager _playerManager = default!;
+
     [Dependency] private readonly MarkingManager _markingManager = default!;
 
     private PaginatedRadialMenu? _menu;
