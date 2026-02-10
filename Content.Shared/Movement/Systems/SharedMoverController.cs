@@ -124,6 +124,7 @@ using Robust.Shared.Audio;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Configuration;
 using Robust.Shared.Containers;
+using Robust.Shared.GameObjects;
 using Robust.Shared.Map;
 using Robust.Shared.Map.Components;
 using Robust.Shared.Physics;
@@ -196,6 +197,8 @@ public abstract partial class SharedMoverController : VirtualController
     /// Cache the mob movement calculation to re-use elsewhere.
     /// </summary>
     public Dictionary<EntityUid, bool> UsedMobMovement = new();
+
+    private readonly HashSet<EntityUid> _aroundColliderEntities = new();
 
     public override void Initialize()
     {
@@ -304,14 +307,8 @@ public abstract partial class SharedMoverController : VirtualController
         // If we're not the target of a relay then handle lerp data.
         if (relaySource == null)
         {
-            if (TileMovementQuery.HasComponent(uid)) // Goobstation Change
+            if (TileMovementQuery.HasComponent(uid) || mover.LerpTarget < Timing.CurTime)
                 TryUpdateRelative(uid, mover, xform);
-
-            // Update relative movement
-            if (mover.LerpTarget < Timing.CurTime)
-            {
-                TryUpdateRelative(uid, mover, xform);
-            }
 
             LerpRotation(uid, mover, frameTime);
         }
@@ -631,7 +628,10 @@ public abstract partial class SharedMoverController : VirtualController
         var (uid, collider, mover, transform) = entity;
         var enlargedAABB = _lookup.GetWorldAABB(entity.Owner, transform).Enlarged(mover.GrabRange);
 
-        foreach (var otherEntity in lookupSystem.GetEntitiesIntersecting(transform.MapID, enlargedAABB))
+        _aroundColliderEntities.Clear();
+        lookupSystem.GetEntitiesIntersecting(transform.MapID, enlargedAABB, _aroundColliderEntities, LookupFlags.Static);
+
+        foreach (var otherEntity in _aroundColliderEntities)
         {
             if (otherEntity == uid)
                 continue; // Don't try to push off of yourself!
