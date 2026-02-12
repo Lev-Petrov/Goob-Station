@@ -97,7 +97,6 @@ using Content.Server.GameTicking;
 using Content.Server.Ghost.Components;
 using Content.Server.Mind;
 using Content.Server.Roles.Jobs;
-using Content.Server.Warps;
 #region DOWNSTREAM-TPirates: ghost follow menu update
 using System.Diagnostics.CodeAnalysis;
 using Content.Shared.Access.Components;

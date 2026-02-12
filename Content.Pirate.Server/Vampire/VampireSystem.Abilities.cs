@@ -362,7 +362,7 @@ public sealed partial class VampireSystem
 
             if (HasComp<HumanoidAppearanceComponent>(entity))
             {
-                _stun.TryParalyze(entity, duration ?? TimeSpan.FromSeconds(3), false);
+                _stun.TryAddParalyzeDuration(entity, duration ?? TimeSpan.FromSeconds(3));
                 _chat.TryEmoteWithoutChat(entity, _prototypeManager.Index<EmotePrototype>(VampireComponent.ScreamEmoteProto), true);
             }
 
@@ -383,14 +383,14 @@ public sealed partial class VampireSystem
 
         if (HasComp<BibleUserComponent>(target))
         {
-            _stun.TryParalyze(vampire, duration ?? TimeSpan.FromSeconds(3), true);
+            _stun.TryUpdateParalyzeDuration(vampire, duration ?? TimeSpan.FromSeconds(3));
             _chat.TryEmoteWithoutChat(vampire.Owner, _prototypeManager.Index<EmotePrototype>(VampireComponent.ScreamEmoteProto), true);
             if (damage != null)
                 _damageableSystem.TryChangeDamage(vampire.Owner, damage);
             return;
         }
 
-        _stun.TryParalyze(target.Value, duration ?? TimeSpan.FromSeconds(3), true);
+        _stun.TryUpdateParalyzeDuration(target.Value, duration ?? TimeSpan.FromSeconds(3));
     }
     private void PolymorphSelf(Entity<VampireComponent> vampire, string? polymorphTarget)
     {
