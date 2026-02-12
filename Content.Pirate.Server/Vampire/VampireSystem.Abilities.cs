@@ -25,6 +25,7 @@ using Content.Shared.Popups;
 using Content.Shared.Polymorph;
 using Content.Shared.Prying.Components;
 using Content.Shared.Stealth.Components;
+using Content.Shared.Storage.Components;
 //using Content.Shared.Store.Events;
 using Content.Shared.Store.Components;
 using Content.Shared.Stunnable;
@@ -868,7 +869,7 @@ public sealed partial class VampireSystem
         if (!_interaction.InRangeUnobstructed(vampire.Owner, target, popup: true))
             return false;
 
-        if (_food.IsMouthBlocked(target, vampire))
+        if (!_ingestion.HasMouthAvailable(vampire.Owner, target))
             return false;
 
         if (_rotting.IsRotten(target))
@@ -902,7 +903,7 @@ public sealed partial class VampireSystem
         if (!HasComp<VampireFangsExtendedComponent>(entity))
             return;
 
-        if (_food.IsMouthBlocked(entity, entity))
+        if (!_ingestion.HasMouthAvailable(entity.Owner, entity.Owner))
             return;
 
         if (_rotting.IsRotten(args.Target!.Value))
