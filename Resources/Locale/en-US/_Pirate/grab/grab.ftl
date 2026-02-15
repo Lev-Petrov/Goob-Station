@@ -1,7 +1,3 @@
-# SPDX-FileCopyrightText: 2026 GoobBot <uristmchands@proton.me>
-#
-# SPDX-License-Identifier: AGPL-3.0-or-later
-
 popup-grab-bone-break-start-self = You raise {CAPITALIZE($tool)} over {CAPITALIZE($target)} and swing at { $limb }!
 popup-grab-bone-break-start-target = {CAPITALIZE($puller)} raises {CAPITALIZE($tool)} over you and swings at { $limb }!
 popup-grab-bone-break-start-others = {CAPITALIZE($puller)} raises {CAPITALIZE($tool)} over {CAPITALIZE($target)} and swings at { $limb }!

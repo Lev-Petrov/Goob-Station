@@ -1,7 +1,3 @@
-// SPDX-FileCopyrightText: 2026 GoobBot <uristmchands@proton.me>
-//
-// SPDX-License-Identifier: AGPL-3.0-or-later
-
 using System;
 using Content.Goobstation.Common.MartialArts;
 using Content.Goobstation.Maths.FixedPoint;
@@ -34,8 +30,11 @@ namespace Content.Shared.Movement.Pulling.Systems;
 
 public sealed partial class PullingSystem
 {
-    private readonly Dictionary<EntityUid, GrabFollowupSuppression> _grabFollowupSuppressions = new();
-    private static readonly TimeSpan GrabFollowupSuppressionDuration = TimeSpan.FromSeconds(1);
+    /// <summary>
+    /// prevent infinite loop after attacking the body part
+    /// </summary>
+    private readonly Dictionary<EntityUid, GrabFollowupSuppression> _followupSuppressions = new();
+    private static readonly TimeSpan suppressionDuration = TimeSpan.FromSeconds(1);
 
     private readonly record struct GrabFollowupSuppression(EntityUid Target, TimeSpan ExpiresAt);
 
@@ -611,31 +610,31 @@ public sealed partial class PullingSystem
 
     private void ArmGrabFollowupSuppression(EntityUid attacker, EntityUid target)
     {
-        _grabFollowupSuppressions[attacker] = new GrabFollowupSuppression(
+        _followupSuppressions[attacker] = new GrabFollowupSuppression(
             target,
-            _timing.CurTime + GrabFollowupSuppressionDuration);
+            _timing.CurTime + suppressionDuration);
     }
 
     private void ClearGrabFollowupSuppression(EntityUid attacker)
     {
-        _grabFollowupSuppressions.Remove(attacker);
+        _followupSuppressions.Remove(attacker);
     }
 
     private bool TryConsumeGrabFollowupSuppression(EntityUid attacker, EntityUid target)
     {
-        if (!_grabFollowupSuppressions.TryGetValue(attacker, out var suppression))
+        if (!_followupSuppressions.TryGetValue(attacker, out var suppression))
             return false;
 
         if (suppression.ExpiresAt < _timing.CurTime)
         {
-            _grabFollowupSuppressions.Remove(attacker);
+            _followupSuppressions.Remove(attacker);
             return false;
         }
 
         if (suppression.Target != target)
             return false;
 
-        _grabFollowupSuppressions.Remove(attacker);
+        _followupSuppressions.Remove(attacker);
         return true;
     }
 
