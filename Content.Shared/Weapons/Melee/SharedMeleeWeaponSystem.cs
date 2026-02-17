@@ -236,6 +236,7 @@ public abstract class SharedMeleeWeaponSystem : EntitySystem
     /// If an attack is released within this buffer it's assumed to be full damage.
     /// </summary>
     public const float GracePeriod = 0.05f;
+    private const float ArmOrHandDisarmChanceMultiplier = 1.5f; // DOWNSTREAM-TPirates: combat actions
 
     public override void Initialize()
     {
@@ -1191,7 +1192,8 @@ public abstract class SharedMeleeWeaponSystem : EntitySystem
         #region DOWNSTREAM-TPirates: combat actions
         if (TryComp<TargetingComponent>(user, out var targeting) && IsArmOrHandTarget(targeting.Target))
         {
-            chance = 1f;
+            // Aiming at arms/hands should improve disarm odds, but not bypass stamina/health/item malus checks.
+            chance = Math.Clamp(chance * ArmOrHandDisarmChanceMultiplier, 0f, 1f);
         }
         #endregion
 
