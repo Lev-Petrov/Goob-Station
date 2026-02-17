@@ -1188,6 +1188,12 @@ public abstract class SharedMeleeWeaponSystem : EntitySystem
             return true;
 
         var chance = CalculateDisarmChance(user, target, inTargetHand, combatMode);
+        #region DOWNSTREAM-TPirates: combat actions
+        if (TryComp<TargetingComponent>(user, out var targeting) && IsArmOrHandTarget(targeting.Target))
+        {
+            chance = 1f;
+        }
+        #endregion
 
         _audio.PlayPredicted(combatMode.DisarmSuccessSound,
             user, user,
@@ -1347,4 +1353,14 @@ public abstract class SharedMeleeWeaponSystem : EntitySystem
             }
         }
     }
+    
+    #region DOWNSTREAM-TPirates: combat actions
+    private static bool IsArmOrHandTarget(TargetBodyPart targetPart)
+    {
+        return targetPart is TargetBodyPart.LeftArm
+            or TargetBodyPart.RightArm
+            or TargetBodyPart.LeftHand
+            or TargetBodyPart.RightHand;
+    }
+    #endregion
 }
