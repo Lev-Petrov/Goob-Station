@@ -169,17 +169,15 @@ public sealed partial class IdentitySystem : SharedIdentitySystem // DOWNSTREAM-
         var ev = new SeeIdentityAttemptEvent();
 
         RaiseLocalEvent(target, ev);
-        var knownIdentity = representation.ToStringKnown(!ev.Cancelled);
-
         #region DOWNSTREAM-TPirates: face mutilation
+        var knownIdentity = representation.ToStringKnown(!ev.Cancelled);
         // Preserve SeeIdentityAttemptEvent and ID-card identity rules first, then apply face mutilation identity only when identity is visible and not ID-based.
         if (!ev.Cancelled
             && representation.PresumedName == null
             && TryGetPirateFaceMutilationIdentity(target, representation, out var pirateIdentity))
             return pirateIdentity;
-        #endregion
-
         return knownIdentity;
+        #endregion
     }
 
     /// <summary>
