@@ -18,8 +18,8 @@ public sealed partial class TraumaSystem
         Entity<WoundableComponent> target,
         Entity<TraumaInflicterComponent> woundInflicter)
     {
-        var bodyPart = Comp<BodyPartComponent>(target);
-        if (!bodyPart.Body.HasValue
+        if (!TryComp<BodyPartComponent>(target, out var bodyPart)
+            || !bodyPart.Body.HasValue
             || bodyPart.PartType != BodyPartType.Head
             || target.Comp.WoundableSeverity < WoundableSeverity.Moderate
             || target.Comp.WoundableSeverity == WoundableSeverity.Severed
