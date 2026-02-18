@@ -41,15 +41,17 @@ public sealed partial class IdentitySystem
 
     private void OnPirateTraumaChanged(EntityUid uid, WoundableComponent component, ref TraumaInducedEvent args)
     {
-        if (args.TraumaType != TraumaType.FaceMutilation)
-            return;
-
-        QueueIdentityUpdateForWoundable(uid);
+        HandleFaceMutilationTraumaChanged(uid, args.TraumaType);
     }
 
     private void OnPirateTraumaChanged(EntityUid uid, WoundableComponent component, ref TraumaBeingRemovedEvent args)
     {
-        if (args.TraumaType != TraumaType.FaceMutilation)
+        HandleFaceMutilationTraumaChanged(uid, args.TraumaType);
+    }
+
+    private void HandleFaceMutilationTraumaChanged(EntityUid uid, TraumaType traumaType)
+    {
+        if (traumaType != TraumaType.FaceMutilation)
             return;
 
         QueueIdentityUpdateForWoundable(uid);
