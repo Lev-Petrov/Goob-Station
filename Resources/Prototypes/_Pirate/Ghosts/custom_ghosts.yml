@@ -296,7 +296,7 @@
 
 - type: customGhost
   id: BlackTank-ghost
-  ckey: localhost@Vareniko
+  ckey: BlackTank
   sprite:
     - _Pirate/Ghosts/BlackTank.rsi
   alpha: 1
