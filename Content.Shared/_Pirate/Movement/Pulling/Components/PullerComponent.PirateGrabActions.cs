@@ -41,5 +41,8 @@ public sealed partial class PullerComponent
     public float ThroatSliceMinimumBleed = 12f;
 
     [DataField]
+    public float ThroatSliceWoundSeverityMultiplier = 8f;
+
+    [DataField]
     public float ThroatSliceStrikeMultiplier = 2.5f;
 }

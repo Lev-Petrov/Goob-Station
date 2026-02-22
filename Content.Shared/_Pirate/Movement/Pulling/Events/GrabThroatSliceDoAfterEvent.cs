@@ -5,7 +5,7 @@ using Robust.Shared.Serialization;
 namespace Content.Shared._Pirate.Movement.Pulling.Events;
 
 [Serializable, NetSerializable]
-public sealed partial class ThroatSliceDoAfterEvent(TargetBodyPart targetPart) : DoAfterEvent
+public sealed partial class ThroatSliceDoAfterEvent(TargetBodyPart targetPart) : SimpleDoAfterEvent
 {
     public TargetBodyPart TargetPart = targetPart;
 
