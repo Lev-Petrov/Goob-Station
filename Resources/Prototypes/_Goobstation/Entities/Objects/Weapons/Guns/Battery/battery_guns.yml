@@ -411,8 +411,6 @@
     layers:
     - state: icon
       map: ["enum.GunVisualLayers.Base"]
-  - type: GunFlashlightAttachment # DOWNSTREAM-TPirates: gun flashlights
-    offset: "0.125, -0.03125"
   - type: Clothing
     quickEquip: false
     slots:
@@ -479,20 +477,6 @@
     keyPhrase: "lawbringer-phrase"
     listenRange: 1
     holderOnly: true
-  - type: UpgradeableWeapon # DOWNSTREAM-TPirates: gun flashlights
-  - type: ItemSlots # DOWNSTREAM-TPirates: gun flashlights
-    slots:
-      flashlight:
-        name: weapon-upgrade-slot-name-flashlight
-        priority: 5
-        ejectOnBreak: true
-        occludesLight: false
-        whitelist:
-          components:
-          - GunUpgradeFlashlight
-  - type: ContainerContainer # DOWNSTREAM-TPirates: gun flashlights
-    containers:
-      flashlight: !type:ContainerSlot
   - type: AccessReader
     access: [['HeadOfSecurity']]
   - type: ActiveListener
