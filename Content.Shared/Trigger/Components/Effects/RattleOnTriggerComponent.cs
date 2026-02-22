@@ -39,7 +39,7 @@ public sealed partial class RattleOnTriggerComponent : BaseXOnTriggerComponent
     /// <summary>
     /// If true and the target is not on any station grid, mirror this message to <see cref="OffStationRelayChannel"/>.
     /// </summary>
-    [DataField("relayToStationWhenOffStation")]
+    [DataField]
     public bool RelayToStationWhenOffStation;
 
     /// <summary>
