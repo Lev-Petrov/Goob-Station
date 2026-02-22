@@ -5,8 +5,8 @@ using Content.Shared.Trigger;
 using Content.Shared.Trigger.Components.Effects;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Utility;
-using Content.Server.Station.Systems; // DOWNSTREAM-TPirates: death rattle update
-using Robust.Shared.Map; // DOWNSTREAM-TPirates: death rattle update
+using Content.Server.Station.Systems; // Pirates: death rattle update
+using Robust.Shared.Map; // Pirates: death rattle update
 
 namespace Content.Server.Trigger.Systems;
 
@@ -15,8 +15,8 @@ public sealed class RattleOnTriggerSystem : EntitySystem
     [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
     [Dependency] private readonly RadioSystem _radio = default!;
     [Dependency] private readonly NavMapSystem _navMap = default!;
-    [Dependency] private readonly SharedTransformSystem _transform = default!; // DOWNSTREAM-TPirates: death rattle update
-    [Dependency] private readonly StationSystem _station = default!; // DOWNSTREAM-TPirates: death rattle update
+    [Dependency] private readonly SharedTransformSystem _transform = default!; // Pirates: death rattle update
+    [Dependency] private readonly StationSystem _station = default!; // Pirates: death rattle update
 
     public override void Initialize()
     {
@@ -44,13 +44,13 @@ public sealed class RattleOnTriggerSystem : EntitySystem
             return;
 
         // Gets the location of the user
-        var pos = _transform.GetMapCoordinates(target.Value); // DOWNSTREAM-TPirates: death rattle update
-        var posText = GetPositionText(pos, ent.Comp.ReportCoordinates); // DOWNSTREAM-TPirates: death rattle update
+        var pos = _transform.GetMapCoordinates(target.Value); // Pirates: death rattle update
+        var posText = GetPositionText(pos, ent.Comp.ReportCoordinates); // Pirates: death rattle update
 
         var message = Loc.GetString(messageId, ("user", target.Value), ("position", posText));
         // Sends a message to the radio channel specified by the implant
         _radio.SendRadioMessage(ent.Owner, message, _prototypeManager.Index(ent.Comp.RadioChannel), ent.Owner);
-        #region DOWNSTREAM-TPirates: death rattle update
+        #region Pirates: death rattle update
         if (!ent.Comp.RelayToStationWhenOffStation || _station.GetOwningStation(target.Value) != null)
             return;
 
@@ -58,7 +58,7 @@ public sealed class RattleOnTriggerSystem : EntitySystem
             _radio.SendRadioMessage(ent.Owner, message, _prototypeManager.Index(ent.Comp.OffStationRelayChannel), relaySource);
         #endregion
     }
-    #region DOWNSTREAM-TPirates: death rattle update
+    #region Pirates: death rattle update
     private string GetPositionText(MapCoordinates pos, bool reportCoordinates)
     {
         var location = CapitalizeFirst(
