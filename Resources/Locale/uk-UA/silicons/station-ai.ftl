@@ -11,7 +11,6 @@ bolt-open = Відкрити болт
 
 toggle-light = Перемкнути світло
 
-
 emergency-access-on = Увімкнути аварійний доступ
 emergency-access-off = Вимкнути аварійний доступ
 electrify-door-on = Увімкнути перезарядку
@@ -37,8 +36,5 @@ station-ai-hologram-female = Жіноча зовнішність
 station-ai-hologram-male = Чоловіча зовнішність
 station-ai-hologram-face = Безтілесна голова
 # Goob, послідовність, форма -> вигляд
-station-ai-hologram-cat = Вигляд кота
-station-ai-hologram-dog = Вигляд коргі
-station-ai-hologram-kobold = Вигляд кобольда
-station-ai-hologram-monkey = Вигляд мавпи
+
 station-ai-eye-name = Око ШІ - {$name}

@@ -177,22 +177,24 @@ loadout-group-warden-jumpsuit = Комбінезон наглядача
 loadout-group-warden-outerclothing = Верхній одяг наглядача
 
 loadout-group-security-officer-head = Головний убір Офіцера СБ
-loadout-group-security-head = Головний убір СБ
+loadout-group-security-head = Головний убір офіцера СБ
 loadout-group-security-jumpsuit = Комбінезон офіцера СБ
-loadout-group-security-backpack = Рюкзак СБ
-loadout-group-security-belt = Ремінь СБ
+loadout-group-security-backpack = Рюкзак офіцера СБ
+loadout-group-security-belt = Ремінь офіцера СБ
 loadout-group-security-outerclothing = Верхній одяг офіцера СБ
-loadout-group-security-shoes = Взуття СБ
-loadout-group-security-id = ID-карта СБ
+loadout-group-security-shoes = Взуття офіцера СБ
+loadout-group-security-id = ID-карта офіцера СБ
 
 loadout-group-detective-head = Головний убір детектива
 loadout-group-detective-neck = Шийна прикраса детектива
 loadout-group-detective-jumpsuit = Комбінезон детектива
 loadout-group-detective-outerclothing = Верхній одяг детектива
 
-loadout-group-security-cadet-jumpsuit = Комбінезон кадета СБ
-loadout-group-cadet-outerclothing = Верхній одяг кадета СБ
+loadout-group-security-cadet-jumpsuit = Комбінезон кадета служби безпеки
+loadout-group-cadet-outerclothing = Верхній одяг кадетів
 loadout-group-security-star = Зірка безпеки
+
+# Медицина
 
 loadout-group-brigmedic-gloves = Рукавиці бригмедика
 
