@@ -48,9 +48,7 @@ public sealed partial class NanoChatMessageBubblePirate : BoxContainer
 
         // Show delivery failed text if needed (only for own messages)
         DeliveryFailedLabel.Visible = isOwnMessage && message.DeliveryFailed;
-        DeliveryFailedLabel.HorizontalAlignment = isOwnMessage
-            ? HAlignment.Right
-            : HAlignment.Left;
+        DeliveryFailedLabel.HorizontalAlignment = HAlignment.Right;
         if (DeliveryFailedLabel.Visible)
             DeliveryFailedLabel.Modulate = ErrorColor;
 
