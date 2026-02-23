@@ -173,19 +173,6 @@
   - FlowerWreath
   - Hairflower
   - Headphones
-# Pirate VVV
-  - TrinketsClothingHeadPaperSack
-  - PlushieVulpSusie
-  - PlushieEntony
-  - PlushieIpcCat
-  - PlushieTK
-  - PlushieKateryna
-  - PlushieNicholasGray
-  - PlushieOlia
-  - PlushieSkeleton
-  - PlushieTayler
-  - PlushiePocketAssistant
-# Pirate ^^^
   - PlushieLizard
   - PlushieSpaceLizard
   - PersonalAI # Goobstation
@@ -254,6 +241,8 @@
   - TapeRecorder
   - DrinkOniGourd
   # End DeltaV Additions
+  subgroups: # Pirate
+  - PirateTrinkets
 
 - type: loadoutGroup
   id: Glasses
@@ -1154,9 +1143,8 @@
   minLimit: 0
   loadouts:
   - ResearchDirectorBeret
-  - MantisTinfoil # Pirate
-  - MantisHelmet # Pirate
-  - MantisFez # Pirate
+  subgroups: # Pirate
+  - MantisHead
 
 - type: loadoutGroup
   id: ResearchDirectorNeck
@@ -1343,11 +1331,11 @@
   name: loadout-group-security-head
   minLimit: 0
   loadouts:
-  - SecurityHelmet
+  # - SecurityHelmet # Pirate
   - SecurityHelmetAlt # Goobstation
   - SecurityBeret
   - SecurityHat
-  - TrooperHat
+  # - TrooperHat # Pirate
 
 - type: loadoutGroup
   id: SecurityJumpsuit
@@ -1357,9 +1345,9 @@
   - SecurityJumpskirt
   - SecurityJumpsuitGrey
   - SecurityJumpskirtGrey
-  - SeniorOfficerJumpsuit
-  - SeniorOfficerJumpskirt
-  - TrooperUniform
+  #- SeniorOfficerJumpsuit # Pirate
+  #- SeniorOfficerJumpskirt # Pirate
+  #- TrooperUniform # Pirate
 
 - type: loadoutGroup
   id: SecurityBackpack
@@ -1385,7 +1373,7 @@
   - ArmorVest
   - ArmorVestSlim
   - SecurityOfficerWintercoat
-  - WinterCoatSeniorSecArmored # Goobstation
+  #- WinterCoatSeniorSecArmored # Goobstation # Pirate disable
 
 - type: loadoutGroup
   id: SecurityShoes
@@ -1400,7 +1388,7 @@
   name: loadout-group-security-id
   loadouts:
   - SecurityPDA
-  - SeniorOfficerPDA
+  #- SeniorOfficerPDA # Pirate disable
 
 - type: loadoutGroup
   id: DetectiveHead

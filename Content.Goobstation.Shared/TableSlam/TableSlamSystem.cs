@@ -77,7 +77,7 @@ public sealed class TableSlamSystem : EntitySystem
 
     private void OnMeleeHit(Entity<PullerComponent> ent, ref MeleeHitEvent args)
     {
-        if (ent.Comp.GrabStage < GrabStage.Suffocate
+        if (ent.Comp.GrabStage < GrabStage.Hard // DOWNSTREAM-TPirate: combat actions
             || ent.Comp.Pulling == null)
             return;
 

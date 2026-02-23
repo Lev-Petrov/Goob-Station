@@ -17,9 +17,6 @@ implanter-contained-implant-text = [color=green]{$desc}[/color]
 
 scramble-implant-activated-popup = Ваша зовнішність змінюється!
 
-deathrattle-implant-dead-message = {$user} загинув у {$position}.
-deathrattle-implant-critical-message = Життєві показники {$user} критичні, необхідна негайна допомога у {$position}.
-
 implanter-component-implant-already = {$target} вже має імплант {$implant}!
 
 ## UI

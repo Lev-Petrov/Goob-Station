@@ -747,12 +747,12 @@
     inhandVisuals:
       left:
       - state: inhand-left
-        color: "#335E87" # Pirate
+        color: "#263E5D" # Pirate bluesec
         sprite: Clothing/Uniforms/Jumpsuit/color.rsi
       - state: overlay-inhand-left
       right:
       - state: inhand-right
-        color: "#335E87" # Pirate
+        color: "#263E5D" # Pirate bluesec
         sprite: Clothing/Uniforms/Jumpsuit/color.rsi
       - state: overlay-inhand-right
 

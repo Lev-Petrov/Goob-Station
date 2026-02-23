@@ -410,6 +410,7 @@
     tags:
     - PetWearable
     - CorgiWearable
+    - HamsterWearable # Pirate
 
 - type: entity
   parent: ClothingHeadHatBeret
@@ -455,6 +456,7 @@
     tags:
     - PetWearable
     - CorgiWearable
+    - HamsterWearable # Pirate
 
 - type: entity
   parent: [ ClothingHeadBase ]

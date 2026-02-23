@@ -111,7 +111,7 @@ public abstract partial class SharedBloodstreamSystem : EntitySystem
                 //var amt = bloodstream.BloodlossDamage * (1 - bloodPercentage) * 10f * _bloodlossMultiplier; // Goobstation
                 // Pirate, Yooo Mr. Void, I cooked up a new bloodloss formula for ya
                 float t = (0.8f - bloodPercentage) / 0.8f;
-                var amt = bloodstream.BloodlossDamage * MathF.Pow(t, 2.1f) * 10f * _bloodlossMultiplier;
+                var amt = bloodstream.BloodlossDamage * (1f + MathF.Pow(t, 2.1f) * 9f) * _bloodlossMultiplier;
                 // Pirate ^^^
 
 

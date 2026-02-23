@@ -1,0 +1,27 @@
+Name: Pirate Log
+Order: -2
+Entries:
+- author: luciusGodGame
+  changes:
+    - type: Add
+      message: add... changelog?
+  id: 1
+  time: '2026-02-19T15:57:48.0000000+00:00'
+- author: Vareniko
+  changes:
+    - type: Add
+      message: Можливість лежати під меблями
+  id: 2
+  time: '2026-02-22T12:40:49.0000000+00:00'
+- author: Vareniko
+  changes:
+    - type: Fix
+      message: повернено обмеження щодо гравців до хвоста "VulpQueenTail"
+  id: 3
+  time: '2026-02-22T22:22:06.0000000+00:00'
+- author: v0idRift
+  changes:
+    - type: Fix
+      message: тест
+  id: 4
+  time: '2026-02-22T23:13:26.0000000+00:00'

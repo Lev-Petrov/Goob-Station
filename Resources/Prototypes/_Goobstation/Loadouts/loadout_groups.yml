@@ -1157,7 +1157,7 @@
   loadouts:
   - Bodycam # Goobstation - Body cameras
   - CameraCollar # Pirate
-  - ClothingNeckCWPSec
+  #- ClothingNeckCWPSec # Pirate disable
 
 #honkops
 
@@ -1405,6 +1405,7 @@
   name: loadout-group-brigmedic-outer
   loadouts:
   - BrigmedicAMG
+  - BrigmedicCoat # Pirate
   - ArmorVest
   - ArmorVestSlim
   - SecurityOfficerWintercoat

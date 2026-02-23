@@ -141,16 +141,16 @@
   requirements:
     - !type:RoleTimeRequirement
       role: JobWarden
-      time: 18000 #5 hr
+      time: 36000 #10 hrs # Pirate
     - !type:RoleTimeRequirement
       role: JobSecurityOfficer
-      time: 36000 #10 hrs
+      time: 108000 #30 hrs # Pirate
     - !type:RoleTimeRequirement
       role: JobDetective
       time: 3600 #1 hrs
-    - !type:DepartmentTimeRequirement
-      department: Security
-      time: 36000 # 10 hrs
+    #- !type:DepartmentTimeRequirement # Pirate remove
+    #  department: Security
+    #  time: 36000 # 10 hrs
     - !type:TraitsRequirement # Pirate
       inverted: true
       traits:
