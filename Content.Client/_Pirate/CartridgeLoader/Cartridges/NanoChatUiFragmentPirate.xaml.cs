@@ -184,6 +184,7 @@ public sealed partial class NanoChatUiFragmentPirate : BoxContainer
             _recipients[number] = recipient;
             UpdateChatList(_recipients);
         }
+        UpdateMessages(_messages);
 
         OnMessageSent?.Invoke(NanoChatUiMessageType.SelectChat, number, null, null);
         UpdateCurrentChat();
