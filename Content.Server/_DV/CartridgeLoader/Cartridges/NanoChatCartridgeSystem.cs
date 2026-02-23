@@ -26,8 +26,8 @@ using Content.Shared._DV.CartridgeLoader.Cartridges;
 using Content.Shared._DV.NanoChat;
 using Content.Shared.PDA;
 using Content.Shared.Radio.Components;
-using Robust.Shared.Audio; // Pirates: sender/recipient NanoChat sound playback support.
-using Robust.Shared.Audio.Systems; // Pirates: sender/recipient NanoChat sound playback support.
+using Robust.Shared.Audio; // Pirate: pda fix
+using Robust.Shared.Audio.Systems; // Pirate: pda fix
 using Robust.Shared.Prototypes;
 using Robust.Shared.Timing;
 using Content.Shared.CCVar;
@@ -46,7 +46,7 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
     [Dependency] private readonly StationSystem _station = default!;
     [Dependency] private readonly SharedUserInterfaceSystem _ui = default!;
     [Dependency] private readonly IConfigurationManager _cfgManager = default!;
-    [Dependency] private readonly SharedAudioSystem _audio = default!; // Pirates: NanoChat sound playback dependency.
+    [Dependency] private readonly SharedAudioSystem _audio = default!; // Pirate: pda fix
 
     // Messages in notifications get cut off after this point
     // no point in storing it on the comp
@@ -103,7 +103,7 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
             if (cartridge.LoaderUid == null)
                 continue;
 
-            UpdateClosed((uid, nanoChat)); // Pirates: keep IsClosed synced with active program + open PDA UI.
+            UpdateClosed((uid, nanoChat)); // Pirate: pda fix
             // Check if we need to update our card reference
             if (!TryComp<PdaComponent>(cartridge.LoaderUid, out var pda))
                 continue;
@@ -298,8 +298,8 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
         if (msg.RecipientNumber == null || msg.Content == null || card.Comp.Number == null)
             return;
 
-        // Pirates: enrich recipient metadata when available.
-        if (!EnsureRecipientExists(card, msg.RecipientNumber.Value, GetCardInfo(msg.RecipientNumber.Value))) // Pirates: ensure contact exists and include freshest known recipient metadata.
+        // Pirate: pda fix
+        if (!EnsureRecipientExists(card, msg.RecipientNumber.Value, GetCardInfo(msg.RecipientNumber.Value))) // Pirate: pda fix
             return;
 
         var content = msg.Content;
@@ -338,8 +338,8 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
         var msgEv = new NanoChatMessageReceivedEvent(card);
         RaiseLocalEvent(ref msgEv);
 
-        if (!card.Comp.NotificationsMuted) // Pirates: mute suppresses sender success/error feedback
-            PlaySenderFeedbackSound((card, card.Comp), deliveryFailed); // Pirates: audible local-area sender confirmation/error feedback.
+        if (!card.Comp.NotificationsMuted) // Pirate: pda fix
+            PlaySenderFeedbackSound((card, card.Comp), deliveryFailed); // Pirate: pda fix
 
         if (deliveryFailed)
             return;
@@ -367,10 +367,10 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
     /// <param name="card">The card to check contacts for</param>
     /// <param name="recipientNumber">The recipient's number to check</param>
     /// <returns>True if the recipient exists or was created successfully</returns>
-    // Pirates: optional recipientInfo allows metadata enrichment.
-    private bool EnsureRecipientExists(Entity<NanoChatCardComponent> card, uint recipientNumber, NanoChatRecipient? recipientInfo = null) // Pirates: accept optional recipient metadata for enrichment.
+    // Pirate: pda fix
+    private bool EnsureRecipientExists(Entity<NanoChatCardComponent> card, uint recipientNumber, NanoChatRecipient? recipientInfo = null) // Pirate: pda fix
     {
-        return _nanoChat.EnsureRecipientExists((card, card.Comp), recipientNumber, recipientInfo ?? GetCardInfo(recipientNumber)); // Pirates: enrich/create recipient entry using provided or discovered metadata.
+        return _nanoChat.EnsureRecipientExists((card, card.Comp), recipientNumber, recipientInfo ?? GetCardInfo(recipientNumber)); // Pirate: pda fix
     }
 
     /// <summary>
@@ -485,6 +485,9 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
 
         _nanoChat.AddMessage((recipient, recipient.Comp), senderNumber.Value, message with { DeliveryFailed = false });
 
+        if (!recipient.Comp.NotificationsMuted) // Pirate: receive sound is tied to message delivery, not text-alert visibility checks.
+            _audio.PlayPvs(RecipientMessageSound, recipient.Comp.PdaUid ?? recipient.Owner, RecipientMessageAudioParams); // Pirate: play receive ping even when chat is open/selected.
+
         if (recipient.Comp.IsClosed || _nanoChat.GetCurrentChat((recipient, recipient.Comp)) != senderNumber)
             HandleUnreadNotification(recipient, message, (uint) senderNumber);
 
@@ -513,7 +516,7 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
                 message.SenderId,
                 senderRecipient with { HasUnread = true });
 
-        if (recipient.Comp.PdaUid is not {} pdaUid || // Pirates: allow muted NanoChat users to still receive text popup notifications.
+        if (recipient.Comp.PdaUid is not {} pdaUid || // Pirate: pda fix
             !TryComp<CartridgeLoaderComponent>(pdaUid, out var loader) ||
             // Don't notify if the recipient has the NanoChat program open with this chat selected.
             (hasSelectedCurrentChat &&
@@ -524,12 +527,9 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
         _cartridge.SendNotification(pdaUid,
             Loc.GetString("nano-chat-new-message-title", ("sender", senderName)),
             Loc.GetString("nano-chat-new-message-body", ("message", TruncateMessage(message.Content))),
-            loader, // Pirates: preserve existing loader context while overriding ringtone behavior.
-            playRingtone: false); // Pirates: suppress default PDA ringtone for NanoChat notifications
+            loader, // Pirate: pda fix
+            playRingtone: false); // Pirate: pda fix
 
-        // Dedicated NanoChat ping for recipient notifications (suppressed when NanoChat mute is enabled).
-        if (!recipient.Comp.NotificationsMuted) // Pirates: mute suppresses NanoChat audio ping only
-            _audio.PlayPvs(RecipientMessageSound, pdaUid, RecipientMessageAudioParams);
     }
 
     /// <summary>
@@ -619,7 +619,7 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
             {
                 if (nanoChatCard.ListNumber && nanoChatCard.Number is uint nanoChatNumber && idCardComponent.FullName is string fullName && _station.GetOwningStation(entityId) == station)
                 {
-                    contacts.Add(new NanoChatRecipient(nanoChatNumber, fullName, idCardComponent.LocalizedJobTitle)); // Pirates: include job in lookup contacts
+                    contacts.Add(new NanoChatRecipient(nanoChatNumber, fullName, idCardComponent.LocalizedJobTitle)); // Pirate: pda fix
                 }
             }
             contacts.Sort((contactA, contactB) => string.CompareOrdinal(contactA.Name, contactB.Name));

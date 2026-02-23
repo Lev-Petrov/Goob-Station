@@ -19,8 +19,8 @@ namespace Content.Client._Pirate.CartridgeLoader.Cartridges;
 [GenerateTypedNameReferences]
 public sealed partial class NanoChatEntryPirate : BoxContainer
 {
-    private const int NameMaxChars = 14;
-    private const int JobMaxChars = 18;
+    private const int NameMaxChars = 16;
+    private const int JobMaxChars = 20;
     private static readonly Color SelectedEntryColor = Color.FromHex("#4d5478d9");
 
     public event Action<uint>? OnPressed;
