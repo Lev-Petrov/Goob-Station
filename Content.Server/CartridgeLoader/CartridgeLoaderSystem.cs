@@ -364,7 +364,7 @@ public sealed class CartridgeLoaderSystem : SharedCartridgeLoaderSystem
         loader.BackgroundPrograms.Remove(cartridgeUid);
     }
 
-    public void SendNotification(EntityUid loaderUid, string header, string message, CartridgeLoaderComponent? loader = default!, bool playRingtone = true) // Pirates: caller can suppress ringtone while retaining text notification.
+    public void SendNotification(EntityUid loaderUid, string header, string message, CartridgeLoaderComponent? loader = default!, bool playRingtone = true) // Pirate: pda fix
     {
         if (!Resolve(loaderUid, ref loader))
             return;
@@ -372,8 +372,8 @@ public sealed class CartridgeLoaderSystem : SharedCartridgeLoaderSystem
         if (!loader.NotificationsEnabled)
             return;
 
-        // Pirates: forward caller ringtone preference to PDA notification handling.
-        var args = new CartridgeLoaderNotificationSentEvent(header, message, playRingtone); // Pirates: propagate ringtone preference in notification event payload.
+        // Pirate: pda fix
+        var args = new CartridgeLoaderNotificationSentEvent(header, message, playRingtone); // Pirate: pda fix
         RaiseLocalEvent(loaderUid, ref args);
     }
 

@@ -141,4 +141,4 @@ public sealed class CartridgeUiReadyEvent : EntityEventArgs
 /// </summary>
 /// <param name="Message">The message to be displayed</param>
 [ByRefEvent]
-public record struct CartridgeLoaderNotificationSentEvent(string Header, string Message, bool PlayRingtone = true); // Pirates: allow callers to suppress ringtone while keeping text notification.
+public record struct CartridgeLoaderNotificationSentEvent(string Header, string Message, bool PlayRingtone = true); // Pirate: pda fix

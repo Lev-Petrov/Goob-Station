@@ -51,7 +51,7 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
     // Messages in notifications get cut off after this point
     // no point in storing it on the comp
     private const int NotificationMaxLength = 64;
-    #region Pirates: NanoChat sender/recipient audio assets and params.
+    #region Pirate: pda fix
     private static readonly SoundSpecifier SendSuccessSound = new SoundPathSpecifier("/Audio/_Pirate/Machines/terminal_success.ogg");
     private static readonly SoundSpecifier SendErrorSound = new SoundPathSpecifier("/Audio/_Pirate/Machines/terminal_error.ogg");
     private static readonly SoundSpecifier RecipientMessageSound = new SoundPathSpecifier("/Audio/Machines/twobeep.ogg");
@@ -350,7 +350,7 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
         }
     }
 
-    #region Pirates: sender feedback sound for success/failure outcomes.
+    #region Pirate: pda fix
     private void PlaySenderFeedbackSound(Entity<NanoChatCardComponent> card, bool deliveryFailed)
     {
         var source = card.Comp.PdaUid ?? card.Owner;
@@ -485,8 +485,8 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
 
         _nanoChat.AddMessage((recipient, recipient.Comp), senderNumber.Value, message with { DeliveryFailed = false });
 
-        if (!recipient.Comp.NotificationsMuted) // Pirate: receive sound is tied to message delivery, not text-alert visibility checks.
-            _audio.PlayPvs(RecipientMessageSound, recipient.Comp.PdaUid ?? recipient.Owner, RecipientMessageAudioParams); // Pirate: play receive ping even when chat is open/selected.
+        if (!recipient.Comp.NotificationsMuted) // Pirate: pda fix
+            _audio.PlayPvs(RecipientMessageSound, recipient.Comp.PdaUid ?? recipient.Owner, RecipientMessageAudioParams); // Pirate: pda fix
 
         if (recipient.Comp.IsClosed || _nanoChat.GetCurrentChat((recipient, recipient.Comp)) != senderNumber)
             HandleUnreadNotification(recipient, message, (uint) senderNumber);

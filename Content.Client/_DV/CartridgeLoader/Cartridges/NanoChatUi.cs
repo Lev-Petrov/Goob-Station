@@ -9,7 +9,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 using Content.Client.UserInterface.Fragments;
-using Content.Client._Pirate.CartridgeLoader.Cartridges; // Pirates: use _Pirate NanoChat UI implementation.
+using Content.Client._Pirate.CartridgeLoader.Cartridges; // Pirate: pda fix
 using Content.Shared.CartridgeLoader;
 using Content.Shared._DV.CartridgeLoader.Cartridges;
 using Robust.Client.UserInterface;
@@ -18,7 +18,7 @@ namespace Content.Client._DV.CartridgeLoader.Cartridges;
 
 public sealed partial class NanoChatUi : UIFragment
 {
-    private NanoChatUiFragmentPirate? _fragment; // Pirates: route NanoChat UI to _Pirate-owned templates.
+    private NanoChatUiFragmentPirate? _fragment; // Pirate: pda fix
 
     public override Control GetUIFragmentRoot()
     {
@@ -27,7 +27,7 @@ public sealed partial class NanoChatUi : UIFragment
 
     public override void Setup(BoundUserInterface userInterface, EntityUid? fragmentOwner)
     {
-        _fragment = new NanoChatUiFragmentPirate(); // Pirates: isolate heavy UI customization from upstream _DV files.
+        _fragment = new NanoChatUiFragmentPirate(); // Pirate: pda fix
 
         _fragment.OnMessageSent += (type, number, content, job) =>
         {

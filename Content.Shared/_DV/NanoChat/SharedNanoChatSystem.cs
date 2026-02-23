@@ -298,7 +298,7 @@ public abstract class SharedNanoChatSystem : EntitySystem
         if (!Resolve(card, ref card.Comp))
             return false;
 
-        var changed = false; // Pirates: track whether recipient/message state changed before calling Dirty().
+        var changed = false; // Pirate: pda fix
         if (!card.Comp.Recipients.ContainsKey(recipientNumber))
         {
             // Only add if we have recipient info
@@ -306,35 +306,35 @@ public abstract class SharedNanoChatSystem : EntitySystem
                 return false;
 
             card.Comp.Recipients[recipientNumber] = recipientInfo.Value;
-            changed = true; // Pirates: recipient entry created.
+            changed = true; // Pirate: pda fix
         }
-        else if (recipientInfo is { } info) // Pirates: enrich existing recipient data when additional metadata becomes available.
+        else if (recipientInfo is { } info) // Pirate: pda fix
         {
             // Enrich existing recipient data when we learn missing fields later.
-            var existing = card.Comp.Recipients[recipientNumber]; // Pirates: current cached recipient snapshot.
-            var updated = existing; // Pirates: mutable copy used to apply enrichment deltas.
+            var existing = card.Comp.Recipients[recipientNumber]; // Pirate: pda fix
+            var updated = existing; // Pirate: pda fix
 
-            if (string.IsNullOrWhiteSpace(existing.Name) && !string.IsNullOrWhiteSpace(info.Name)) // Pirates: backfill missing recipient name.
+            if (string.IsNullOrWhiteSpace(existing.Name) && !string.IsNullOrWhiteSpace(info.Name)) // Pirate: pda fix
                 updated = updated with { Name = info.Name };
 
-            if (string.IsNullOrWhiteSpace(existing.JobTitle) && !string.IsNullOrWhiteSpace(info.JobTitle)) // Pirates: backfill missing recipient job title.
+            if (string.IsNullOrWhiteSpace(existing.JobTitle) && !string.IsNullOrWhiteSpace(info.JobTitle)) // Pirate: pda fix
                 updated = updated with { JobTitle = info.JobTitle };
 
-            if (!updated.Equals(existing)) // Pirates: only write back when enrichment actually changed the value.
+            if (!updated.Equals(existing)) // Pirate: pda fix
             {
-                card.Comp.Recipients[recipientNumber] = updated; // Pirates: persist enriched recipient metadata.
-                changed = true; // Pirates: recipient metadata mutation occurred.
+                card.Comp.Recipients[recipientNumber] = updated; // Pirate: pda fix
+                changed = true; // Pirate: pda fix
             }
         }
 
         // Ensure message list exists for this recipient
         if (!card.Comp.Messages.ContainsKey(recipientNumber))
         {
-            card.Comp.Messages[recipientNumber] = new List<NanoChatMessage>(); // Pirates: initialize recipient message bucket on first contact creation/enrichment path.
-            changed = true; // Pirates: message dictionary mutated.
+            card.Comp.Messages[recipientNumber] = new List<NanoChatMessage>(); // Pirate: pda fix
+            changed = true; // Pirate: pda fix
         }
 
-        if (changed) // Pirates: skip Dirty() when no state mutation happened.
+        if (changed) // Pirate: pda fix
             Dirty(card);
 
         return true;
