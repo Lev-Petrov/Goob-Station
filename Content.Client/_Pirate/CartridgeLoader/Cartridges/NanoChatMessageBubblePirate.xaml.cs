@@ -29,6 +29,8 @@ public sealed partial class NanoChatMessageBubblePirate : BoxContainer
     public NanoChatMessageBubblePirate()
     {
         RobustXamlLoader.Load(this);
+        MessageText.Modulate = TextColor;
+        DeliveryFailedLabel.HorizontalAlignment = HAlignment.Right;
     }
 
     public void SetMessage(NanoChatMessage message, bool isOwnMessage)
@@ -42,11 +44,9 @@ public sealed partial class NanoChatMessageBubblePirate : BoxContainer
 
         // Set message content
         MessageText.Text = FormattedMessage.EscapeText(message.Content); // Goob Sanitize Text
-        MessageText.Modulate = TextColor;
 
         // Show delivery failed text if needed (only for own messages)
         DeliveryFailedLabel.Visible = isOwnMessage && message.DeliveryFailed;
-        DeliveryFailedLabel.HorizontalAlignment = HAlignment.Right;
         if (DeliveryFailedLabel.Visible)
             DeliveryFailedLabel.Modulate = ErrorColor;
 

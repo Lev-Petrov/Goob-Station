@@ -150,12 +150,13 @@ public sealed partial class NanoChatUiFragmentPirate : BoxContainer
         );
 
         if (!_messages.TryGetValue(activeChat.Value, out var value))
-        {
             value = new List<NanoChatMessage>();
-            _messages[activeChat.Value] = value;
-        }
 
-        value.Add(predictedMessage);
+        var predictedMessages = new List<NanoChatMessage>(value)
+        {
+            predictedMessage
+        };
+        _messages[activeChat.Value] = predictedMessages;
 
         // Update UI with predicted message
         UpdateMessages(_messages);
@@ -232,7 +233,7 @@ public sealed partial class NanoChatUiFragmentPirate : BoxContainer
 
         // Update UI state
         MessagesScroll.Visible = hasActiveChat;
-        CurrentChatName.Visible = !hasActiveChat;
+        CurrentChatName.Visible = hasActiveChat;
         MessageInputContainer.Visible = hasActiveChat;
         DeleteChatButton.Visible = hasActiveChat;
         DeleteChatButton.Disabled = !hasActiveChat;
@@ -308,8 +309,7 @@ public sealed partial class NanoChatUiFragmentPirate : BoxContainer
         MessageList.InvalidateMeasure();
         MessagesScroll.InvalidateMeasure();
 
-        if (MessagesScroll != null)
-            MessagesScroll.SetScrollValue(new Vector2(0, float.MaxValue));
+        MessagesScroll.SetScrollValue(new Vector2(0, float.MaxValue));
     }
 
     private TimeSpan GetStationTime(TimeSpan messageTimestamp)
