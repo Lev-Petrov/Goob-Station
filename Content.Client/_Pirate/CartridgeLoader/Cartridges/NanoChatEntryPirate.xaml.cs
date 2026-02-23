@@ -22,6 +22,8 @@ public sealed partial class NanoChatEntryPirate : BoxContainer
     private const int NameMaxChars = 16;
     private const int JobMaxChars = 20;
     private static readonly Color SelectedEntryColor = Color.FromHex("#4d5478d9");
+    private static readonly Color UnreadIndicatorColor = Color.FromHex("#28d93e");
+    private static readonly Color ActiveIndicatorColor = Color.FromHex("#7ea2ff");
 
     public event Action<uint>? OnPressed;
     private uint _number;
@@ -51,7 +53,13 @@ public sealed partial class NanoChatEntryPirate : BoxContainer
         JobLabel.Text = TruncateForEntry(jobTitle, JobMaxChars);
         JobLabel.ToolTip = jobTitle;
         JobLabel.Visible = !string.IsNullOrWhiteSpace(jobTitle);
-        UnreadIndicator.Visible = recipient.HasUnread;
+        UnreadIndicator.Visible = recipient.HasUnread || isSelected;
+        if (UnreadIndicator.PanelOverride is StyleBoxFlat indicatorStyle)
+        {
+            var indicatorColor = recipient.HasUnread ? UnreadIndicatorColor : ActiveIndicatorColor;
+            indicatorStyle.BackgroundColor = indicatorColor;
+            indicatorStyle.BorderColor = indicatorColor;
+        }
 
         ChatButton.ModulateSelfOverride = isSelected ? SelectedEntryColor : null;
     }

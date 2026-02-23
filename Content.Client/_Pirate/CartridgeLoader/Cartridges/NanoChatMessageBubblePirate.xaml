@@ -19,7 +19,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
                   HorizontalExpand="True">
         <!-- Left spacer for other's messages -->
         <Control Name="LeftSpacer"
-                 MinSize="18 0" />
+                 MinSize="0 0" />
 
         <!-- Message panel -->
         <BoxContainer Name="MessageBox"
@@ -56,7 +56,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
         <!-- Right spacer for own messages -->
         <Control Name="RightSpacer"
-                 MinSize="18 0" />
+                 MinSize="6 0" />
 
         <!-- Flexible space for alignment -->
         <Control Name="FlexSpace"

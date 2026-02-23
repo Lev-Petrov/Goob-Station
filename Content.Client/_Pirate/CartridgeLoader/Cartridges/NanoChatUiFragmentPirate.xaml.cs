@@ -230,7 +230,7 @@ public sealed partial class NanoChatUiFragmentPirate : BoxContainer
 
         // Update UI state
         MessagesScroll.Visible = hasActiveChat;
-        CurrentChatName.Visible = hasActiveChat;
+        CurrentChatName.Visible = !hasActiveChat;
         MessageInputContainer.Visible = hasActiveChat;
         DeleteChatButton.Visible = hasActiveChat;
         DeleteChatButton.Disabled = !hasActiveChat;

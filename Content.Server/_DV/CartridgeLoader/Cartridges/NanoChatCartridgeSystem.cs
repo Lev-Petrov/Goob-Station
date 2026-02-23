@@ -485,10 +485,12 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
 
         _nanoChat.AddMessage((recipient, recipient.Comp), senderNumber.Value, message with { DeliveryFailed = false });
 
-        if (!recipient.Comp.NotificationsMuted) // Pirate: pda fix
+        var shouldNotifyUnread = recipient.Comp.IsClosed || _nanoChat.GetCurrentChat((recipient, recipient.Comp)) != senderNumber;
+
+        if (!recipient.Comp.NotificationsMuted && shouldNotifyUnread) // Pirate: pda fix
             _audio.PlayPvs(RecipientMessageSound, recipient.Comp.PdaUid ?? recipient.Owner, RecipientMessageAudioParams); // Pirate: pda fix
 
-        if (recipient.Comp.IsClosed || _nanoChat.GetCurrentChat((recipient, recipient.Comp)) != senderNumber)
+        if (shouldNotifyUnread)
             HandleUnreadNotification(recipient, message, (uint) senderNumber);
 
         var msgEv = new NanoChatMessageReceivedEvent(recipient);
