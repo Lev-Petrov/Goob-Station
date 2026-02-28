@@ -69,7 +69,7 @@ namespace Content.Goobstation.Server.Chemistry.EntitySystems
     /// <seealso cref="EnergyReagentDispenserComponent"/>
     /// </summary>
     [UsedImplicitly]
-    public sealed class EnergyReagentDispenserSystem : PirateRecipeDispenserSystemBase<EnergyReagentDispenserComponent>
+    public sealed class EnergyReagentDispenserSystem : PirateRecipeDispenserSystemBase<EnergyReagentDispenserComponent> // Pirate: chem recipes
     {
         [Dependency] private readonly AudioSystem _audioSystem = default!;
         [Dependency] private readonly SharedSolutionContainerSystem _solutionContainerSystem = default!;

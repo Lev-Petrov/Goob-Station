@@ -70,7 +70,7 @@ namespace Content.Goobstation.Client.Chemistry.UI
 
             _window.AmountGrid.OnButtonPressed += s => SendMessage(new EnergyReagentDispenserSetDispenseAmountMessage(s));
 
-            _window.OnDispenseReagentButtonPressed += reagentId => SendMessage(new EnergyReagentDispenserDispenseReagentMessage(reagentId));
+            _window.OnDispenseReagentButtonPressed += (reagentId) => SendMessage(new EnergyReagentDispenserDispenseReagentMessage(reagentId));
             BindPirateRecipeActions(); // Pirate: chem recipes
         }
 
