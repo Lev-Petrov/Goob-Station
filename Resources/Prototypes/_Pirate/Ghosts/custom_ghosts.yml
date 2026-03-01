@@ -329,3 +329,12 @@
   alpha: 0.8
   ghostName: "Narinder"
   ghostDescription: "неко-інженер якого не зупинила смерть від продовження роботи , чомусь ви відчуваєте тепло та запах металу з кавою поруч з ним. RIG на спині показує незький рівень здоровя"
+
+- type: customGhost
+  id: hhhhhhhhruo-ghost
+  ckey: hhhhhhhhruo
+  sprite:
+    - _Pirate/Ghosts/hhhhhhhhruo.rsi
+  alpha: 1
+  ghostName: hhhhhhhhruo
+  ghostDescription: лютий хард РПешер
