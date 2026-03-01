@@ -36,6 +36,12 @@ public abstract class PirateRecipeDispenserSystemBase<TComp> : EntitySystem
         SubscribeLocalEvent<TComp, ReagentDispenserDeleteDiskRecipeMessage>(OnDeleteDiskRecipeMessage);
     }
 
+    protected void EnsureItemSlot(EntityUid uid, string slotId, ItemSlot slot)
+    {
+        if (!ItemSlotsSystem.TryGetSlot(uid, slotId, out _))
+            ItemSlotsSystem.AddItemSlot(uid, slotId, slot);
+    }
+
     protected bool TryGetRecipeDisk(
         Entity<TComp> dispenser,
         [NotNullWhen(true)] out EntityUid? diskUid,

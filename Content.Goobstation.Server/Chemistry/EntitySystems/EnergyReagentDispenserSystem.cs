@@ -254,8 +254,8 @@ namespace Content.Goobstation.Server.Chemistry.EntitySystems
         }
         private void OnMapInit(Entity<EnergyReagentDispenserComponent> entity, ref MapInitEvent args)
         {
-            _itemSlotsSystem.AddItemSlot(entity.Owner, SharedEnergyReagentDispenser.OutputSlotName, entity.Comp.EnergyBeakerSlot);
-            _itemSlotsSystem.AddItemSlot(entity.Owner, SharedEnergyReagentDispenser.RecipeDiskSlotName, entity.Comp.RecipeDiskSlot); // Pirate: chem recipes
+            EnsureItemSlot(entity.Owner, SharedEnergyReagentDispenser.OutputSlotName, entity.Comp.EnergyBeakerSlot); // Pirate: chem recipes
+            EnsureItemSlot(entity.Owner, SharedEnergyReagentDispenser.RecipeDiskSlotName, entity.Comp.RecipeDiskSlot); // Pirate: chem recipes
         }
 
         #region Pirate: chem recipes
