@@ -24,6 +24,7 @@
             max: 1
       - !type:DoActsBehavior
         acts: [ "Destruction" ]
+  - type: Transform
   - type: Appearance
   - type: GenericVisualizer
     visuals:
@@ -36,6 +37,8 @@
           3: { state: construct-3, visible: true }
           4: { state: construct-4, visible: true }
           5: { state: construct-5, visible: true }
+  - type: StaticPrice
+    price: 5000
 
 - type: entity
   parent: WallPlastitaniumDiagonal
@@ -60,4 +63,6 @@
             max: 1
       - !type:DoActsBehavior
         acts: [ "Destruction" ]
+  - type: StaticPrice
+    price: 3000
         
