@@ -28,13 +28,6 @@
     - !type:CharacterEmployerRequirement
       employers:
       - Interdyne
-    - !type:CharacterLifepathRequirement
-      inverted: true
-      lifepaths:
-      - Cultist
-      - Smuggler
-      - Enforcer
-      - ConArtist
   startingGear: InterdyneOfficerGear
   icon: "JobIconCaptainInterdyne"
   goobcoins: 10 #Goob content (PvE content)
