@@ -28,6 +28,7 @@ using Robust.Server.GameStates;
 using Robust.Server.Player;
 using Robust.Shared.Audio;
 using Robust.Shared.Configuration;
+using Robust.Shared.Enums;
 using Robust.Shared.Map;
 using Robust.Shared.Player;
 using Robust.Shared.Random;
@@ -75,6 +76,24 @@ public sealed class ThunderdomeRuleSystem : EntitySystem
         SubscribeLocalEvent<ThunderdomeOriginalBodyComponent, MobStateChangedEvent>(OnOriginalBodyStateChanged);
         SubscribeNetworkEvent<ThunderdomeRevivalAcceptEvent>(OnRevivalAccept);
         SubscribeLocalEvent<ThunderdomePlayerComponent, SuicideGhostEvent>(OnSuicideAttempt);
+
+        // If a player disconnects while their loadout EUI is open, keep our tracking clean so round cleanup
+        // doesn't try to close an EUI for a session that no longer exists in EUI manager state.
+        _playerManager.PlayerStatusChanged += OnPlayerStatusChanged;
+    }
+
+    public override void Shutdown()
+    {
+        base.Shutdown();
+        _playerManager.PlayerStatusChanged -= OnPlayerStatusChanged;
+    }
+
+    private void OnPlayerStatusChanged(object? sender, SessionStatusEventArgs e)
+    {
+        if (e.NewStatus != SessionStatus.Disconnected)
+            return;
+
+        _activeEuis.Remove(e.Session);
     }
 
     public override void Update(float frameTime)
@@ -105,8 +124,11 @@ public sealed class ThunderdomeRuleSystem : EntitySystem
 
     private void OnRoundEnding(RoundRestartCleanupEvent ev)
     {
-        foreach (var eui in _activeEuis.Values)
-            eui.Close();
+        foreach (var eui in _activeEuis.Values.ToArray())
+        {
+            if (eui.Player.Status != SessionStatus.Disconnected)
+                eui.Close();
+        }
         _activeEuis.Clear();
 
         if (_ruleEntity == null)
