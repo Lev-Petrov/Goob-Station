@@ -12,7 +12,6 @@ paper-component-action-stamp-paper-other = {CAPITALIZE($user)} поставив 
 paper-component-action-stamp-paper-self = Ви поставили печатку на {$target} за допомогою {$stamp}
 
 paper-ui-save-button = Зберегти ({$keybind})
-paper-ui-macro-hint = ПКМ: вставити теги
 
 paper-component-illiterate = Ви не вмієте писати.
 paper-component-illiterate-mime = Ваша обітниця забороняє вам писати.
