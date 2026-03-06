@@ -5,4 +5,5 @@
   components:
   - type: ShipShield
   - type: ShipShieldVisuals
+  - type: Physics
   - type: Fixtures
