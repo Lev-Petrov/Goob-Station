@@ -37,8 +37,5 @@ public sealed class PhotoCardBoundUserInterface : BoundUserInterface
         _window.ShowImage(cast.ImageData);
     }
 
-    protected override void Dispose(bool disposing)
-    {
-        base.Dispose(disposing);
-    }
+}
 }
