@@ -4,6 +4,7 @@
 
 using Content.Client._Pirate.RoundEnd.PhotoAlbum;
 using Content.Client.Message;
+using Content.Client.Popups;
 using Content.Client.Stylesheets;
 using Robust.Client.GameObjects;
 using Robust.Client.Graphics;
@@ -19,7 +20,7 @@ namespace Content.Client.RoundEnd;
 
 public sealed partial class RoundEndSummaryWindow
 {
-    private readonly Dictionary<int, string> _photoDownloadPaths = new();
+    private readonly Dictionary<int, Guid> _photoDownloadImageIds = new();
     private readonly List<(TextureButton Button, Action<ButtonEventArgs> Handler)> _photoDownloadHandlers = new();
     private readonly List<TextureRect> _photoTextureRects = new();
     private BoxContainer? _photoReportTab;
@@ -86,21 +87,24 @@ public sealed partial class RoundEndSummaryWindow
 
             foreach (var image in album.Images)
             {
-                Texture texture;
-                try
+                Texture? texture = null;
+                if (image.PreviewData is { Length: > 0 } previewData)
                 {
-                    using var stream = new MemoryStream(image.Key);
-                    texture = Texture.LoadFromPNGStream(stream);
-                }
-                catch
-                {
-                    continue;
+                    try
+                    {
+                        using var stream = new MemoryStream(previewData);
+                        texture = Texture.LoadFromPNGStream(stream);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warning($"Failed to load round-end photo preview for image id {image.ImageId}: {ex}");
+                    }
                 }
 
                 var imageLabel = new RichTextLabel();
 
-                if (image.Value is not null)
-                    imageLabel.SetMessage(image.Value);
+                if (image.CustomName is not null)
+                    imageLabel.SetMessage(image.CustomName);
                 else
                     imageLabel.SetMessage(Loc.GetString("round-end-summary-album-photo-no-name"));
 
@@ -124,22 +128,17 @@ public sealed partial class RoundEndSummaryWindow
                 };
 
                 var downloadId = _nextPhotoDownloadId++;
-                try
+                if (image.ImageId == Guid.Empty)
                 {
-                    var tempPath = Path.Combine(
-                        Path.GetTempPath(),
-                        $"ss14-round-end-photo-{RoundId}-{downloadId}-{Guid.NewGuid():N}.png");
-                    File.WriteAllBytes(tempPath, image.Key);
-                    _photoDownloadPaths[downloadId] = tempPath;
-
+                    downloadButton.Disabled = true;
+                    Log.Warning($"Round-end photo {downloadId} has an empty image id and cannot be downloaded.");
+                }
+                else
+                {
+                    _photoDownloadImageIds[downloadId] = image.ImageId;
                     Action<ButtonEventArgs> onPressed = args => DownloadButton_OnPressed(args, downloadId);
                     downloadButton.OnPressed += onPressed;
                     _photoDownloadHandlers.Add((downloadButton, onPressed));
-                }
-                catch (Exception ex)
-                {
-                    downloadButton.Disabled = true;
-                    Log.Warning($"Failed to cache round-end photo {downloadId} for download: {ex}");
                 }
 
                 downloadButton.Scale = new Vector2(0.5f, 0.5f);
@@ -223,42 +222,45 @@ public sealed partial class RoundEndSummaryWindow
         }
         _photoTextureRects.Clear();
 
-        foreach (var cachedPath in _photoDownloadPaths.Values)
-        {
-            try
-            {
-                if (File.Exists(cachedPath))
-                    File.Delete(cachedPath);
-            }
-            catch (Exception ex)
-            {
-                Log.Warning($"Failed to delete cached round-end photo file '{cachedPath}': {ex}");
-            }
-        }
-        _photoDownloadPaths.Clear();
+        _photoDownloadImageIds.Clear();
     }
 
     private async void DownloadButton_OnPressed(ButtonEventArgs _, int imageId)
     {
-        if (!_photoDownloadPaths.TryGetValue(imageId, out var cachedPath) || !File.Exists(cachedPath))
+        if (!_photoDownloadImageIds.TryGetValue(imageId, out var photoImageId))
         {
-            Log.Warning($"Round-end photo download cache miss for image id {imageId}.");
+            Log.Warning($"Round-end photo download id miss for image id {imageId}.");
             return;
         }
 
-        var file = await _fileDialogManager.SaveFile(new FileDialogFilters(new FileDialogFilters.Group("png")));
-
-        if (!file.HasValue)
+        var stationAlbumSystem = _entityManager.System<PhotoAlbumSystem>();
+        var fullImageBytes = await stationAlbumSystem.GetFullImageDataAsync(photoImageId);
+        if (fullImageBytes is not { Length: > 0 })
+        {
+            Log.Warning($"Round-end photo full image fetch failed for image id {imageId}, photo id {photoImageId}.");
+            _entityManager.System<PopupSystem>().PopupCursor(Loc.GetString("round-end-summary-album-photo-save-failed"));
             return;
+        }
+
+        (Stream fileStream, bool alreadyExisted)? file = null;
 
         try
         {
-            await using var source = File.OpenRead(cachedPath);
-            await source.CopyToAsync(file.Value.fileStream);
+            file = await _fileDialogManager.SaveFile(new FileDialogFilters(new FileDialogFilters.Group("png")));
+            if (!file.HasValue)
+                return;
+
+            await file.Value.fileStream.WriteAsync(fullImageBytes, 0, fullImageBytes.Length);
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Failed to save round-end photo for image id {imageId}: {ex}");
+            _entityManager.System<PopupSystem>().PopupCursor(Loc.GetString("round-end-summary-album-photo-save-failed"));
         }
         finally
         {
-            await file.Value.fileStream.DisposeAsync();
+            if (file.HasValue)
+                await file.Value.fileStream.DisposeAsync();
         }
     }
 }

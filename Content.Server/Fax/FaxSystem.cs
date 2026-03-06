@@ -871,7 +871,7 @@ public sealed class FaxSystem : EntitySystem
 
             paper.EditingDisabled = printout.Locked;
         }
-        else if (printout.EntityUid.HasValue && TryComp<PhotoCardComponent>(printout.EntityUid, out var photo))
+        else if (printout.PhotoSourceEntityUid.HasValue && TryComp<PhotoCardComponent>(printout.PhotoSourceEntityUid, out var photo))
         {
             var newPhoto = EnsureComp<PhotoCardComponent>(printed);
             newPhoto.ImageData = photo.ImageData;
@@ -880,7 +880,7 @@ public sealed class FaxSystem : EntitySystem
             newPhoto.CustomDescription = photo.CustomDescription;
             newPhoto.Caption = photo.Caption;
 
-            var sourceDescription = MetaData(printout.EntityUid.Value).EntityDescription;
+            var sourceDescription = MetaData(printout.PhotoSourceEntityUid.Value).EntityDescription;
             if (!string.IsNullOrWhiteSpace(sourceDescription))
                 _metaData.SetEntityDescription(printed, sourceDescription);
 

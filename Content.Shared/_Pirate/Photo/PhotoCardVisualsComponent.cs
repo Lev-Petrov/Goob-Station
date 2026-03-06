@@ -7,7 +7,9 @@ using Robust.Shared.Serialization;
 namespace Content.Shared._Pirate.Photo;
 
 [RegisterComponent]
-public sealed partial class PhotoCardVisualsComponent : Component;
+public sealed partial class PhotoCardVisualsComponent : Component
+{
+}
 
 [Serializable, NetSerializable]
 public enum PhotoCardVisuals : byte

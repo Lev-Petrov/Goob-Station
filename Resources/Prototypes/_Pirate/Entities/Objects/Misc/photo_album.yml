@@ -173,8 +173,8 @@
 - type: entity
   id: PhotoAlbumMakeshift
   parent: PhotoAlbum
-  name: photo album makeshift
-  description: A book makeshift with a bunch of memories. Put the photos in it and they will end up in the round end summary window. Use a pen to customize photo titles, descriptions, and captions.
+  name: makeshift photo album
+  description: A makeshift book containing a bunch of memories. Put the photos in it and they will end up in the round end summary window. Use a pen to customize photo titles, descriptions, and captions.
   components:
   - type: Sprite
     sprite: _Pirate/Objects/Misc/Photo/photo_album_makeshift.rsi

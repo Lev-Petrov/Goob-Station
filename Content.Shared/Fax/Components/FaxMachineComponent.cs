@@ -243,8 +243,8 @@ public sealed partial class FaxPrintout
     [DataField]
     public bool Locked { get; private set; }
 
-    [DataField]
-    public EntityUid? EntityUid { get; private set; } // # Pirate: camera
+    [DataField("entityUid")]
+    public EntityUid? PhotoSourceEntityUid { get; private set; } // # Pirate: camera
 
     [DataField]
     public byte[]? PhotoImageData { get; private set; }
@@ -276,7 +276,7 @@ public sealed partial class FaxPrintout
         string? stampState = null,
         List<StampDisplayInfo>? stampedBy = null,
         bool locked = false,
-        EntityUid? entityUid = null,
+        EntityUid? photoSourceEntityUid = null,
         byte[]? photoImageData = null,
         byte[]? photoPreviewData = null,
         string? photoCustomName = null,
@@ -291,7 +291,7 @@ public sealed partial class FaxPrintout
         StampState = stampState;
         StampedBy = stampedBy ?? new List<StampDisplayInfo>();
         Locked = locked;
-        EntityUid = entityUid; // # Pirate: camera
+        PhotoSourceEntityUid = photoSourceEntityUid; // # Pirate: camera
         PhotoImageData = photoImageData;
         PhotoPreviewData = photoPreviewData;
         PhotoCustomName = photoCustomName;

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+using System;
 using Content.Server._Pirate.Photo;
 using Content.Server.GameTicking;
 using Content.Server.Popups;
@@ -14,6 +15,7 @@ using Robust.Server.Audio;
 using Robust.Server.Containers;
 using Robust.Server.Player;
 using Robust.Shared.Containers;
+using Robust.Shared.Player;
 
 namespace Content.Server._Pirate.RoundEnd.PhotoAlbum;
 public sealed class PhotoAlbumSystem : EntitySystem
@@ -25,11 +27,13 @@ public sealed class PhotoAlbumSystem : EntitySystem
     [Dependency] private readonly TagSystem _tags = default!;
     [Dependency] private readonly MetaDataSystem _metaData = default!;
     private readonly HashSet<EntityUid> _unsignedAutoSignAlbums = new();
+    private readonly Dictionary<Guid, byte[]> _roundEndImageData = new();
 
     public override void Initialize()
     {
         SubscribeLocalEvent<RoundEndTextAppendEvent>(OnRoundEndTextAppend);
         SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnPlayerSpawnComplete);
+        SubscribeNetworkEvent<PhotoAlbumImageRequestEvent>(OnPhotoAlbumImageRequest);
 
         SubscribeLocalEvent<AutoSignPhotoAlbumComponent, ComponentStartup>(OnAutoSignStartup);
         SubscribeLocalEvent<AutoSignPhotoAlbumComponent, ComponentShutdown>(OnAutoSignShutdown);
@@ -40,6 +44,12 @@ public sealed class PhotoAlbumSystem : EntitySystem
         SubscribeLocalEvent<PhotoAlbumComponent, ComponentShutdown>(OnPhotoAlbumShutdown);
         SubscribeLocalEvent<PhotoAlbumComponent, EntInsertedIntoContainerMessage>(OnPhotoAlbumInserted);
         SubscribeLocalEvent<PhotoAlbumComponent, EntRemovedFromContainerMessage>(OnPhotoAlbumRemoved);
+    }
+
+    private void OnPhotoAlbumImageRequest(PhotoAlbumImageRequestEvent ev, EntitySessionEventArgs args)
+    {
+        _roundEndImageData.TryGetValue(ev.ImageId, out var imageData);
+        RaiseNetworkEvent(new PhotoAlbumImageResponseEvent(ev.ImageId, imageData), args.SenderSession);
     }
 
     private void OnPhotoAlbumStartup(Entity<PhotoAlbumComponent> entity, ref ComponentStartup args)
@@ -193,6 +203,8 @@ public sealed class PhotoAlbumSystem : EntitySystem
 
     private void OnRoundEndTextAppend(RoundEndTextAppendEvent args)
     {
+        _roundEndImageData.Clear();
+
         List<AlbumData>? albums = new();
         var query = EntityQueryEnumerator<PhotoAlbumComponent>();
 
@@ -201,7 +213,7 @@ public sealed class PhotoAlbumSystem : EntitySystem
             if (!_container.TryGetContainer(uid, photoAlbum.ContainerId, out var container))
                 continue;
 
-            Dictionary<byte[], string?> photos = new();
+            List<AlbumImageData> photos = new();
 
             string? authorCKey = default;
             string? authorName = default;
@@ -214,7 +226,9 @@ public sealed class PhotoAlbumSystem : EntitySystem
                 if (photoCard.ImageData is null)
                     continue;
 
-                photos.Add(photoCard.ImageData, photoCard.CustomName);
+                var imageId = Guid.NewGuid();
+                _roundEndImageData[imageId] = photoCard.ImageData;
+                photos.Add(new AlbumImageData(imageId, photoCard.PreviewData, photoCard.CustomName));
             }
 
             if (photos.Count == 0)

@@ -25,7 +25,7 @@ photo-card-mob-description-state-holding = На фото також видно {
    *[other]є
 } { $items }.
 photo-card-mob-state-critical = у критичному стані
-photo-card-mob-state-dead = мертвого
+photo-card-mob-state-dead = неживий
 photo-camera-film-not-empty = У камері ще є фото!
 photo-camera-film-cannot-insert = Не вдається вставити картридж із плівкою.
 photo-camera-customize-confirm-title = Хочете налаштувати фото?

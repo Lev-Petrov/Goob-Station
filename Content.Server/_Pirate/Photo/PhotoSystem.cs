@@ -162,12 +162,13 @@ public sealed partial class PhotoSystem : SharedPhotoSystem
         if (_delay.IsDelayed(uid))
             return false;
 
-        _delay.TryResetDelay(uid);
-
         var printCard = PrintCard(uid, component, imageData, previewData, capturedEntities, zoom);
 
         if (printCard)
+        {
+            _delay.TryResetDelay(uid);
             _audio.PlayPvs(component.PhotoSound, uid);
+        }
         else
             _audio.PlayPvs(component.ErrorSound, uid);
 

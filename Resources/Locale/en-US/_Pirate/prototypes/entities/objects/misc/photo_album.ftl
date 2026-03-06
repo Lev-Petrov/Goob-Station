@@ -1,14 +1,14 @@
-﻿ent-PhotoAlbum = photo album
-    .desc = A book with a pack of memories. Put photos into it so they appear in the final round summary. Use a pen to customize photo titles, descriptions, and captions.
+ent-PhotoAlbum = photo album
+    .desc = A book packed with memories. Put photos into it so they appear in the final round summary. Use a pen to customize photo titles, descriptions, and captions.
 
 ent-PhotoAlbumTGGreen = green photo album
-    .desc = A book with a pack of memories. Put photos into it so they appear in the final round summary. Use a pen to customize photo titles, descriptions, and captions.
+    .desc = A book packed with memories. Put photos into it so they appear in the final round summary. Use a pen to customize photo titles, descriptions, and captions.
 
 ent-PhotoAlbumTGRed = red photo album
-    .desc = A book with a pack of memories. Put photos into it so they appear in the final round summary. Use a pen to customize photo titles, descriptions, and captions.
+    .desc = A book packed with memories. Put photos into it so they appear in the final round summary. Use a pen to customize photo titles, descriptions, and captions.
 
 ent-PhotoAlbumTGBlue = blue photo album
-    .desc = A book with a pack of memories. Put photos into it so they appear in the final round summary. Use a pen to customize photo titles, descriptions, and captions.
+    .desc = A book packed with memories. Put photos into it so they appear in the final round summary. Use a pen to customize photo titles, descriptions, and captions.
 
 ent-PhotoAlbumHeadCaptain = captain's photo album
     .desc = A big book used to store photos and mementos.
@@ -32,4 +32,4 @@ ent-PhotoAlbumHeadCe = chief engineer's photo album
     .desc = A big book used to store photos and mementos.
 
 ent-PhotoAlbumMakeshift = makeshift photo album
-    .desc = A makeshift book with a pack of memories. Put photos into it so they appear in the final round summary. Use a pen to customize photo titles, descriptions, and captions.
+    .desc = A makeshift book packed with memories. Put photos into it so they appear in the final round summary. Use a pen to customize photo titles, descriptions, and captions.

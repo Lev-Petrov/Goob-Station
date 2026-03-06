@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+using System;
 using Robust.Shared.Serialization;
 
 namespace Content.Shared._Pirate.RoundEnd;
@@ -20,15 +21,54 @@ public sealed class PhotoAlbumEvent : EntityEventArgs
 [Serializable, NetSerializable]
 public struct AlbumData
 {
-    public Dictionary<byte[], string?> Images;
+    public List<AlbumImageData> Images;
 
     public string? AuthorCkey;
     public string? AuthorName;
 
-    public AlbumData(Dictionary<byte[], string?> images, string? authorCkey, string? authorName)
+    public AlbumData(List<AlbumImageData> images, string? authorCkey, string? authorName)
     {
         this.Images = images;
         this.AuthorCkey = authorCkey;
         this.AuthorName = authorName;
+    }
+}
+
+[Serializable, NetSerializable]
+public struct AlbumImageData
+{
+    public Guid ImageId;
+    public byte[]? PreviewData;
+    public string? CustomName;
+
+    public AlbumImageData(Guid imageId, byte[]? previewData, string? customName)
+    {
+        ImageId = imageId;
+        PreviewData = previewData;
+        CustomName = customName;
+    }
+}
+
+[Serializable, NetSerializable]
+public sealed class PhotoAlbumImageRequestEvent : EntityEventArgs
+{
+    public Guid ImageId { get; }
+
+    public PhotoAlbumImageRequestEvent(Guid imageId)
+    {
+        ImageId = imageId;
+    }
+}
+
+[Serializable, NetSerializable]
+public sealed class PhotoAlbumImageResponseEvent : EntityEventArgs
+{
+    public Guid ImageId { get; }
+    public byte[]? ImageData { get; }
+
+    public PhotoAlbumImageResponseEvent(Guid imageId, byte[]? imageData)
+    {
+        ImageId = imageId;
+        ImageData = imageData;
     }
 }
