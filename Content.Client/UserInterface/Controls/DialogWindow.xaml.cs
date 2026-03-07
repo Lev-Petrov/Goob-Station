@@ -69,13 +69,14 @@ public sealed partial class DialogWindow : FancyWindow
         {
             var entry = entries[i];
 
+            #region Pirate: camera
             var box = new BoxContainer
             {
                 Orientation = BoxContainer.LayoutOrientation.Vertical,
                 HorizontalExpand = true,
-            }; // Pirate: camera
+            };
 
-            if (!string.IsNullOrWhiteSpace(entry.Prompt)) // Pirate: camera
+            if (!string.IsNullOrWhiteSpace(entry.Prompt))
             {
                 box.AddChild(new Label
                 {
@@ -83,6 +84,7 @@ public sealed partial class DialogWindow : FancyWindow
                     HorizontalExpand = true,
                 });
             }
+            #endregion
 
             (Func<string, bool>, string) pair = entry.Type switch
             {
@@ -94,6 +96,7 @@ public sealed partial class DialogWindow : FancyWindow
             };
             var (valid, name) = pair;
 
+            #region Pirate: camera
             Control input;
             Func<string> getText;
 
@@ -136,6 +139,7 @@ public sealed partial class DialogWindow : FancyWindow
 
             _promptLines.Add((entry.FieldId, input, getText, valid));
             box.AddChild(input);
+            #endregion
             Prompts.AddChild(box);
         }
 
@@ -156,6 +160,7 @@ public sealed partial class DialogWindow : FancyWindow
 
         MinWidth *= 2; // Just double it.
 
+        #region Pirate: camera
         // Single-field dialogs without a prompt label (e.g. photo name customization)
         // should stay compact and only take the space needed for input + action buttons.
         if (entries.Count == 1
@@ -165,6 +170,7 @@ public sealed partial class DialogWindow : FancyWindow
             MinWidth /= 1.5f;
             MinHeight = 75;
         }
+        #endregion
 
         OpenCentered();
     }
@@ -174,6 +180,7 @@ public sealed partial class DialogWindow : FancyWindow
         base.Opened();
         
         // Grab keyboard focus for the first dialog entry
+        #region Pirate: camera
         switch (_promptLines[0].Input)
         {
             case LineEdit lineEdit:
@@ -186,11 +193,13 @@ public sealed partial class DialogWindow : FancyWindow
                 _promptLines[0].Input.GrabKeyboardFocus();
                 break;
         }
+        #endregion
     }
 
     private void Confirm()
     {
         var results = new Dictionary<string, string>();
+        #region Pirate: camera
         foreach (var (field, _, getText, isValid) in _promptLines)
         {
             var value = getText();
@@ -199,6 +208,7 @@ public sealed partial class DialogWindow : FancyWindow
 
             results[field] = value;
         }
+        #endregion
 
         _finished = true;
         OnConfirmed?.Invoke(results);
