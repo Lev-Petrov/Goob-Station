@@ -156,8 +156,6 @@ public sealed partial class RoundEndSummaryWindow
                 gridContainer.AddChild(panel);
             }
 
-            stationAlbumContainer.AddChild(gridContainer);
-
             var stationAlbumAuthorHeaderContainer = new BoxContainer
             {
                 Orientation = LayoutOrientation.Vertical,
@@ -186,6 +184,7 @@ public sealed partial class RoundEndSummaryWindow
             stationAlbumAuthorHeaderContainer.AddChild(stationAlbumAuthorHeaderPanel);
 
             stationAlbumContainer.AddChild(stationAlbumAuthorHeaderContainer);
+            stationAlbumContainer.AddChild(gridContainer);
         }
 
         stationAlbumContainerScrollbox.AddChild(stationAlbumContainer);
