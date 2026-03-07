@@ -69,6 +69,12 @@ public sealed class PhotoCameraTakeImageMessage : BoundUserInterfaceMessage
         PreviewData = previewData;
         PhotoPosition = photoPosition;
         Zoom = zoom;
-        CapturedEntities = new List<NetEntity>(capturedEntities).AsReadOnly();
+        var copiedEntities = new NetEntity[capturedEntities.Count];
+        for (var i = 0; i < capturedEntities.Count; i++)
+        {
+            copiedEntities[i] = capturedEntities[i];
+        }
+
+        CapturedEntities = copiedEntities;
     }
 }

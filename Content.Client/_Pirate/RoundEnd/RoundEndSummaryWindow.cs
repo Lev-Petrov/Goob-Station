@@ -48,7 +48,6 @@ public sealed partial class RoundEndSummaryWindow
 
         var spriteSystem = _entityManager.System<SpriteSystem>();
         ReleasePhotoResources();
-        OnClose += ReleasePhotoResources;
 
         var stationAlbumTab = new BoxContainer
         {
@@ -140,6 +139,9 @@ public sealed partial class RoundEndSummaryWindow
                 textureRect.Texture = texture;
                 textureRect.AddChild(downloadButton);
 
+                if (image.ImageId != Guid.Empty)
+                    TryPopulateFullPhotoTexture(image.ImageId, textureRect);
+
                 var panel = new PanelContainer
                 {
                     StyleClasses = { StyleNano.StyleClassBackgroundBaseDark },
@@ -186,8 +188,6 @@ public sealed partial class RoundEndSummaryWindow
         stationAlbumContainerScrollbox.AddChild(stationAlbumContainer);
         stationAlbumTab.AddChild(stationAlbumContainerScrollbox);
 
-        stationAlbumSystem.ResetAlbums();
-
         return stationAlbumTab;
     }
 
@@ -201,8 +201,6 @@ public sealed partial class RoundEndSummaryWindow
 
     private void ReleasePhotoResources()
     {
-        OnClose -= ReleasePhotoResources;
-
         foreach (var (button, handler) in _photoDownloadHandlers)
         {
             button.OnPressed -= handler;
@@ -216,6 +214,27 @@ public sealed partial class RoundEndSummaryWindow
         _photoTextureRects.Clear();
 
         _photoDownloadImageIds.Clear();
+    }
+
+    private async void TryPopulateFullPhotoTexture(Guid imageId, TextureRect textureRect)
+    {
+        if (!_photoTextureRects.Contains(textureRect))
+            return;
+
+        try
+        {
+            var stationAlbumSystem = _entityManager.System<PhotoAlbumSystem>();
+            var fullImageBytes = await stationAlbumSystem.GetFullImageDataAsync(imageId);
+            if (fullImageBytes is not { Length: > 0 } || !_photoTextureRects.Contains(textureRect))
+                return;
+
+            using var stream = new MemoryStream(fullImageBytes);
+            textureRect.Texture = Texture.LoadFromPNGStream(stream);
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning($"Failed to load round-end full photo for image id {imageId}: {ex}");
+        }
     }
 
     private async void DownloadButton_OnPressed(ButtonEventArgs _, int imageId)

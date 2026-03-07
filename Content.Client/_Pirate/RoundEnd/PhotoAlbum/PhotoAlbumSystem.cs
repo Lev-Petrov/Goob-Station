@@ -64,7 +64,7 @@ public sealed class PhotoAlbumSystem : EntitySystem
                 return pending.Completion.Task;
         }
 
-        var completion = new TaskCompletionSource<byte[]?>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var completion = new TaskCompletionSource<byte[]?>();
         var request = new PendingImageRequest(completion, ImageRequestTimeout, () => OnImageRequestTimedOut(imageId));
 
         lock (_pendingImageRequestsLock)

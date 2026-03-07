@@ -4,7 +4,7 @@
     SetSize="430 592">
 
     <BoxContainer Name="ContentsRoot" Orientation="Vertical">
-        <PanelContainer Name="PaperBackground" StyleClasses="PaperDefaultBorder" VerticalExpand="True" HorizontalExpand="True">
+        <PanelContainer Name="PaperBackground" StyleClasses="PhotoDefaultBorder" VerticalExpand="True" HorizontalExpand="True">
             <BoxContainer Orientation="Vertical" VerticalExpand="True" HorizontalExpand="True" SeparationOverride="0">
                 <PanelContainer Margin="4 4 4 8" StyleClasses="PhotoCardFramePanel" VerticalExpand="True" HorizontalExpand="True">
                     <BoxContainer Orientation="Vertical" VerticalExpand="True" HorizontalExpand="True" SeparationOverride="0">
