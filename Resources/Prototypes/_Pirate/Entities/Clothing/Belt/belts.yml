@@ -6,10 +6,10 @@
   description: Вишукані ножни зроблені щоб зберігати важку шаблю капітана.
   components:
   - type: Sprite
-    sprite: _Pirate/Clothing/Belt/Captain_sheaths/Heavy.rsi
+    sprite: _Pirate/Clothing/Belt/Captain_sheaths/heavy.rsi
     state: sheath
   - type: Clothing
-    sprite: _Pirate/Clothing/Belt/Captain_sheaths/Heavy.rsi
+    sprite: _Pirate/Clothing/Belt/Captain_sheaths/heavy.rsi
   - type: ItemSlots
     slots:
       item:
