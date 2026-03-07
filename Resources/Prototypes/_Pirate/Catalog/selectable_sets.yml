@@ -15,7 +15,7 @@
   name: selectable-set-captain-sabre-heavy-name
   description: selectable-set-captain-sabre-heavy-description
   sprite:
-    sprite: _Pirate/Objects/Weapons/Melee/Сaptain_sabres/heavy.rsi
+    sprite: _Pirate/Objects/Weapons/Melee/Captain_sabres/heavy.rsi
     state: icon
   content:
     - ClothingBeltSheathHeavyFilled
@@ -25,7 +25,7 @@
   name: selectable-set-captain-sabre-shashka-name
   description: selectable-set-captain-sabre-shashka-description
   sprite:
-    sprite: _Pirate/Objects/Weapons/Melee/Сaptain_sabres/shashka.rsi
+    sprite: _Pirate/Objects/Weapons/Melee/Captain_sabres/shashka.rsi
     state: icon
   content:
     - ClothingBeltSheathShashkaFilled

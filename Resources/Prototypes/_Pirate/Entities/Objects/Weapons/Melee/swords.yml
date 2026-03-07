@@ -59,7 +59,7 @@
   description: Ще в давні часи на землі шабля якою користувалися кавалерійці найвеличніших армій, тепер, персональна зброя капітана з пам'яттю  про най елітніших воїнів тих часів, важка та товста що не дає їй змоги різати, але має чудову пробивну силу. Оздоблена золотом та вирізаними малюнками на ручці.
   components:
   - type: Sprite
-    sprite: _Pirate/Objects/Weapons/Melee/Сaptain_sabres/heavy.rsi
+    sprite: _Pirate/Objects/Weapons/Melee/Captain_sabres/heavy.rsi
   - type: MeleeWeapon
     canWideSwing: false
     attackRate: 1.7
@@ -82,7 +82,7 @@
   description: Давня зброя планети земля якою користувалися її різноманітні народи ще в давні часи, від Кавказу до України, славні козаки завжди мали їх при собі, зараз, вона є і в капітана космічної станції, легка швидка та гостра, але має погане пробиття.
   components:
   - type: Sprite
-    sprite: _Pirate/Objects/Weapons/Melee/Сaptain_sabres/shashka.rsi
+    sprite: _Pirate/Objects/Weapons/Melee/Captain_sabres/shashka.rsi
   - type: MeleeWeapon
     attackRate: 1.6
     damage:
@@ -96,7 +96,7 @@
   - type: Item
     storedSprite:
       state: icon
-      sprite: _Pirate/Objects/Weapons/Melee/Сaptain_sabres/shashka.rsi
+      sprite: _Pirate/Objects/Weapons/Melee/Captain_sabres/shashka.rsi
     shape:
     - 0,0,0,2
   - type: Tag
