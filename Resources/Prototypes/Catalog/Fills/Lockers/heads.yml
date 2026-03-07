@@ -195,7 +195,8 @@
     - id: CaptainIDCard
     - id: CigarGoldCase
       prob: 0.25
-    - id: ClothingBeltSheathFilled
+    #- id: ClothingBeltSheathFilled # Pirate sabres
+    - id: CaptainUndeterminedSabre # Pirate sabres
     - id: ClothingHeadsetAltCommand
     - id: ClothingOuterArmorCaptainCarapace
     - id: CommsComputerCircuitboard

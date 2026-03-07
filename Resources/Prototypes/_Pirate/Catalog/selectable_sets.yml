@@ -1,3 +1,35 @@
+## Command - Командування
+# Captain - Капітан
+- type: selectableSet
+  id: CaptainSabre
+  name: selectable-set-captain-sabre-name
+  description: selectable-set-captain-sabre-description
+  sprite:
+    sprite: Objects/Weapons/Melee/captain_sabre.rsi
+    state: icon
+  content:
+    - ClothingBeltSheathFilled
+
+- type: selectableSet
+  id: CaptainSabreHeavy
+  name: selectable-set-captain-sabre-heavy-name
+  description: selectable-set-captain-sabre-heavy-description
+  sprite:
+    sprite: _Pirate/Objects/Weapons/Melee/captain_sabres/heavy.rsi
+    state: icon
+  content:
+    - ClothingBeltSheathHeavyFilled
+
+- type: selectableSet
+  id: CaptainSabreShashka
+  name: selectable-set-captain-sabre-shashka-name
+  description: selectable-set-captain-sabre-shashka-description
+  sprite:
+    sprite: _Pirate/Objects/Weapons/Melee/captain_sabres/shashka.rsi
+    state: icon
+  content:
+    - ClothingBeltSheathShashkaFilled
+
 # Interdyne Secure
 
 - type: selectableSet
