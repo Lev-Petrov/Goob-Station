@@ -14,6 +14,10 @@ public sealed class GhostRespawnStatusEvent : EntityEventArgs
     public bool CanRespawn;
     public TimeSpan RemainingTime;
 
+    public GhostRespawnStatusEvent()
+    {
+    }
+
     public GhostRespawnStatusEvent(bool canRespawn, TimeSpan remainingTime)
     {
         CanRespawn = canRespawn;
