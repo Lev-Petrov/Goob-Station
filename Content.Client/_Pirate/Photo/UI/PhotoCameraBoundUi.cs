@@ -17,6 +17,7 @@ public sealed class PhotoCameraBoundUserInterface : BoundUserInterface
 {
     private const float ControlAudioActiveVolume = 2f;
     private const float ControlAudioIdleVolume = -20f;
+    // Keep 15% of ViewBox pan range even at maximum zoom so framing does not snap back to center.
     private const float MaxZoomPanRatio = 0.15f;
 
     private readonly EyeSystem _eyeSystem;
@@ -163,6 +164,8 @@ public sealed class PhotoCameraBoundUserInterface : BoundUserInterface
             ? (zoom - component.MinZoom) / zoomRange
             : 0f;
 
+        // 0.4f softens the falloff curve: higher zoom still reduces pan range, but less aggressively than linear.
+        // These values were chosen from gameplay tuning so max zoom keeps limited framing freedom without exposing the full ViewBox.
         var panRatio = MaxZoomPanRatio + (1 - MaxZoomPanRatio) * MathF.Pow(1 - zoomRatio, 0.4f);
         var xClamp = component.ViewBox.X * 0.5f * panRatio;
         var yClamp = component.ViewBox.Y * 0.5f * panRatio;
