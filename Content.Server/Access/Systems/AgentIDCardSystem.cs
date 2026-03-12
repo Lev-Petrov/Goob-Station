@@ -96,7 +96,7 @@ using Robust.Shared.Prototypes;
 using Content.Shared.Roles;
 using System.Diagnostics.CodeAnalysis;
 using Content.Shared._DV.NanoChat; // DeltaV
-using Content.Shared._DV.CartridgeLoader.Cartridges; // Pirate: agent id nano chat gallery cloning
+using Content.Shared._DV.CartridgeLoader.Cartridges; // Pirate: camera (nanochat gallery)
 using Content.Server.Clothing.Systems;
 using Content.Server.Implants;
 using Content.Shared.Implants;
@@ -193,7 +193,6 @@ namespace Content.Server.Access.Systems
             if (TryComp<NanoChatCardComponent>(args.Target, out var targetNanoChat) &&
                 TryComp<NanoChatCardComponent>(uid, out var agentNanoChat))
             {
-                #region Pirate: preserve nano chat gallery state when copying agent IDs
                 // First clear existing data
                 _nanoChat.Clear((uid, agentNanoChat));
 
@@ -216,13 +215,22 @@ namespace Content.Server.Access.Systems
                     }
                 }
 
+                #region Pirate: camera (nanochat gallery)
+                var selectedPhoto = _nanoChat.GetSelectedGalleryPhoto((args.Target.Value, targetNanoChat));
+                var copiedSelectedPhoto = false;
+
                 foreach (var (_, photo) in _nanoChat.GetStoredPhotos((args.Target.Value, targetNanoChat)))
                 {
-                    _nanoChat.TryStorePhoto((uid, agentNanoChat), CloneNanoChatPhoto(photo));
+                    var cloned = CloneNanoChatPhoto(photo);
+                    if (!_nanoChat.TryStorePhoto((uid, agentNanoChat), cloned))
+                        continue;
+
+                    copiedSelectedPhoto |= selectedPhoto == cloned.FileName;
                 }
 
                 _nanoChat.SetCurrentChat((uid, agentNanoChat), _nanoChat.GetCurrentChat((args.Target.Value, targetNanoChat)));
-                _nanoChat.SetSelectedGalleryPhoto((uid, agentNanoChat), _nanoChat.GetSelectedGalleryPhoto((args.Target.Value, targetNanoChat)));
+                if (copiedSelectedPhoto)
+                    _nanoChat.SetSelectedGalleryPhoto((uid, agentNanoChat), selectedPhoto);
                 #endregion
             }
             // End DeltaV
@@ -284,7 +292,7 @@ namespace Content.Server.Access.Systems
                 _cardSystem.TryChangeJobDepartment(uid, job, idCard);
         }
 
-        #region Pirate: preserve nano chat gallery state when copying agent IDs
+        #region Pirate: camera (nanochat gallery)
         private static NanoChatPhotoData CloneNanoChatPhoto(NanoChatPhotoData photo)
         {
             return new NanoChatPhotoData(

@@ -39,22 +39,10 @@ public sealed partial class NanoChatCardComponent : Component
     public Dictionary<uint, List<NanoChatMessage>> Messages = new();
 
     /// <summary>
-    ///     Photos stored in PDA memory, keyed by file name.
-    /// </summary>
-    [DataField]
-    public Dictionary<string, NanoChatPhotoData> Photos = new();
-
-    /// <summary>
     ///     The currently selected chat recipient number.
     /// </summary>
     [DataField]
     public uint? CurrentChat;
-
-    /// <summary>
-    ///     The currently selected gallery photo file name for external actions.
-    /// </summary>
-    [DataField]
-    public string? SelectedGalleryPhotoFileName; // Pirate: nano chat fax photo printing
 
     /// <summary>
     ///     The maximum amount of recipients this card supports.
@@ -67,12 +55,6 @@ public sealed partial class NanoChatCardComponent : Component
     /// </summary>
     [DataField(customTypeSerializer: typeof(TimeOffsetSerializer)), AutoPausedField]
     public TimeSpan LastMessageTime; // TODO: actually use this, compare against actor and not the card
-
-    /// <summary>
-    ///     Monotonically increasing local message id source.
-    /// </summary>
-    [DataField]
-    public uint NextMessageId = 1;
 
     /// <summary>
     ///     Whether to send notifications.
@@ -97,4 +79,21 @@ public sealed partial class NanoChatCardComponent : Component
     /// </summary>
     [DataField]
     public bool IsClosed;
+    #region Pirate: cameras (nanochat gallery)
+    /// <summary>
+    ///     Monotonically increasing local message id source.
+    /// </summary>
+    [DataField]
+    public uint NextMessageId = 1;
+    /// <summary>
+    ///     The currently selected gallery photo file name for external actions.
+    /// </summary>
+    [DataField]
+    public string? SelectedGalleryPhotoFileName; // Pirate: nano chat fax photo printing
+    /// <summary>
+    ///     Photos stored in PDA memory, keyed by file name.
+    /// </summary>
+    [DataField]
+    public Dictionary<string, NanoChatPhotoData> Photos = new();
+    #endregion
 }

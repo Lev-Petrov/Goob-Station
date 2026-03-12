@@ -22,9 +22,7 @@ namespace Content.Shared._DV.NanoChat;
 public abstract class SharedNanoChatSystem : EntitySystem
 {
     [Dependency] private readonly IGameTiming _timing = default!;
-    #region Pirate: nano chat gallery limits
-    public const int MaxPhotos = 50;
-    #endregion
+    public const int MaxPhotos = 50; // Pirate: cameras (nanochat gallery)
 
     public override void Initialize()
     {
@@ -105,17 +103,6 @@ public abstract class SharedNanoChatSystem : EntitySystem
     }
 
     /// <summary>
-    ///     Gets the stored PDA gallery photos for a card.
-    /// </summary>
-    public IReadOnlyDictionary<string, NanoChatPhotoData> GetStoredPhotos(Entity<NanoChatCardComponent?> card)
-    {
-        if (!Resolve(card, ref card.Comp))
-            return new Dictionary<string, NanoChatPhotoData>();
-
-        return card.Comp.Photos;
-    }
-
-    /// <summary>
     ///     Sets a specific recipient in the card.
     /// </summary>
     public void SetRecipient(Entity<NanoChatCardComponent?> card, uint number, NanoChatRecipient recipient)
@@ -166,19 +153,6 @@ public abstract class SharedNanoChatSystem : EntitySystem
         messages.Add(message);
         card.Comp.LastMessageTime = _timing.CurTime;
         Dirty(card);
-    }
-
-    /// <summary>
-    ///     Allocates the next local message id for this card.
-    /// </summary>
-    public uint AllocateMessageId(Entity<NanoChatCardComponent?> card)
-    {
-        if (!Resolve(card, ref card.Comp))
-            return 0;
-
-        var id = card.Comp.NextMessageId++;
-        Dirty(card);
-        return id;
     }
 
     /// <summary>
@@ -272,7 +246,29 @@ public abstract class SharedNanoChatSystem : EntitySystem
         return recipient.HasUnread;
     }
 
-    #region Pirate: nano chat fax photo printing
+    #region Pirate: cameras (nanochat gallery)
+    /// <summary>
+    ///     Allocates the next local message id for this card.
+    /// </summary>
+    public uint AllocateMessageId(Entity<NanoChatCardComponent?> card)
+    {
+        if (!Resolve(card, ref card.Comp))
+            return 0;
+
+        var id = card.Comp.NextMessageId++;
+        Dirty(card);
+        return id;
+    }
+    /// <summary>
+    ///     Gets the stored PDA gallery photos for a card.
+    /// </summary>
+    public IReadOnlyDictionary<string, NanoChatPhotoData> GetStoredPhotos(Entity<NanoChatCardComponent?> card)
+    {
+        if (!Resolve(card, ref card.Comp))
+            return new Dictionary<string, NanoChatPhotoData>();
+
+        return card.Comp.Photos;
+    }
     /// <summary>
     ///     Gets the currently selected gallery photo file name for external actions.
     /// </summary>
@@ -295,7 +291,6 @@ public abstract class SharedNanoChatSystem : EntitySystem
         card.Comp.SelectedGalleryPhotoFileName = fileName;
         Dirty(card); // Pirate: sync selected gallery photo changes
     }
-    #endregion
 
     /// <summary>
     ///     Tries to store or overwrite a gallery photo by file name.
@@ -305,10 +300,8 @@ public abstract class SharedNanoChatSystem : EntitySystem
         if (!Resolve(card, ref card.Comp) || string.IsNullOrWhiteSpace(photo.FileName))
             return false;
 
-        #region Pirate: nano chat gallery limits
         if (!card.Comp.Photos.ContainsKey(photo.FileName) && card.Comp.Photos.Count >= MaxPhotos)
             return false;
-        #endregion
 
         card.Comp.Photos[photo.FileName] = photo;
         Dirty(card);
@@ -335,15 +328,14 @@ public abstract class SharedNanoChatSystem : EntitySystem
         var deleted = card.Comp.Photos.Remove(fileName);
         if (deleted)
         {
-            #region Pirate: nano chat fax photo printing
             if (card.Comp.SelectedGalleryPhotoFileName == fileName)
                 card.Comp.SelectedGalleryPhotoFileName = null;
-            #endregion
             Dirty(card);
         }
 
         return deleted;
     }
+    #endregion
 
     /// <summary>
     ///     Clears all messages and recipients from the card.
@@ -355,9 +347,9 @@ public abstract class SharedNanoChatSystem : EntitySystem
 
         card.Comp.Messages.Clear();
         card.Comp.Recipients.Clear();
-        card.Comp.Photos.Clear();
+        card.Comp.Photos.Clear(); // Pirate: cameras (nanochat gallery)
         card.Comp.CurrentChat = null;
-        card.Comp.SelectedGalleryPhotoFileName = null; // Pirate: nano chat fax photo printing
+        card.Comp.SelectedGalleryPhotoFileName = null; // Pirate: cameras (nanochat gallery)
         Dirty(card);
     }
 

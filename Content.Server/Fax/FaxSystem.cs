@@ -126,7 +126,10 @@ using Content.Shared.DeviceNetwork;
 using Content.Shared.DeviceNetwork.Components;
 using Content.Shared.DeviceNetwork.Events;
 using Content.Shared.Emag.Systems;
-using Content.Shared._DV.CartridgeLoader.Cartridges; // Pirate: nano chat fax photo printing
+using Content.Shared._DV.CartridgeLoader.Cartridges; // Pirate: camera (nanochat gallery)
+using System.IO; // Pirate: camera (nanochat gallery)
+using Content.Shared._Pirate.Photo; // Pirate: camera
+using Content.Server._Pirate.Photo; // Pirate: camera
 using Content.Shared.Fax;
 using Content.Shared.Fax.Components;
 using Content.Shared.Fax.Systems;
@@ -145,9 +148,6 @@ using Robust.Shared.Audio.Systems;
 using Robust.Shared.Containers;
 using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
-using Content.Shared._Pirate.Photo; // Pirate: camera
-using Content.Server._Pirate.Photo; // Pirate: camera
-using System.IO; // Pirate: nano chat fax photo printing
 
 namespace Content.Server.Fax;
 
@@ -631,7 +631,7 @@ public sealed class FaxSystem : EntitySystem
             $"of {nameWithLabel}: {args.Content}");
     }
 
-    #region Pirate: nano chat fax photo printing
+    #region Pirate: cameras (nanochat gallery)
     public bool CanQueueNanoChatPhotoPrint(EntityUid uid, FaxMachineComponent? component = null)
     {
         if (!Resolve(uid, ref component))
@@ -659,11 +659,9 @@ public sealed class FaxSystem : EntitySystem
             return false;
         }
 
-        #region Pirate: nano chat fax photo printing
         var photoName = string.IsNullOrWhiteSpace(photo.FileName)
             ? "PhotoCard"
             : Path.GetFileNameWithoutExtension(photo.FileName);
-        #endregion
         var photoDescription = string.IsNullOrWhiteSpace(photo.Description) ? null : photo.Description;
         var photoContent = photoDescription ?? photo.Caption ?? string.Empty;
         var printout = new FaxPrintout(
@@ -844,12 +842,12 @@ public sealed class FaxSystem : EntitySystem
                 _deviceNetworkSystem.QueuePacket(uid, component.DestinationFaxAddress, photoPayload);
 
                 if (!args.Actor.IsValid()) // Goobstation - no log for automation
-                _adminLogger.Add(LogType.Action,
-                    LogImpact.Low,
-                    $"{ToPrettyString(args.Actor):actor} " +
-                    $"sent fax from \"{component.FaxName}\" {ToPrettyString(uid):tool} " +
-                    $"to \"{faxName}\" ({component.DestinationFaxAddress}) " +
-                    $"of {ToPrettyString(sendEntity):subject}: {photo.CustomName ?? string.Empty}");
+                    _adminLogger.Add(LogType.Action,
+                        LogImpact.Low,
+                        $"{ToPrettyString(args.Actor):actor} " +
+                        $"sent fax from \"{component.FaxName}\" {ToPrettyString(uid):tool} " +
+                        $"to \"{faxName}\" ({component.DestinationFaxAddress}) " +
+                        $"of {ToPrettyString(sendEntity):subject}: {photo.CustomName ?? string.Empty}");
 
                 component.SendTimeoutRemaining += component.SendTimeout;
 
@@ -890,12 +888,12 @@ public sealed class FaxSystem : EntitySystem
         _deviceNetworkSystem.QueuePacket(uid, component.DestinationFaxAddress, payload);
 
         if (!args.Actor.IsValid()) // Goobstation - no log for automation
-        _adminLogger.Add(LogType.Action,
-            LogImpact.Low,
-            $"{ToPrettyString(args.Actor):actor} " +
-            $"sent fax from \"{component.FaxName}\" {ToPrettyString(uid):tool} " +
-            $"to \"{faxName}\" ({component.DestinationFaxAddress}) " +
-            $"of {ToPrettyString(sendEntity):subject}: {paper.Content}");
+            _adminLogger.Add(LogType.Action,
+                LogImpact.Low,
+                $"{ToPrettyString(args.Actor):actor} " +
+                $"sent fax from \"{component.FaxName}\" {ToPrettyString(uid):tool} " +
+                $"to \"{faxName}\" ({component.DestinationFaxAddress}) " +
+                $"of {ToPrettyString(sendEntity):subject}: {paper.Content}");
 
         component.SendTimeoutRemaining += component.SendTimeout;
 

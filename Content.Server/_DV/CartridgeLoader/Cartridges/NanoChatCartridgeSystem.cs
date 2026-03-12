@@ -213,20 +213,21 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
         return true;
     }
 
-    #region Pirate: photo upload alt verb
+    #region Pirate: cameras (nanochat gallery)
     private void OnPdaGetAlternativeVerbs(Entity<PdaComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanInteract ||
             !args.CanAccess ||
+            !GetCardEntity(ent.Owner, out _) ||
             !TryGetUploadablePhoto(args.Using, out _, out _))
             return;
 
-        var user = args.User; // Pirate: photo upload alt verb
-        var used = args.Using; // Pirate: photo upload alt verb
+        var user = args.User;
+        var used = args.Using;
         args.Verbs.Add(new AlternativeVerb
         {
             Text = Loc.GetString("nano-chat-upload-photo-verb"),
-            Icon = new SpriteSpecifier.Texture(new("/Textures/Interface/VerbIcons/plus.svg.192dpi.png")), // Pirate: use core plus icon for scan verb
+            Icon = new SpriteSpecifier.Texture(new("/Textures/Interface/VerbIcons/plus.svg.192dpi.png")),
             Act = () => TryStartPhotoUpload(ent.Owner, user, used),
             Priority = 5
         });
@@ -239,7 +240,7 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
             return;
         }
 
-        var cardUid = GetEntity(args.CardUid); // Pirate: resolve frozen upload target from net entity
+        var cardUid = GetEntity(args.CardUid);
         if (args.Cancelled ||
             cardUid == EntityUid.Invalid ||
             args.Photo.ImageData is not { Length: > 0 } ||
@@ -250,7 +251,7 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
             return;
         }
 
-        if (!_nanoChat.TryStorePhoto((cardUid, cardComp), args.Photo)) // Pirate: use frozen card uid from do-after payload
+        if (!_nanoChat.TryStorePhoto((cardUid, cardComp), args.Photo))
         {
             ShowPhotoActionError(ent.Owner, args.User, "nano-chat-photo-upload-failed");
             args.Handled = true;
@@ -258,7 +259,7 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
         }
 
         UpdateUIForCard(cardUid);
-        ShowPhotoActionSuccess(cardComp.PdaUid ?? cardUid, args.User, "nano-chat-photo-uploaded", PhotoScanSuccessSound); // Pirate: nano chat photo scan sound
+        ShowPhotoActionSuccess(cardComp.PdaUid ?? cardUid, args.User, "nano-chat-photo-uploaded", PhotoScanSuccessSound);
         args.Handled = true;
     }
 
@@ -321,7 +322,7 @@ public sealed class NanoChatCartridgeSystem : EntitySystem
         args.Verbs.Add(new AlternativeVerb
         {
             Text = Loc.GetString("nano-chat-print-photo-verb"),
-            Icon = new SpriteSpecifier.Texture(new("/Textures/_Pirate/Interface/VerbIcons/file_public.svg.192dpi.png")), // Pirate: publicicons fax verb runtime texture
+            Icon = new SpriteSpecifier.Texture(new("/Textures/_Pirate/Interface/VerbIcons/file_public.svg.192dpi.png")),
             Act = () => TryStartPhotoPrintToFax(ent.Owner, user, used),
             Priority = 5
         });
