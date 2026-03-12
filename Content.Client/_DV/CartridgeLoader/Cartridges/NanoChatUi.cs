@@ -29,9 +29,9 @@ public sealed partial class NanoChatUi : UIFragment
     {
         _fragment = new NanoChatUiFragmentPirate(); // Pirate: pda fix
 
-        _fragment.OnMessageSent += message =>
+        _fragment.OnMessageSent += message => // Pirate: camera (nanochat gallery)
         {
-            SendNanoChatUiMessage(message, userInterface);
+            SendNanoChatUiMessage(message, userInterface); // Pirate: camera (nanochat gallery)
         };
     }
 
@@ -41,7 +41,7 @@ public sealed partial class NanoChatUi : UIFragment
             _fragment?.UpdateState(cast);
     }
 
-    private static void SendNanoChatUiMessage(NanoChatUiMessageEvent nanoChatMessage,
+    private static void SendNanoChatUiMessage(NanoChatUiMessageEvent nanoChatMessage, // Pirate: camera (nanochat gallery)
         BoundUserInterface userInterface)
     {
         var message = new CartridgeUiMessage(nanoChatMessage);

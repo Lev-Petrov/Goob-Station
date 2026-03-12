@@ -631,7 +631,7 @@ public sealed class FaxSystem : EntitySystem
             $"of {nameWithLabel}: {args.Content}");
     }
 
-    #region Pirate: cameras (nanochat gallery)
+    #region Pirate: camera (nanochat gallery)
     public bool CanQueueNanoChatPhotoPrint(EntityUid uid, FaxMachineComponent? component = null)
     {
         if (!Resolve(uid, ref component))
@@ -841,7 +841,7 @@ public sealed class FaxSystem : EntitySystem
 
                 _deviceNetworkSystem.QueuePacket(uid, component.DestinationFaxAddress, photoPayload);
 
-                if (!args.Actor.IsValid()) // Goobstation - no log for automation
+                if (args.Actor.IsValid()) // // Pirate: camera(nanochat gallery)
                     _adminLogger.Add(LogType.Action,
                         LogImpact.Low,
                         $"{ToPrettyString(args.Actor):actor} " +
@@ -887,7 +887,7 @@ public sealed class FaxSystem : EntitySystem
 
         _deviceNetworkSystem.QueuePacket(uid, component.DestinationFaxAddress, payload);
 
-        if (!args.Actor.IsValid()) // Goobstation - no log for automation
+        if (args.Actor.IsValid()) // Pirate: audit player-triggered fax sends
             _adminLogger.Add(LogType.Action,
                 LogImpact.Low,
                 $"{ToPrettyString(args.Actor):actor} " +

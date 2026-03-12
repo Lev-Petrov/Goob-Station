@@ -12,7 +12,7 @@
 
 using Content.Shared.CartridgeLoader;
 using Robust.Shared.Serialization;
-using System.Linq; // Pirate: cameras (nanochat gallery)
+using System.Linq; // Pirate: camera (nanochat gallery)
 
 namespace Content.Shared._DV.CartridgeLoader.Cartridges;
 
@@ -39,7 +39,7 @@ public sealed class NanoChatUiMessageEvent : CartridgeMessageEvent
     /// </summary>
     public readonly string? RecipientJob;
 
-    #region Pirate: cameras (nanochat gallery)
+    #region Pirate: camera (nanochat gallery)
     /// <summary>
     ///     The gallery file name associated with this action, if applicable.
     /// </summary>
@@ -58,21 +58,21 @@ public sealed class NanoChatUiMessageEvent : CartridgeMessageEvent
     /// <param name="recipientNumber">Optional recipient number for the message</param>
     /// <param name="content">Optional content of the message</param>
     /// <param name="recipientJob">Optional job title for new chat creation</param>
-    /// <param name="photoFileName">Optional gallery file name for attachments and deletes</param> // Pirate: cameras (nanochat gallery)
-    /// <param name="messageId">Optional message id for message photo actions</param>// Pirate: cameras (nanochat gallery)
+    /// <param name="photoFileName">Optional gallery file name for attachments and deletes</param> // Pirate: camera (nanochat gallery)
+    /// <param name="messageId">Optional message id for message photo actions</param>// Pirate: camera (nanochat gallery)
     public NanoChatUiMessageEvent(NanoChatUiMessageType type,
         uint? recipientNumber = null,
         string? content = null,
-        string? recipientJob = null, // Pirate: cameras (nanochat gallery)
-        string? photoFileName = null, // Pirate: cameras (nanochat gallery)
-        uint? messageId = null) // Pirate: cameras (nanochat gallery)
+        string? recipientJob = null, // Pirate: camera (nanochat gallery)
+        string? photoFileName = null, // Pirate: camera (nanochat gallery)
+        uint? messageId = null) // Pirate: camera (nanochat gallery)
     {
         Type = type;
         RecipientNumber = recipientNumber;
         Content = content;
         RecipientJob = recipientJob;
-        PhotoFileName = photoFileName; // Pirate: cameras (nanochat gallery)
-        MessageId = messageId; // Pirate: cameras (nanochat gallery)
+        PhotoFileName = photoFileName; // Pirate: camera (nanochat gallery)
+        MessageId = messageId; // Pirate: camera (nanochat gallery)
     }
 }
 
@@ -81,14 +81,14 @@ public enum NanoChatUiMessageType : byte
 {
     NewChat,
     SelectChat,
-    SelectGalleryPhoto, // Pirate: cameras (nanochat gallery)
+    SelectGalleryPhoto, // Pirate: camera (nanochat gallery)
     CloseChat,
     SendMessage,
     DeleteChat,
     ToggleMute,
     ToggleListNumber,
-    DeleteGalleryPhoto, // Pirate: cameras (nanochat gallery)
-    StoreMessagePhoto, // Pirate: cameras (nanochat gallery)
+    DeleteGalleryPhoto, // Pirate: camera (nanochat gallery)
+    StoreMessagePhoto, // Pirate: camera (nanochat gallery)
 }
 
 // putting this here because i can
@@ -131,7 +131,7 @@ public struct NanoChatRecipient
     }
 }
 
-#region Pirate: cameras (nanochat gallery)
+#region Pirate: camera (nanochat gallery)
 
 [Serializable, NetSerializable, DataRecord]
 public struct NanoChatPhotoData
@@ -206,21 +206,21 @@ public struct NanoChatMessage
     /// <summary>
     ///     Creates a new NanoChat message.
     /// </summary>
-    /// <param name="id">Unique id for this message on the local card</param> // Pirate: cameras (nanochat gallery)
+    /// <param name="id">Unique id for this message on the local card</param> // Pirate: camera (nanochat gallery)
     /// <param name="timestamp">When the message was sent</param>
     /// <param name="content">The content of the message</param>
     /// <param name="senderId">The sender's NanoChat number</param>
     /// <param name="deliveryFailed">Whether delivery to the recipient failed</param>
-    /// <param name="photo">Optional photo attachment payload</param> // Pirate: cameras (nanochat gallery)
-    public NanoChatMessage(uint id, TimeSpan timestamp, string content, uint senderId, bool deliveryFailed = false, NanoChatPhotoData? photo = null) // Pirate: cameras (nanochat gallery)
+    /// <param name="photo">Optional photo attachment payload</param> // Pirate: camera (nanochat gallery)
+    public NanoChatMessage(uint id, TimeSpan timestamp, string content, uint senderId, bool deliveryFailed = false, NanoChatPhotoData? photo = null) // Pirate: camera (nanochat gallery)
     {
         Timestamp = timestamp;
         Content = content;
         SenderId = senderId;
         DeliveryFailed = deliveryFailed;
-        #region Pirate: cameras (nanochat gallery)
-        Id = id; 
-        HasPhoto = photo != null; 
+        #region Pirate: camera (nanochat gallery)
+        Id = id;
+        HasPhoto = photo != null;
         Photo = photo;
         #endregion
     }
@@ -234,13 +234,13 @@ public struct NanoChatMessage
 public readonly struct NanoChatData(
     Dictionary<uint, NanoChatRecipient> recipients,
     Dictionary<uint, List<NanoChatMessage>> messages,
-    Dictionary<string, NanoChatPhotoData> photos, // Pirate: cameras (nanochat gallery)
+    Dictionary<string, NanoChatPhotoData> photos, // Pirate: camera (nanochat gallery)
     uint? cardNumber,
     NetEntity card)
 {
     public Dictionary<uint, NanoChatRecipient> Recipients { get; } = recipients;
     public Dictionary<uint, List<NanoChatMessage>> Messages { get; } = messages;
-    public Dictionary<string, NanoChatPhotoData> Photos { get; } = photos; // Pirate: cameras (nanochat gallery)
+    public Dictionary<string, NanoChatPhotoData> Photos { get; } = photos; // Pirate: camera (nanochat gallery)
     public uint? CardNumber { get; } = cardNumber;
     public NetEntity Card { get; } = card;
 }

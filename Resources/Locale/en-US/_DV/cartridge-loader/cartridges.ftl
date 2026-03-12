@@ -160,14 +160,11 @@ nano-chat-message-too-long = Message too long ({$current}/{$max} characters)
 nano-chat-max-recipients = Maximum number of chats reached
 nano-chat-new-message-title = Message from {$sender}
 nano-chat-new-message-body = {$message}
-# Pirate: nano chat extended locale keys moved to _Pirate/cartridge-loader/nano-chat.ftl
 nano-chat-toggle-mute = Mute notifications
 nano-chat-delivery-failed = Failed to deliver
 nano-chat-look-up-no-server = No valid telecommunications server found
 nano-chat-look-up = Look up numbers
 nano-chat-list-number = List number
-# Pirate: nano chat photo upload verb
-# Pirate: nano chat gallery save feedback
 
 # Create chat popup
 nano-chat-new-title = Add a new chat

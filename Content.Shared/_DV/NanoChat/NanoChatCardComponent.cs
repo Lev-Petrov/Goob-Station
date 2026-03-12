@@ -79,7 +79,7 @@ public sealed partial class NanoChatCardComponent : Component
     /// </summary>
     [DataField]
     public bool IsClosed;
-    #region Pirate: cameras (nanochat gallery)
+    #region Pirate: camera (nanochat gallery)
     /// <summary>
     ///     Monotonically increasing local message id source.
     /// </summary>

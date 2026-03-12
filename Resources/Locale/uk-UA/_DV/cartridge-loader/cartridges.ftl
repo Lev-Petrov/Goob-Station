@@ -25,14 +25,11 @@ nano-chat-message-too-long = Повідомлення задовге ({$current}
 nano-chat-max-recipients = Досягнуто максимальної кількості чатів
 nano-chat-new-message-title = Повідомлення від {$sender}
 nano-chat-new-message-body = {$message}
-# Pirate: nano chat extended locale keys moved to _Pirate/cartridge-loader/nano-chat.ftl
 nano-chat-toggle-mute = Вимкнути сповіщення
 nano-chat-delivery-failed = Не вдалося доставити
 nano-chat-look-up-no-server = Не знайдено дійсного телекомунікаційного сервера
 nano-chat-look-up = Пошук номерів
 nano-chat-list-number = Список номерів
-# Pirate: nano chat photo upload verb
-# Pirate: nano chat gallery save feedback
 
 # Створити спливаюче вікно чату
 nano-chat-new-title = Додати новий чат

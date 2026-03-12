@@ -22,7 +22,7 @@ namespace Content.Shared._DV.NanoChat;
 public abstract class SharedNanoChatSystem : EntitySystem
 {
     [Dependency] private readonly IGameTiming _timing = default!;
-    public const int MaxPhotos = 50; // Pirate: cameras (nanochat gallery)
+    public const int MaxPhotos = 50; // Pirate: camera (nanochat gallery)
 
     public override void Initialize()
     {
@@ -246,7 +246,7 @@ public abstract class SharedNanoChatSystem : EntitySystem
         return recipient.HasUnread;
     }
 
-    #region Pirate: cameras (nanochat gallery)
+    #region Pirate: camera (nanochat gallery)
     /// <summary>
     ///     Allocates the next local message id for this card.
     /// </summary>
@@ -289,7 +289,7 @@ public abstract class SharedNanoChatSystem : EntitySystem
             return;
 
         card.Comp.SelectedGalleryPhotoFileName = fileName;
-        Dirty(card); // Pirate: sync selected gallery photo changes
+        Dirty(card);
     }
 
     /// <summary>
@@ -347,9 +347,9 @@ public abstract class SharedNanoChatSystem : EntitySystem
 
         card.Comp.Messages.Clear();
         card.Comp.Recipients.Clear();
-        card.Comp.Photos.Clear(); // Pirate: cameras (nanochat gallery)
+        card.Comp.Photos.Clear(); // Pirate: camera (nanochat gallery)
         card.Comp.CurrentChat = null;
-        card.Comp.SelectedGalleryPhotoFileName = null; // Pirate: cameras (nanochat gallery)
+        card.Comp.SelectedGalleryPhotoFileName = null; // Pirate: camera (nanochat gallery)
         Dirty(card);
     }
 
