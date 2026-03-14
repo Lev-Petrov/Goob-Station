@@ -86,7 +86,7 @@
     - id: FoodCoffeeBeansPirate
       amount: 5
   - type: StaticPrice
-    price: 50
+    price: 0.04
 
 - type: entity
   id: CoffeePackRobustaPirate

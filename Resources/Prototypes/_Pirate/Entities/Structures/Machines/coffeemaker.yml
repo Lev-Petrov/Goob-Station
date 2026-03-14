@@ -27,7 +27,7 @@
           Full: { visible: true, state: coffeemaker_pot_full }
       enum.CoffeemakerVisuals.HasCartridge:
         cartridge:
-          True: { visible: true, state: coffeemaker_cartidge }
+          True: { visible: true, state: coffeemaker_cartridge }
           False: { visible: false }
   - type: Sprite
     sprite: _Pirate/Structures/Machines/coffeemaker.rsi
@@ -39,7 +39,7 @@
       state: coffeemaker_pot_empty
       visible: false
     - map: ["cartridge"]
-      state: coffeemaker_cartidge
+      state: coffeemaker_cartridge
       visible: false
   - type: Physics
   - type: Fixtures

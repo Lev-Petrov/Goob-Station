@@ -2,7 +2,7 @@ coffeemaker-slot-pot = слота для кавника
 coffeemaker-slot-cartridge = слота для картриджа
 
 coffeemaker-verb-brew = Заварити
-co-ffeemaker-verb-take-cup = Взяти чашку
+coffeemaker-verb-take-cup = Взяти чашку
 coffeemaker-verb-take-sugar = Взяти цукор
 coffeemaker-verb-take-sweetener = Взяти підсолоджувач
 coffeemaker-verb-take-creamer = Взяти вершки
@@ -72,7 +72,7 @@ ent-CoffeemakerFlatpackPirate = плоска пака кавоварки
 ent-CoffeemakerImpressaFlatpackPirate = плоска пака кавоварки Impressa
     .desc = Набір для збирання кавоварки Impressa.
 
-ent-SpawnPodCoffeemakerPirate = кавовий вантажний дроппод
+ent-SpawnPodCoffeemakerImpressaPirate = кавовий вантажний дроппод
     .desc = Доставний контейнер із кавовими припасами.
 ent-SpawnPodCoffeemakerModelloPirate = кавовий вантажний дроппод
     .desc = Доставний контейнер із кавовими припасами.

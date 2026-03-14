@@ -72,7 +72,7 @@ ent-CoffeemakerFlatpackPirate = coffeemaker flatpack
 ent-CoffeemakerImpressaFlatpackPirate = Impressa coffeemaker flatpack
     .desc = A flatpack kit for assembling an Impressa coffeemaker.
 
-ent-SpawnPodCoffeemakerPirate = coffee supply pod
+ent-SpawnPodCoffeemakerImpressaPirate = coffee supply pod
     .desc = A delivery pod containing coffee supplies.
 ent-SpawnPodCoffeemakerModelloPirate = coffee supply pod
     .desc = A delivery pod containing coffee supplies.

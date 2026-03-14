@@ -35,7 +35,7 @@
     - ReagentId: Coffee
       Quantity: 120
   - type: StaticPrice
-    price: 50
+    price: 0.04
 
 - type: entity
   id: CoffeeCartridgeFancyPirate
@@ -161,6 +161,7 @@
   - type: Item
     sprite: _Pirate/Objects/Consumable/Drinks/coffeemaker_drinks.rsi
   - type: Appearance
+  - type: DrinkableThroughLid
   - type: CoffeeCupVisuals
   - type: SolutionContainerVisuals
     maxFillLevels: 1

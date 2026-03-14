@@ -123,8 +123,9 @@ public sealed partial class IngestionSystem
             return;
 
         #region Pirate: coffeemaker
+        // Pirate: coffeemaker
         // Coffee cups are intentionally drinkable through closed lids.
-        if (HasComp<CoffeeCupVisualsComponent>(ent))
+        if (HasComp<DrinkableThroughLidComponent>(ent)) // Pirate: coffeemaker
             return;
         #endregion
 

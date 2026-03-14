@@ -39,6 +39,12 @@ public sealed partial class CoffeemakerComponent : Component
     public EntProtoId SweetenerPacketPrototype = "FoodCondimentPacketAstrotamePirate";
 
     [DataField]
+    public EntProtoId FallbackSugarPacketPrototype = "FoodCondimentPacketSugar";
+
+    [DataField]
+    public EntProtoId FallbackSweetenerPacketPrototype = "FoodCondimentPacketAstrotame";
+
+    [DataField]
     public EntProtoId CreamerPacketPrototype = "FoodCondimentPacketCreamerPirate";
 
     [DataField]

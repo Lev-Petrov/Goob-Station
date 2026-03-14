@@ -1,5 +1,5 @@
 - type: entity
-  id: SpawnPodCoffeemakerPirate
+  id: SpawnPodCoffeemakerImpressaPirate
   categories: [ HideSpawnMenu ]
   name: "coffeemaker supply drop"
   parent: SpawnSupplyEmpty
@@ -31,9 +31,9 @@
   - type: SpawnItemsOnUse
     sound: /Audio/Items/Mining/fultext_launch.ogg
     items:
-    - id: SpawnPodCoffeemakerPirate
+    - id: SpawnPodCoffeemakerImpressaPirate
   - type: StaticPrice
-    price: 400
+    price: 0.1
 
 - type: entity
   parent: CoffeemakerDropTeleporterPirate
@@ -46,4 +46,4 @@
     items:
     - id: SpawnPodCoffeemakerModelloPirate
   - type: StaticPrice
-    price: 350
+    price: 0.1

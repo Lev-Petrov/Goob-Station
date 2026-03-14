@@ -596,7 +596,7 @@ public sealed class CoffeemakerSystem : EntitySystem
 
     private bool TryRestockSugar(Entity<CoffeemakerComponent> ent, EntityUid user, EntityUid used)
     {
-        if (!HasPrototype(used, ent.Comp.SugarPacketPrototype) && !HasPrototype(used, "FoodCondimentPacketSugar"))
+        if (!HasPrototype(used, ent.Comp.SugarPacketPrototype) && !HasPrototype(used, ent.Comp.FallbackSugarPacketPrototype))
             return false;
 
         if (!TryRestockPacket(ent, user, used, ref ent.Comp.SugarPacks, ent.Comp.MaxSugarPacks, "coffeemaker-popup-sugar-max"))
@@ -608,7 +608,7 @@ public sealed class CoffeemakerSystem : EntitySystem
 
     private bool TryRestockSweetener(Entity<CoffeemakerComponent> ent, EntityUid user, EntityUid used)
     {
-        if (!HasPrototype(used, ent.Comp.SweetenerPacketPrototype) && !HasPrototype(used, "FoodCondimentPacketAstrotame"))
+        if (!HasPrototype(used, ent.Comp.SweetenerPacketPrototype) && !HasPrototype(used, ent.Comp.FallbackSweetenerPacketPrototype))
             return false;
 
         if (!TryRestockPacket(ent, user, used, ref ent.Comp.SweetenerPacks, ent.Comp.MaxSweetenerPacks, "coffeemaker-popup-sweetener-max"))

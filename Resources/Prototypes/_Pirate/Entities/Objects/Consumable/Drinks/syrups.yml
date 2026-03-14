@@ -13,10 +13,13 @@
     maxTransferAmount: 10
   - type: Sprite
     layers:
-    - state: bottle-empty
+    - &syrupBottleOpenableLayer
+      state: bottle-empty
       map: ["enum.OpenableVisuals.Layer"]
-    - state: label-b
-    - state: bottle-alpha-6
+    - &syrupBottleDefaultLabelLayer
+      state: label-b
+    - &syrupBottleFillLayer
+      state: bottle-alpha-6
       map: ["enum.SolutionContainerLayers.Fill"]
       visible: true
   - type: Item
@@ -36,14 +39,6 @@
         reagents:
         - ReagentId: Syrup
           Quantity: 50
-  - type: Sprite
-    layers:
-    - state: bottle-empty
-      map: ["enum.OpenableVisuals.Layer"]
-    - state: label-b
-    - state: bottle-alpha-6
-      map: ["enum.SolutionContainerLayers.Fill"]
-      visible: true
 
 - type: entity
   id: FoodCondimentBottleCoffeeLiqueurSyrupPirate
@@ -59,12 +54,9 @@
           Quantity: 50
   - type: Sprite
     layers:
-    - state: bottle-empty
-      map: ["enum.OpenableVisuals.Layer"]
+    - *syrupBottleOpenableLayer
     - state: label-v
-    - state: bottle-alpha-6
-      map: ["enum.SolutionContainerLayers.Fill"]
-      visible: true
+    - *syrupBottleFillLayer
 
 - type: entity
   id: FoodCondimentBottleKortaSyrupPirate
@@ -80,12 +72,9 @@
           Quantity: 50
   - type: Sprite
     layers:
-    - state: bottle-empty
-      map: ["enum.OpenableVisuals.Layer"]
+    - *syrupBottleOpenableLayer
     - state: label-e
-    - state: bottle-alpha-6
-      map: ["enum.SolutionContainerLayers.Fill"]
-      visible: true
+    - *syrupBottleFillLayer
 
 - type: entity
   id: FoodCondimentBottleLaughSyrupPirate
