@@ -67,9 +67,9 @@ ent-CoffeemakerMachinePirate = кавоварка
 ent-CoffeemakerImpressaMachinePirate = кавоварка Impressa
     .desc = Промислова кавоварка Impressa. Використовує цілі зерна.
 
-ent-CoffeemakerFlatpackPirate = плоска пака кавоварки
+ent-CoffeemakerFlatpackPirate = плоский пакет кавоварки
     .desc = Набір для збирання кавоварки Modello 3.
-ent-CoffeemakerImpressaFlatpackPirate = плоска пака кавоварки Impressa
+ent-CoffeemakerImpressaFlatpackPirate = плоский пакет кавоварки Impressa
     .desc = Набір для збирання кавоварки Impressa.
 
 ent-SpawnPodCoffeemakerImpressaPirate = кавовий вантажний дроппод
