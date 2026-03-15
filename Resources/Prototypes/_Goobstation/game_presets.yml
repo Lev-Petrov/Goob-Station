@@ -213,6 +213,7 @@
     - entropy
   name: secretplus-mid-title
   description: secretplus-mid-description
+  minPlayers: 10 # Pirate
   showInVote: true
   rules:
     - SecretPlusMid
