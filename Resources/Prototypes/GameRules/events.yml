@@ -276,7 +276,7 @@
     weight: 8
     duration: 35
     chaos: # Goobstation
-      Anomaly: 40
+      Anomaly: 100 # Pirate - was 40
     eventType: Chaotic # Goobstation
   - type: BluespaceArtifactRule
 
@@ -285,7 +285,7 @@
   parent: BaseGameRule
   components:
   - type: StationEvent
-    weight: 2
+    weight: 4 # Pirate - was 2
     reoccurrenceDelay: 5
     earliestStart: 1
     duration: 1
@@ -380,7 +380,7 @@
     eventType: HostilesSpawn # Goobstation
   # Goobstation
   - type: GameRule
-    chaosScore: 600
+    chaosScore: 800 # Pirate - was 600
   - type: SpaceSpawnRule
     spawnDistance: 0
   - type: AntagSpawner
@@ -420,7 +420,7 @@
     eventType: HostilesSpawn # Goobstation
   # Goobstation
   - type: GameRule
-    chaosScore: 300
+    chaosScore: 500 # Pirate - was 300
   - type: SpaceSpawnRule
   - type: AntagLoadProfileRule
     # Goobstation start
@@ -844,7 +844,7 @@
   id: LoneOpsSpawn
   components:
   - type: StationEvent
-    earliestStart: 35
+    earliestStart: 60 # Pirate - was 35
     weight: 2.5 # Goobstation - was 5.5
     minimumPlayers: 50 # Goobstation - was 20
     duration: 1
@@ -855,7 +855,7 @@
     eventType: HostilesSpawn # Goobstation
   # Goobstation
   - type: GameRule
-    chaosScore: 700
+    chaosScore: 900 # Pirate - was 700
   - type: RuleGrids
   - type: LoadMapRule
     gridPath: /Maps/Shuttles/ShuttleEvent/striker.yml
