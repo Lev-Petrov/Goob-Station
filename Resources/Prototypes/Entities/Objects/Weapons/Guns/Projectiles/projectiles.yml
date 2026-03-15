@@ -345,6 +345,7 @@
         - BulletImpassable
       fly-by: *flybyfixture
   - type: Ammo
+    muzzleFlash: MuzzleFlashEffectGoldLaser # Pirate
   - type: Projectile
     damage:
       types:
@@ -479,9 +480,9 @@
   categories: [ HideSpawnMenu ]
   components:
   - type: Sprite
-    sprite: Structures/Power/Generation/Singularity/emitter.rsi
+    sprite: _Pirate/Objects/Weapons/Guns/Projectiles/energybolts.rsi # Pirate
     layers:
-    - state: projectile
+    - state: mediumsynd # Pirate
       shader: unshaded
   - type: Ammo
     muzzleFlash: MuzzleFlashEffectSyndLaser # Pirate
@@ -1474,6 +1475,8 @@
     proto: BulletLaser
     count: 5 #65 heat damage if you hit all your shots, but wide spread
     spread: 30
+  - type: Ammo # Pirate
+    muzzleFlash: MuzzleFlashEffectHeavyLaser # Pirate
 
 - type: entity
   name: "вузький лазерний промінь"
@@ -1485,6 +1488,8 @@
     proto: BulletLaser
     count: 4 #52 heat damage if you hit all your shots, but narrower spread
     spread: 10
+  - type: Ammo # Pirate
+    muzzleFlash: MuzzleFlashEffectHeavyLaser # Pirate
 
 - type: entity
   name: "знерухомлюючий лазерний залп"
