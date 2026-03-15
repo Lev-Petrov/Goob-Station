@@ -74,6 +74,9 @@
   - type: Icon
     sprite: _Pirate/Objects/Storage/coffee_containers.rsi
     state: arabica_beans
+  - type: Item
+    shape:
+    - 0,0,1,1
   - type: Storage
     maxItemSize: Tiny
     grid:
