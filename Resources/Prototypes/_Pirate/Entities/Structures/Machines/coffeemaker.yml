@@ -7,7 +7,7 @@
   - type: Coffeemaker
     usesBeans: false
     brewTime: 20
-    steamOffset: 0, 0.0475
+    steamOffset: 0, 0.2975
     beanCapacity: 0
     cups: 15
     maxCups: 15
@@ -33,6 +33,7 @@
     sprite: _Pirate/Structures/Machines/coffeemaker.rsi
     drawdepth: SmallObjects
     snapCardinals: true
+    offset: 0, 0.25
     layers:
     - state: coffeemaker_nopot_nocart
     - map: ["pot"]
@@ -98,7 +99,7 @@
     usesBeans: true
     cartridgeSlotId: null
     brewTime: 15
-    steamOffset: 0, 0.2638
+    steamOffset: 0, 0.4513
     beanCapacity: 10
     cups: 15
     maxCups: 15
@@ -143,6 +144,7 @@
     sprite: _Pirate/Structures/Machines/coffeemaker.rsi
     drawdepth: SmallObjects
     snapCardinals: true
+    offset: 0, 0.1875
     layers:
     - state: coffeemaker_impressa
     - map: ["pot"]
