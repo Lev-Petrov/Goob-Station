@@ -223,7 +223,7 @@
 
 
 - type: entity
-  parent: [ ClothingShoesBase, ClothingShoesMilitaryBase ]
+  parent: ClothingShoesMilitaryBase
   id: ClothingUnderSocksCorpsman
   name: "панчохи санітара до стегон"
   description: "Пара панчіх до стегон, стилізованих для санітарів."
