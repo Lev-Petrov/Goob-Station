@@ -20,4 +20,3 @@ loadout-group-chaplain-shoes = Взуття капелана
 loadout-group-janitor-shoes = Взуття прибиральника
 loadout-group-musician-shoes = Взуття музиканта
 loadout-group-service-worker-shoes = Взуття сервісного працівника
-loadout-group-hos-shoes = Взуття начальника безпеки
