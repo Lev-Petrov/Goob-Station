@@ -97,7 +97,7 @@
   - type: StationEvent
     earliestStart: 15
     minimumPlayers: 20
-    weight: 2
+    weight: 4
     duration: 1
     chaos:
       Medical: 25
