@@ -20,7 +20,8 @@ namespace Content.Server.Database.Migrations.Sqlite
                     owner_kind = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
                     owner_id = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
                     album_key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
-                    saved_at = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    saved_at = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    is_public = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {

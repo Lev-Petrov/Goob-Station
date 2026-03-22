@@ -21,7 +21,8 @@ namespace Content.Server.Database.Migrations.Postgres
                     owner_kind = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
                     owner_id = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     album_key = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    saved_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    saved_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    is_public = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
