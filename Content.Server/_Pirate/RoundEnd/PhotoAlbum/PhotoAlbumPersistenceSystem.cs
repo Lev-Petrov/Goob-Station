@@ -25,6 +25,7 @@ public sealed class PhotoAlbumPersistenceSystem : EntitySystem
     [Dependency] private readonly IServerDbManager _db = default!;
     [Dependency] private readonly PhotoSystem _photo = default!;
     [Dependency] private readonly IServerPreferencesManager _preferences = default!;
+    private Task? _persistTask;
 
     public override void Initialize()
     {
@@ -33,6 +34,13 @@ public sealed class PhotoAlbumPersistenceSystem : EntitySystem
         SubscribeLocalEvent<PersistentPhotoAlbumComponent, SelectedLoadoutEntitySpawnedEvent>(OnSelectedLoadoutAlbumSpawned);
         SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnPlayerSpawnComplete);
         SubscribeLocalEvent<RoundEndTextAppendEvent>(OnRoundEndTextAppend);
+        SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRoundRestartCleanup);
+    }
+
+    public override void Shutdown()
+    {
+        WaitForPendingPersistence();
+        base.Shutdown();
     }
 
     private void OnSelectedLoadoutAlbumSpawned(
@@ -66,13 +74,16 @@ public sealed class PhotoAlbumPersistenceSystem : EntitySystem
                 if (ownerId == null || Deleted(uid))
                     continue;
 
+                var snapshot = await _db.GetPersistentPhotoAlbumSnapshotAsync(persistence.OwnerKind, ownerId, persistence.AlbumKey);
+                if (Deleted(uid) || !IsOwnedBy(uid, ev.Mob))
+                    continue;
+
                 var state = EnsureComp<PhotoAlbumPersistenceStateComponent>(uid);
                 state.OwnerKind = persistence.OwnerKind;
                 state.OwnerId = ownerId;
                 state.AlbumKey = persistence.AlbumKey;
 
-                var snapshot = await _db.GetPersistentPhotoAlbumSnapshotAsync(persistence.OwnerKind, ownerId, persistence.AlbumKey);
-                if (snapshot == null || Deleted(uid) || !IsOwnedBy(uid, ev.Mob))
+                if (snapshot == null)
                     continue;
 
                 persistence.IsPublic = snapshot.IsPublic;
@@ -91,25 +102,47 @@ public sealed class PhotoAlbumPersistenceSystem : EntitySystem
         if (snapshots.Count == 0)
             return;
 
-        _ = Task.Run(async () =>
+        _persistTask = PersistSnapshotsAsync(snapshots);
+    }
+
+    private void OnRoundRestartCleanup(RoundRestartCleanupEvent ev)
+    {
+        WaitForPendingPersistence();
+    }
+
+    private async Task PersistSnapshotsAsync(List<PersistentPhotoAlbumSnapshot> snapshots)
+    {
+        foreach (var snapshot in snapshots)
         {
-            foreach (var snapshot in snapshots)
+            try
             {
-                try
-                {
-                    await _db.UpsertPersistentPhotoAlbumSnapshotAsync(
-                        snapshot.OwnerKind,
-                        snapshot.OwnerId,
-                        snapshot.AlbumKey,
-                        snapshot.IsPublic,
-                        snapshot.Photos);
-                }
-                catch (Exception ex)
-                {
-                    Log.Error($"Failed to persist photo album {snapshot.OwnerKind}/{snapshot.OwnerId}/{snapshot.AlbumKey}: {ex}");
-                }
+                await _db.UpsertPersistentPhotoAlbumSnapshotAsync(
+                    snapshot.OwnerKind,
+                    snapshot.OwnerId,
+                    snapshot.AlbumKey,
+                    snapshot.IsPublic,
+                    snapshot.Photos);
             }
-        });
+            catch (Exception ex)
+            {
+                Log.Error($"Failed to persist photo album {snapshot.OwnerKind}/{snapshot.OwnerId}/{snapshot.AlbumKey}: {ex}");
+            }
+        }
+    }
+
+    private void WaitForPendingPersistence()
+    {
+        if (_persistTask == null)
+            return;
+
+        try
+        {
+            _persistTask.GetAwaiter().GetResult();
+        }
+        finally
+        {
+            _persistTask = null;
+        }
     }
 
     private List<PersistentPhotoAlbumSnapshot> CollectAlbumSnapshots()

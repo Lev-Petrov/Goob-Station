@@ -160,6 +160,11 @@ namespace Content.Server.Database
 {
     public abstract class ServerDbBase
     {
+        #region Pirate: persistent photo albums
+        private const int PiratePersistentPhotoBaseDescriptionMaxLength = 2000;
+        private const int PiratePersistentPhotoCaptureDataJsonMaxLength = 10000;
+        #endregion
+
         private readonly ISawmill _opsLog;
 
         public event Action<DatabaseNotification>? OnNotificationReceived;
@@ -2415,10 +2420,13 @@ INSERT INTO player_round (players_id, rounds_id) VALUES ({players[player]}, {id}
                     CustomName = photo.CustomName,
                     CustomDescription = photo.CustomDescription,
                     Caption = photo.Caption,
-                    BaseDescription = photo.BaseDescription,
+                    // Pirate: persistent photo albums
+                    BaseDescription = TruncatePersistentPhotoText(photo.BaseDescription, PiratePersistentPhotoBaseDescriptionMaxLength),
                     CaptureData = DeserializeCaptureData(photo.CaptureDataJson),
-                    CreatedAt = photo.CreatedAt,
-                    UpdatedAt = photo.UpdatedAt
+                    // Pirate: persistent photo albums
+                    CreatedAt = NormalizeDatabaseTime(photo.CreatedAt),
+                    // Pirate: persistent photo albums
+                    UpdatedAt = NormalizeDatabaseTime(photo.UpdatedAt)
                 });
             }
 
@@ -2428,7 +2436,8 @@ INSERT INTO player_round (players_id, rounds_id) VALUES ({players[player]}, {id}
                 OwnerId = album.OwnerId,
                 AlbumKey = album.AlbumKey,
                 IsPublic = album.IsPublic,
-                SavedAt = album.SavedAt,
+                // Pirate: persistent photo albums
+                SavedAt = NormalizeDatabaseTime(album.SavedAt),
                 Photos = photos
             };
         }
@@ -2481,7 +2490,9 @@ INSERT INTO player_round (players_id, rounds_id) VALUES ({players[player]}, {id}
                     CustomName = photo.CustomName,
                     CustomDescription = photo.CustomDescription,
                     Caption = photo.Caption,
-                    BaseDescription = photo.BaseDescription,
+                    // Pirate: persistent photo albums
+                    BaseDescription = TruncatePersistentPhotoText(photo.BaseDescription, PiratePersistentPhotoBaseDescriptionMaxLength),
+                    // Pirate: persistent photo albums
                     CaptureDataJson = SerializeCaptureData(photo.CaptureData),
                     CreatedAt = photo.CreatedAt,
                     UpdatedAt = photo.UpdatedAt
@@ -2495,7 +2506,21 @@ INSERT INTO player_round (players_id, rounds_id) VALUES ({players[player]}, {id}
 
         private static string? SerializeCaptureData(PhotoCaptureData? data)
         {
-            return data == null ? null : JsonSerializer.Serialize(data);
+            // Pirate: persistent photo albums
+            return data == null
+                ? null
+                : TruncatePersistentPhotoText(
+                    JsonSerializer.Serialize(data),
+                    PiratePersistentPhotoCaptureDataJsonMaxLength);
+        }
+
+        // Pirate: persistent photo albums
+        private static string? TruncatePersistentPhotoText(string? value, int maxLength)
+        {
+            if (string.IsNullOrEmpty(value) || value.Length <= maxLength)
+                return value;
+
+            return value[..maxLength];
         }
 
         private static PhotoCaptureData? DeserializeCaptureData(string? json)

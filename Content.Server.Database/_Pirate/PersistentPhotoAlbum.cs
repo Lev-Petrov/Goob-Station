@@ -22,10 +22,8 @@ public sealed class PersistentPhotoAlbum
     [Required, StringLength(64)]
     public string AlbumKey { get; set; } = default!;
 
-    [Required]
     public DateTime SavedAt { get; set; }
 
-    [Required]
     public bool IsPublic { get; set; } = true;
 
     public List<PersistentPhotoAlbumPhoto> Photos { get; set; } = new();
@@ -59,8 +57,10 @@ public sealed class PersistentPhotoAlbumPhoto
     [StringLength(256)]
     public string? Caption { get; set; }
 
+    [StringLength(2000)]
     public string? BaseDescription { get; set; }
 
+    [StringLength(10000)]
     public string? CaptureDataJson { get; set; }
 
     public DateTime? CreatedAt { get; set; }

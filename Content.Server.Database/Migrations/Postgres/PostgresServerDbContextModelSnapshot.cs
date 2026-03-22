@@ -762,7 +762,8 @@ namespace Content.Server.Database.Migrations.Postgres
                         .HasColumnName("album_id");
 
                     b.Property<string>("BaseDescription")
-                        .HasColumnType("text")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
                         .HasColumnName("base_description");
 
                     b.Property<string>("Caption")
@@ -771,7 +772,8 @@ namespace Content.Server.Database.Migrations.Postgres
                         .HasColumnName("caption");
 
                     b.Property<string>("CaptureDataJson")
-                        .HasColumnType("text")
+                        .HasMaxLength(10000)
+                        .HasColumnType("character varying(10000)")
                         .HasColumnName("capture_data_json");
 
                     b.Property<DateTime?>("CreatedAt")

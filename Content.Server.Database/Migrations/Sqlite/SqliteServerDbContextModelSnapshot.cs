@@ -720,6 +720,7 @@ namespace Content.Server.Database.Migrations.Sqlite
                         .HasColumnName("album_id");
 
                     b.Property<string>("BaseDescription")
+                        .HasMaxLength(2000)
                         .HasColumnType("TEXT")
                         .HasColumnName("base_description");
 
@@ -729,6 +730,7 @@ namespace Content.Server.Database.Migrations.Sqlite
                         .HasColumnName("caption");
 
                     b.Property<string>("CaptureDataJson")
+                        .HasMaxLength(10000)
                         .HasColumnType("TEXT")
                         .HasColumnName("capture_data_json");
 

@@ -42,8 +42,8 @@ namespace Content.Server.Database.Migrations.Postgres
                     custom_name = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: true),
                     custom_description = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
                     caption = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    base_description = table.Column<string>(type: "text", nullable: true),
-                    capture_data_json = table.Column<string>(type: "text", nullable: true),
+                    base_description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
+                    capture_data_json = table.Column<string>(type: "character varying(10000)", maxLength: 10000, nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },

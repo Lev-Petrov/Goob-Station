@@ -272,7 +272,6 @@ public sealed class PhotoAlbumSystem : EntitySystem
 
             var sortedPhotos = sortablePhotos
                 .OrderByDescending(entry => GetPhotoSortTimestamp(entry.PhotoCard))
-                .ThenByDescending(entry => entry.PhotoCard.CreatedAt ?? DateTime.MinValue)
                 .ThenBy(entry => entry.OriginalIndex)
                 .ToList();
 
