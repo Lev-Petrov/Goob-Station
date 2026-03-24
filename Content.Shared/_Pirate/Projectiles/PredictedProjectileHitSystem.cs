@@ -113,20 +113,7 @@ public sealed class PredictedProjectileHitSystem : EntitySystem
             damageRequired = FixedPoint2.Max(damageRequired - damageable.TotalDamage, FixedPoint2.Zero);
         }
 
-        TargetBodyPart? targetPart = _gun.GetTargetPart(component.Shooter, target);
-        if (TryComp(uid, out ProjectileMissTargetPartChanceComponent? missComp) &&
-            !missComp.PerfectHitEntities.Contains(target))
-        {
-            targetPart = TargetBodyPart.Chest;
-        }
-
-        var modifiedDamage = _damageable.TryChangeDamage(target,
-            hitEv.Damage,
-            component.IgnoreResistances,
-            damageable: damageable,
-            origin: component.Shooter,
-            targetPart: targetPart,
-            canBeCancelled: true);
+        var modifiedDamage = damageable != null ? hitEv.Damage : null;
         var deleted = Deleted(target);
 
         if (modifiedDamage is not null)
