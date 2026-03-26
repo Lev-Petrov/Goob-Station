@@ -65,7 +65,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using Content.Shared._Shitmed.Weapons.Ranged.Events; // Shitmed Change
-using Content.Shared._Lavaland.Weapons.Ranged.Events;
+using Content.Shared._Lavaland.Weapons.Ranged.Events; // Pirate: gunplay
 using Content.Shared.ActionBlocker;
 using Content.Shared.Actions;
 using Content.Shared.Administration.Logs;
@@ -585,7 +585,7 @@ public abstract partial class SharedGunSystem : EntitySystem
         if (targetCoordinates.HasValue) // Goobstation
             projectile.TargetCoordinates = targetCoordinates.Value; // Goobstation
 
-        // Pirate: gunplay
+        #region Pirate: gunplay
         if (user is { } userUid)
         {
             var ev = new Content.Shared._Pirate.Projectiles.PlayerShotProjectileEvent(uid, userUid);
@@ -601,6 +601,7 @@ public abstract partial class SharedGunSystem : EntitySystem
             };
             RaiseLocalEvent(gun, shotEv);
         }
+        #endregion
     }
 
     protected abstract void Popup(string message, EntityUid? uid, EntityUid? user);

@@ -156,21 +156,22 @@ public sealed class BatteryWeaponFireModesSystem : EntitySystem
             RaiseLocalEvent(uid, ref updateClientAmmoEvent);
         }
 
-        // Pirate: gunplay
+        #region Pirate: gunplay
         if (TryComp(uid, out HitscanBatteryAmmoProviderComponent? hitscanBatteryAmmoProviderComponent))
         {
             var oldFireCost = hitscanBatteryAmmoProviderComponent.FireCost;
             hitscanBatteryAmmoProviderComponent.Prototype = fireMode.Prototype;
             hitscanBatteryAmmoProviderComponent.FireCost = fireMode.FireCost;
 
-            var fireCostDiff = (float) fireMode.FireCost / oldFireCost;
-            hitscanBatteryAmmoProviderComponent.Shots = (int) Math.Round(hitscanBatteryAmmoProviderComponent.Shots / fireCostDiff);
-            hitscanBatteryAmmoProviderComponent.Capacity = (int) Math.Round(hitscanBatteryAmmoProviderComponent.Capacity / fireCostDiff);
+            var fireCostDiff = (float)fireMode.FireCost / oldFireCost;
+            hitscanBatteryAmmoProviderComponent.Shots = (int)Math.Round(hitscanBatteryAmmoProviderComponent.Shots / fireCostDiff);
+            hitscanBatteryAmmoProviderComponent.Capacity = (int)Math.Round(hitscanBatteryAmmoProviderComponent.Capacity / fireCostDiff);
 
             Dirty(uid, hitscanBatteryAmmoProviderComponent);
 
             var updateClientAmmoEvent = new UpdateClientAmmoEvent();
             RaiseLocalEvent(uid, ref updateClientAmmoEvent);
         }
+        #endregion
     }
 }

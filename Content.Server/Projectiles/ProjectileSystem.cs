@@ -73,14 +73,14 @@ using Content.Shared.Camera;
 using Content.Shared.Damage;
 using Content.Shared.Database;
 using Content.Goobstation.Maths.FixedPoint;
-using Content.Shared._Pirate.Projectiles;
 using Content.Shared._Shitmed.Targeting;
 using Content.Shared.Projectiles;
-using Robust.Shared.Physics;
-using Robust.Shared.Physics.Components;
-using Robust.Shared.Physics.Dynamics;
 using Robust.Shared.Physics.Events;
 using Robust.Shared.Player;
+using Content.Shared._Pirate.Projectiles; // Pirate: gunplay
+using Robust.Shared.Physics; // Pirate: gunplay
+using Robust.Shared.Physics.Components; // Pirate: gunplay
+using Robust.Shared.Physics.Dynamics; // Pirate: gunplay
 
 namespace Content.Server.Projectiles;
 
@@ -111,7 +111,7 @@ public sealed class ProjectileSystem : SharedProjectileSystem
         DoHit(uid, component, args.OurBody, args.OtherEntity, args.OtherFixture);
     }
 
-    // Pirate: gunplay
+    #region Pirate: gunplay
     public void DoHit(EntityUid uid, EntityUid target)
     {
         if (!TryComp(uid, out ProjectileComponent? component) ||
@@ -140,6 +140,7 @@ public sealed class ProjectileSystem : SharedProjectileSystem
 
         return null;
     }
+    #endregion
 
     // Pirate: gunplay
     private void DoHit(EntityUid uid, ProjectileComponent component, PhysicsComponent ourBody, EntityUid target, Fixture otherFixture)
@@ -260,7 +261,7 @@ public sealed class ProjectileSystem : SharedProjectileSystem
         {
             _guns.PlayImpactSound(target, modifiedDamage, component.SoundHit, component.ForceSound);
 
-            if (!ourBody.LinearVelocity.IsLengthZero())
+            if (!ourBody.LinearVelocity.IsLengthZero()) // Pirate: gunplay
                 _sharedCameraRecoil.KickCamera(target, ourBody.LinearVelocity.Normalized());
         }
 

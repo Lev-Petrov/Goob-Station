@@ -36,12 +36,13 @@ public abstract partial class SharedGunSystem
 
     private void OnBasicEntityTakeAmmo(EntityUid uid, BasicEntityAmmoProviderComponent component, TakeAmmoEvent args)
     {
-        // Pirate: gunplay
+        // Goobstation start
         WeightedRandomEntityPrototype? prototypes = null;
         if (component.Proto == null && (!ProtoManager.TryIndex(component.Prototypes, out prototypes) ||
                                         prototypes.Weights.Count == 0))
             return;
-        var rand = PredictedRandom(uid);
+        // Goobstation end
+        var rand = PredictedRandom(uid); // Pirate: gunplay
 
         for (var i = 0; i < args.Shots; i++)
         {

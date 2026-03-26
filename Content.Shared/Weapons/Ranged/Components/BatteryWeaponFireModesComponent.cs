@@ -50,13 +50,6 @@ public sealed partial class BatteryWeaponFireMode
     /// </summary>
     [DataField]
     public float FireCost = 100;
-
-    /// <summary>
-    /// Wether or not this fire mode can be used by pacifists
-    /// </summary>
-    // Pirate: gunplay
-    [DataField]
-    public bool PacifismAllowedMode = false;
 }
 
 [Serializable, NetSerializable]

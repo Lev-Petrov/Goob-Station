@@ -319,13 +319,14 @@ public partial class SharedGunSystem
                 if (chamber == null)
                     continue;
 
-                // Pirate: gunplay
+                #region Pirate: gunplay
                 var uid = EntityManager.PredictedSpawn(component.FillPrototype, mapCoordinates);
 
                 if (TryComp<CartridgeAmmoComponent>(uid, out var cartridge))
                     SetCartridgeSpent(uid, cartridge, !(bool) chamber);
 
                 EjectCartridgePredicted(rand, user, uid);
+                #endregion
 
                 component.Chambers[i] = null;
                 anyEmpty = true;
@@ -369,13 +370,14 @@ public partial class SharedGunSystem
         Audio.PlayPredicted(component.SoundSpin, revolverUid, user);
         Popup(Loc.GetString("gun-revolver-spun"), revolverUid, user);
 
-        // Pirate: gunplay
+        #region Pirate: gunplay
         var index = PredictedRandom(revolverUid).Next(component.Capacity);
         if (component.CurrentIndex == index)
             return;
 
         component.CurrentIndex = index;
         Dirty(revolverUid, component);
+        #endregion
     }
 
     private void OnRevolverTakeAmmo(EntityUid uid, RevolverAmmoProviderComponent component, TakeAmmoEvent args)
@@ -402,10 +404,11 @@ public partial class SharedGunSystem
                 if (chamber == true)
                 {
                     // Pretend it's always been there.
-                    // Pirate: gunplay
+                    #region Pirate: gunplay
                     ent = PredictedSpawnAtPosition(component.FillPrototype, args.Coordinates);
                     component.AmmoSlots[index] = ent;
                     Containers.Insert(ent.Value, component.AmmoContainer);
+                    #endregion
 
                     component.Chambers[index] = false;
                 }
