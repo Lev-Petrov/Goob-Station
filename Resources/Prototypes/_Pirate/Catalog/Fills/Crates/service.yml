@@ -4,19 +4,19 @@
   name: coffeemaker crate
   description: Contains a Modello 3 coffeemaker flatpack and a full coffee service kit.
   components:
-  - type: StorageFill
-    contents:
-    - id: CoffeemakerFlatpackPirate
-    - id: CoffeeCartridgeFancyPirate
-      amount: 3
-    - id: DrinkCoffeepotPirate
-    - id: CoffeeCondimentDisplayPirate
-    - id: DrinkCreamCartonPirate
-    - id: DrinkMilkCarton
-    - id: DrinkSoyMilkCarton
-    - id: DrinkSugarBottlePirate
-    - id: FoodCondimentBottleCaramelSyrupPirate
-    - id: Multitool
+    - type: StorageFill
+      contents:
+        - id: CoffeemakerFlatpackPirate
+        - id: CoffeeCartridgeFancyPirate
+          amount: 3
+        - id: DrinkCoffeepotPirate
+        - id: CoffeeCondimentDisplayPirate
+        - id: DrinkCreamCartonPirate
+        - id: DrinkMilkCarton
+        - id: DrinkSoyMilkCarton
+        - id: DrinkSugarBottlePirate
+        - id: FoodCondimentBottleCaramelSyrupPirate
+        - id: Multitool
 
 - type: entity
   id: CrateServiceCoffeemakerImpressaPirate
@@ -24,29 +24,29 @@
   name: impressa coffeemaker crate
   description: Contains an Impressa coffeemaker flatpack and a full coffee service kit.
   components:
-  - type: StorageFill
-    contents:
-    - id: CoffeemakerImpressaFlatpackPirate
-    - id: CoffeePackRobustaPirate
-    - id: CoffeePackPirate
-    - id: DrinkCoffeepotPirate
-    - id: CoffeeCondimentDisplayPirate
-    - id: DrinkCreamCartonPirate
-    - id: DrinkMilkCarton
-    - id: DrinkSoyMilkCarton
-    - id: DrinkSugarBottlePirate
-    - id: FoodCondimentBottleCaramelSyrupPirate
-    - id: Multitool
+    - type: StorageFill
+      contents:
+        - id: CoffeemakerImpressaFlatpackPirate
+        - id: CoffeePackRobustaPirate
+        - id: CoffeePackPirate
+        - id: DrinkCoffeepotPirate
+        - id: CoffeeCondimentDisplayPirate
+        - id: DrinkCreamCartonPirate
+        - id: DrinkMilkCarton
+        - id: DrinkSoyMilkCarton
+        - id: DrinkSugarBottlePirate
+        - id: FoodCondimentBottleCaramelSyrupPirate
+        - id: Multitool
 
 - type: entity
   id: CrateServiceContrabandSyrupsPirate
   parent:
-  - CratePlastic
-  - BaseSyndicateContraband
+    - CratePlastic
+    - BaseSyndicateContraband
   name: illegal syrups box
   description: A packaged box containing illegal coffee syrups.
   components:
-  - type: StorageFill
-    contents:
-    - id: FoodCondimentBottleLaughSyrupPirate
-      amount: 2
+    - type: StorageFill
+      contents:
+        - id: FoodCondimentBottleLaughSyrupPirate
+          amount: 2

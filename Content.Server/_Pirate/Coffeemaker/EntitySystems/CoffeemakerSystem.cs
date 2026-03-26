@@ -21,6 +21,7 @@ using Robust.Shared.Audio.Systems;
 using Robust.Shared.Containers;
 using Robust.Shared.GameObjects;
 using Robust.Shared.Map;
+using Robust.Shared.Maths;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
 using Robust.Shared.Timing;
@@ -405,13 +406,17 @@ public sealed class CoffeemakerSystem : EntitySystem
                 return;
             }
 
+            var brewReagent = "Coffee";
             if (TryComp<CoffeeBeanComponent>(bean.Value, out var beanComponent))
+            {
+                brewReagent = beanComponent.BrewReagent;
                 AddReagents(potSolutionEntity.Value, beanComponent.ExtraReagents);
+            }
 
             QueueDel(bean.Value);
             var amount = FixedPoint2.Min(ent.Comp.BrewVolume, potSolution.AvailableVolume);
             if (amount > FixedPoint2.Zero)
-                _solutions.TryAddReagent(potSolutionEntity.Value, "Coffee", amount);
+                _solutions.TryAddReagent(potSolutionEntity.Value, brewReagent, amount);
         }
         else
         {
@@ -427,7 +432,10 @@ public sealed class CoffeemakerSystem : EntitySystem
                 return;
             }
 
-            AddReagents(potSolutionEntity.Value, cartridgeComponent.ReagentYield);
+            AddReagents(potSolutionEntity.Value, cartridgeComponent.ExtraReagents);
+            var amount = FixedPoint2.Min(cartridgeComponent.BrewAmount, potSolution.AvailableVolume);
+            if (amount > FixedPoint2.Zero)
+                _solutions.TryAddReagent(potSolutionEntity.Value, cartridgeComponent.BrewReagent, amount);
             cartridgeComponent.Charges--;
         }
 
@@ -480,10 +488,11 @@ public sealed class CoffeemakerSystem : EntitySystem
         {
             var speed = _random.NextFloat(0.48f, 0.72f);
             var upwardVelocity = new Vector2(0f, speed);
+            var spread = Angle.FromDegrees(_random.NextFloat(-10f, 10f));
             var emitterRotation = _transform.GetWorldRotation(emitter);
 
-            // Move along the coffeemaker's local "up" direction so map/grid rotation does not skew the steam.
-            puff.Velocity = emitterRotation.RotateVec(upwardVelocity);
+            // Start from the coffeemaker's local "up", then add a small random spread for a cone-like puff.
+            puff.Velocity = emitterRotation.RotateVec(spread.RotateVec(upwardVelocity));
         }
 
         ent.Comp.NextSteamPuffAt = _timing.CurTime + TimeSpan.FromSeconds(ent.Comp.SteamPuffInterval);

@@ -23,10 +23,13 @@ public sealed partial class CoffeeCartridgeComponent : Component
     public int Charges = 4;
 
     [DataField]
-    public List<ReagentQuantity> ReagentYield = new()
-    {
-        new ReagentQuantity("Coffee", FixedPoint2.New(120)),
-    };
+    public string BrewReagent = "Coffee";
+
+    [DataField]
+    public FixedPoint2 BrewAmount = FixedPoint2.New(120);
+
+    [DataField]
+    public List<ReagentQuantity> ExtraReagents = new();
 
     [DataField]
     public CoffeeCartridgeVariant Variant = CoffeeCartridgeVariant.Basic;

@@ -12,6 +12,12 @@
     },
     {
       "name": "coffee_robusta"
+    },
+    {
+      "name": "coffee_synthetic"
+    },
+    {
+      "name": "coffee_stenophylla"
     }
   ]
 }

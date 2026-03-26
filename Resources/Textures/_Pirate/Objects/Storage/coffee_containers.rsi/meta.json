@@ -27,6 +27,12 @@
     },
     {
       "name": "robusta_beans"
+    },
+    {
+      "name": "synthetic_beans"
+    },
+    {
+      "name": "stenophylla_beans"
     }
   ]
 }
