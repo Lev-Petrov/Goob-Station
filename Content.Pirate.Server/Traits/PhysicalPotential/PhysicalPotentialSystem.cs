@@ -151,7 +151,7 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             var trainsDefense = ApplyDefenseReduction(args.Damage, comp.DefenseBonus);
             var isAlive = TryComp<MobStateComponent>(uid, out var mob) && mob.CurrentState == MobState.Alive;
 
-            if (args.Origin != null && trainsDefense && isAlive)
+            if (args.Origin != null && trainsDefense && isAlive && args.Damage.GetTotal() > 0)
             {
                 var newStrain = new TrainingStrain { Defense = comp.DefenseRisingSpeed };
                 AddStrain(comp, newStrain);

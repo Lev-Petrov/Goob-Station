@@ -27,7 +27,7 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
     public sealed partial class PhysicalPotentialComponent : Component
     {
         [DataField("trainingEffectiveness"), ViewVariables(VVAccess.ReadWrite)]
-        public float trainingEffectiveness = 100;
+        public float trainingEffectiveness = 0.5f;
 
         #region Damage
         [DataField("strains")]
@@ -75,7 +75,7 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
 
         #region Rest
         [DataField("timeForRest"), ViewVariables(VVAccess.ReadWrite)]
-        public float TimeForRest = 180f;
+        public float TimeForRest = 15f;
 
         [ViewVariables] public TimeSpan EndRestTime;
         [ViewVariables] public bool IsResting;
