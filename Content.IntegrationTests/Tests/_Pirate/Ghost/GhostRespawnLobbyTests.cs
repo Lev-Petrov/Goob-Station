@@ -9,6 +9,7 @@ using Content.Server._Pirate.Ghost;
 using Content.Server.GameTicking;
 using Content.Server.Ghost.Roles;
 using Content.Server.Ghost.Roles.Components;
+using Content.Server.Mind;
 using Content.Shared.Bed.Cryostorage;
 using Content.Shared.CCVar;
 using Content.Shared.GameTicking;
@@ -97,6 +98,31 @@ public sealed class GhostRespawnLobbyTests
             Assert.That(session.AttachedEntity, Is.Null);
         });
 
+        await pair.Server.WaitPost(() =>
+        {
+            var session = pair.Server.PlayerMan.Sessions.Single();
+            ticker.JoinAsObserver(session);
+        });
+        await pair.RunTicksSync(10);
+
+        await pair.Server.WaitAssertion(() =>
+        {
+            var session = pair.Server.PlayerMan.Sessions.Single();
+            var state = respawnSystem.GetDebugState(userId);
+            var availability = respawnSystem.GetDebugAvailability(userId);
+            Assert.That(ticker.PlayerGameStatuses[userId], Is.EqualTo(PlayerGameStatus.JoinedGame));
+            Assert.That(session.AttachedEntity, Is.Not.Null);
+            Assert.That(pair.Server.EntMan.HasComponent<GhostComponent>(session.AttachedEntity!.Value), Is.True);
+            Assert.That(state.HasCrewCycle, Is.False);
+            Assert.That(availability.CanRespawn, Is.True);
+        });
+
+        await pair.Client.WaitAssertion(() =>
+        {
+            var button = GetReturnToRoundButton(ui);
+            Assert.That(button.Disabled, Is.False);
+        });
+
         await pair.CleanReturnAsync();
     }
 
@@ -180,6 +206,64 @@ public sealed class GhostRespawnLobbyTests
         {
             var button = GetReturnToRoundButton(ui);
             Assert.That(button.Disabled, Is.False);
+        });
+
+        await pair.CleanReturnAsync();
+    }
+
+    [Test]
+    public async Task CustomCrewSpawnWithoutPlayerSpawnCompleteStartsTimer()
+    {
+        await using var pair = await PoolManager.GetServerClient(new PoolSettings
+        {
+            DummyTicker = false,
+            Connected = true,
+            Dirty = true,
+            InLobby = true
+        });
+        var userId = pair.Client.User!.Value;
+        var respawnSystem = pair.Server.System<PirateGhostRespawnSystem>();
+        var ticker = pair.Server.System<GameTicker>();
+        var mindSystem = pair.Server.System<MindSystem>();
+        var entMan = pair.Server.EntMan;
+
+        await pair.Server.WaitAssertion(() =>
+        {
+            var state = respawnSystem.GetDebugState(userId);
+            Assert.That(state.HasCrewCycle, Is.False);
+        });
+
+        await pair.Server.WaitPost(() =>
+        {
+            pair.Server.CfgMan.SetCVar(CCVars.GhostRespawnDelay, TimeSpan.FromSeconds(5));
+
+            var session = pair.Server.PlayerMan.Sessions.Single();
+            var body = entMan.SpawnEntity("MobHuman", MapCoordinates.Nullspace);
+            var (mindId, _) = mindSystem.CreateMind(session.UserId, session.Name);
+            mindSystem.SetUserId(mindId, session.UserId);
+            ticker.PlayerJoinGame(session);
+            mindSystem.TransferTo(mindId, body);
+        });
+        await pair.RunTicksSync(10);
+
+        await pair.Server.WaitAssertion(() =>
+        {
+            var session = pair.Server.PlayerMan.Sessions.Single();
+            var state = respawnSystem.GetDebugState(userId);
+            Assert.That(session.AttachedEntity, Is.Not.Null);
+            Assert.That(state.HasCrewCycle, Is.True);
+            Assert.That(state.TimerArmed, Is.False);
+        });
+
+        await Ghost(pair);
+
+        await pair.Server.WaitAssertion(() =>
+        {
+            var state = respawnSystem.GetDebugState(userId);
+            var availability = respawnSystem.GetDebugAvailability(userId);
+            Assert.That(state.TimerArmed, Is.True);
+            Assert.That(availability.CanRespawn, Is.False);
+            Assert.That(availability.RemainingTime, Is.GreaterThan(TimeSpan.Zero));
         });
 
         await pair.CleanReturnAsync();

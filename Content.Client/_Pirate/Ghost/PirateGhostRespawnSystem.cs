@@ -11,6 +11,7 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
 
     private bool _hasStatus;
     private bool _canRespawn;
+    private bool _pendingRespawnRequest;
     private TimeSpan _respawnAvailableAt;
 
     public event Action? StatusChanged;
@@ -25,6 +26,7 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
     {
         _hasStatus = false;
         _canRespawn = false;
+        _pendingRespawnRequest = false;
         _respawnAvailableAt = TimeSpan.Zero;
         StatusChanged?.Invoke();
     }
@@ -46,6 +48,11 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
 
     public void RequestRespawnToLobby()
     {
+        var state = GetDisplayState();
+        if (_pendingRespawnRequest || !state.HasStatus || !state.CanRespawn)
+            return;
+
+        _pendingRespawnRequest = true;
         RaiseNetworkEvent(new GhostRespawnLobbyRequest());
     }
 
@@ -53,6 +60,7 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
     {
         _hasStatus = true;
         _canRespawn = ev.CanRespawn;
+        _pendingRespawnRequest = false;
         _respawnAvailableAt = _timing.CurTime + ev.RemainingTime;
         StatusChanged?.Invoke();
     }

@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Content.Server.GameTicking;
+using Content.Server.Ghost.Roles.Components;
 using Content.Shared._Pirate.Ghost;
 using Content.Shared.Bed.Cryostorage;
 using Content.Shared.CCVar;
 using Content.Shared.GameTicking;
 using Content.Shared.Ghost;
 using Content.Shared.Mind.Components;
+using Content.Goobstation.Shared.MisandryBox.Thunderdome;
 using Robust.Server.Player;
 using Robust.Shared.Configuration;
 using Robust.Shared.Network;
@@ -25,10 +27,12 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
 
     private readonly Dictionary<NetUserId, GhostRespawnState> _states = new();
     private readonly Dictionary<NetUserId, PendingGhostTransition> _pendingTransitions = new();
+    private readonly Dictionary<NetUserId, int> _suppressedCrewCycleSeeds = new();
 
     public override void Initialize()
     {
         SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnPlayerSpawnComplete);
+        SubscribeLocalEvent<PlayerJoinedLobbyEvent>(OnPlayerJoinedLobby);
         SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRoundRestartCleanup);
         SubscribeLocalEvent<MindContainerComponent, MindRemovedMessage>(OnMindRemoved);
         SubscribeLocalEvent<MindContainerComponent, MindAddedMessage>(OnMindAdded);
@@ -39,21 +43,20 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
 
     private void OnPlayerSpawnComplete(PlayerSpawnCompleteEvent ev)
     {
-        // PIRATE: GameTicker player spawns start a fresh crew cycle, including no-lobby fallback respawns.
-        _states[ev.Player.UserId] = new GhostRespawnState
-        {
-            HasCrewCycle = true,
-            TimerArmed = false,
-            RespawnAvailableAt = TimeSpan.Zero
-        };
+        EnsureCrewCycle(ev.Player.UserId, ev.Mob);
+    }
 
-        _pendingTransitions.Remove(ev.Player.UserId);
+    private void OnPlayerJoinedLobby(PlayerJoinedLobbyEvent ev)
+    {
+        ClearState(ev.PlayerSession.UserId);
+        _suppressedCrewCycleSeeds.Remove(ev.PlayerSession.UserId);
     }
 
     private void OnRoundRestartCleanup(RoundRestartCleanupEvent ev)
     {
         _states.Clear();
         _pendingTransitions.Clear();
+        _suppressedCrewCycleSeeds.Clear();
     }
 
     private void OnMindRemoved(Entity<MindContainerComponent> ent, ref MindRemovedMessage args)
@@ -61,12 +64,14 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
         if (args.Mind.Comp.UserId is not { } userId)
             return;
 
+        var wasInCryo = HasComp<CryostorageContainedComponent>(ent.Owner);
+
         if (!TryGetState(userId, out var state) || !state.HasCrewCycle || state.TimerArmed)
             return;
 
         _pendingTransitions[userId] = new PendingGhostTransition
         {
-            Immediate = HasComp<CryostorageContainedComponent>(ent.Owner)
+            Immediate = wasInCryo
         };
     }
 
@@ -85,13 +90,16 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
         _pendingTransitions.Remove(userId);
     }
 
-    private void OnPlayerAttached(ref PlayerAttachedEvent args)
+    private void OnPlayerAttached(PlayerAttachedEvent args)
     {
-        if (!HasComp<GhostComponent>(args.Entity))
+        if (HasComp<GhostComponent>(args.Entity))
+        {
+            ArmTimerIfNeeded(args.Player.UserId);
+            SendStatus(args.Player);
             return;
+        }
 
-        ArmTimerIfNeeded(args.Player.UserId);
-        SendStatus(args.Player);
+        EnsureCrewCycle(args.Player.UserId, args.Entity);
     }
 
     private void OnGhostRespawnLobbyRequest(GhostRespawnLobbyRequest ev, EntitySessionEventArgs args)
@@ -111,6 +119,9 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
             SendStatus(session);
             return;
         }
+
+        if (!_gameTicker.LobbyEnabled)
+            _suppressedCrewCycleSeeds[session.UserId] = 2;
 
         ClearState(session.UserId);
         _gameTicker.Respawn(session);
@@ -140,6 +151,57 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
 
         state = null!;
         return false;
+    }
+
+    private void EnsureCrewCycle(NetUserId userId, EntityUid entity)
+    {
+        if (!ShouldSeedCrewCycle(entity))
+        {
+            _pendingTransitions.Remove(userId);
+            return;
+        }
+
+        if (TryConsumeSuppressedCrewCycleSeed(userId) || _states.ContainsKey(userId))
+        {
+            _pendingTransitions.Remove(userId);
+            return;
+        }
+
+        _states[userId] = new GhostRespawnState
+        {
+            HasCrewCycle = true,
+            TimerArmed = false,
+            RespawnAvailableAt = TimeSpan.Zero
+        };
+
+        _pendingTransitions.Remove(userId);
+    }
+
+    private bool TryConsumeSuppressedCrewCycleSeed(NetUserId userId)
+    {
+        if (!_suppressedCrewCycleSeeds.TryGetValue(userId, out var remaining) || remaining <= 0)
+            return false;
+
+        if (remaining == 1)
+            _suppressedCrewCycleSeeds.Remove(userId);
+        else
+            _suppressedCrewCycleSeeds[userId] = remaining - 1;
+
+        return true;
+    }
+
+    private bool ShouldSeedCrewCycle(EntityUid entity)
+    {
+        if (HasComp<GhostComponent>(entity))
+            return false;
+
+        if (HasComp<GhostRoleComponent>(entity))
+            return false;
+
+        if (HasComp<ThunderdomePlayerComponent>(entity))
+            return false;
+
+        return true;
     }
 
     private void ArmTimerIfNeeded(NetUserId userId)

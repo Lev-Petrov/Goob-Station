@@ -15,6 +15,7 @@ public sealed class PirateGhostRespawnUIController : UIController, IOnSystemChan
     [UISystemDependency] private readonly PirateGhostRespawnSystem? _respawn = default!;
 
     private GhostGui? Gui => UIManager.GetActiveUIWidgetOrNull<GhostGui>();
+    private GhostGui? _subscribedGui;
 
     public override void Initialize()
     {
@@ -61,19 +62,25 @@ public sealed class PirateGhostRespawnUIController : UIController, IOnSystemChan
 
     private void OnScreenLoad()
     {
-        if (Gui == null)
+        var gui = Gui;
+        if (gui == null)
             return;
 
-        Gui.RespawnToLobbyPressed += OnRespawnToLobbyPressed;
+        if (_subscribedGui != null && _subscribedGui != gui)
+            _subscribedGui.RespawnToLobbyPressed -= OnRespawnToLobbyPressed;
+
+        gui.RespawnToLobbyPressed -= OnRespawnToLobbyPressed;
+        gui.RespawnToLobbyPressed += OnRespawnToLobbyPressed;
+        _subscribedGui = gui;
         UpdateGui();
     }
 
     private void OnScreenUnload()
     {
-        if (Gui == null)
-            return;
+        if (_subscribedGui != null)
+            _subscribedGui.RespawnToLobbyPressed -= OnRespawnToLobbyPressed;
 
-        Gui.RespawnToLobbyPressed -= OnRespawnToLobbyPressed;
+        _subscribedGui = null;
     }
 
     private void OnRespawnToLobbyPressed()
