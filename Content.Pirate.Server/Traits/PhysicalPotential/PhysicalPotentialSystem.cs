@@ -67,19 +67,25 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
 
         public DamageSpecifier GetDamageStain(PhysicalPotentialComponent comp, MeleeWeaponComponent melee)
         {
-            // Extract raw damage values for Blunt and Slash types from the weapon's damage dictionary
+            // Extract the physical damage profile from the weapon's damage dictionary.
             var blunt = (float)melee.Damage.DamageDict.GetValueOrDefault("Blunt", 0);
             var slash = (float)melee.Damage.DamageDict.GetValueOrDefault("Slash", 0);
-            var totalDamage = blunt + slash;
+            var piercing = (float)melee.Damage.DamageDict.GetValueOrDefault("Piercing", 0);
+            var totalDamage = blunt + slash + piercing;
 
             var damageStrain = new DamageSpecifier();
 
             if (totalDamage > 0)
             {
-                // Calculate the ratio of each damage type relative to the total damage
-                // This ensures the strain is proportional to the weapon's damage profile
-                damageStrain.DamageDict["Blunt"] = FixedPoint2.New(blunt / totalDamage);
-                damageStrain.DamageDict["Slash"] = FixedPoint2.New(slash / totalDamage);
+                // Keep the trained bonus aligned with the weapon's actual physical damage split.
+                if (blunt > 0)
+                    damageStrain.DamageDict["Blunt"] = FixedPoint2.New(blunt / totalDamage);
+
+                if (slash > 0)
+                    damageStrain.DamageDict["Slash"] = FixedPoint2.New(slash / totalDamage);
+
+                if (piercing > 0)
+                    damageStrain.DamageDict["Piercing"] = FixedPoint2.New(piercing / totalDamage);
             }
             else
             {
@@ -158,6 +164,14 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
                 trainsDefense |= slash > FixedPoint2.Zero;
                 args.Damage.DamageDict["Slash"] = FixedPoint2.Max(
                     slash - comp.DefenseBonus,
+                    FixedPoint2.Zero);
+            }
+
+            if (args.Damage.DamageDict.TryGetValue("Piercing", out var piercing))
+            {
+                trainsDefense |= piercing > FixedPoint2.Zero;
+                args.Damage.DamageDict["Piercing"] = FixedPoint2.Max(
+                    piercing - comp.DefenseBonus,
                     FixedPoint2.Zero);
             }
 
