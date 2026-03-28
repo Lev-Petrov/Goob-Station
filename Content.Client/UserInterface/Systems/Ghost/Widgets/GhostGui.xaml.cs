@@ -39,8 +39,7 @@ public sealed partial class GhostGui : UIWidget
     public event Action? ReturnToBodyPressed;
     public event Action? GhostRolesPressed;
     public event Action? ThunderdomePressed; // Goobstation - Thunderdome
-    // Pirate: downstream ghost respawn action wired to the return-to-round button.
-    public event Action? RespawnToLobbyPressed;
+    public event Action? RespawnToLobbyPressed; // Pirate
     private int _prevNumberRoles;
 
     public GhostGui()
