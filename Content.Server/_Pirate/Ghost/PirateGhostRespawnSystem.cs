@@ -108,6 +108,12 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
             return;
         }
 
+        if (!_gameTicker.LobbyEnabled)
+        {
+            SendStatus(session);
+            return;
+        }
+
         ArmTimerIfNeeded(session.UserId);
         var status = GetStatus(session.UserId);
         if (!status.CanRespawn)
@@ -249,8 +255,14 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
 
     private void SendStatus(ICommonSession session)
     {
+        if (!_gameTicker.LobbyEnabled)
+        {
+            RaiseNetworkEvent(new GhostRespawnStatusEvent(false, false, TimeSpan.Zero), session.Channel);
+            return;
+        }
+
         var status = GetStatus(session.UserId);
-        RaiseNetworkEvent(new GhostRespawnStatusEvent(status.CanRespawn, status.RemainingTime), session.Channel);
+        RaiseNetworkEvent(new GhostRespawnStatusEvent(true, status.CanRespawn, status.RemainingTime), session.Channel);
     }
 
     private void ClearState(NetUserId userId)

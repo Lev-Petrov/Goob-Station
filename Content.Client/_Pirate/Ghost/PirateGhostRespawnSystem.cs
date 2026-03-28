@@ -58,10 +58,12 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
 
     private void OnGhostRespawnStatus(GhostRespawnStatusEvent ev)
     {
-        _hasStatus = true;
-        _canRespawn = ev.CanRespawn;
+        _hasStatus = ev.HasStatus;
+        _canRespawn = ev.HasStatus && ev.CanRespawn;
         _pendingRespawnRequest = false;
-        _respawnAvailableAt = _timing.CurTime + ev.RemainingTime;
+        _respawnAvailableAt = ev.HasStatus
+            ? _timing.CurTime + ev.RemainingTime
+            : TimeSpan.Zero;
         StatusChanged?.Invoke();
     }
 
