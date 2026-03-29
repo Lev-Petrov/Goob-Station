@@ -81,6 +81,7 @@ public sealed class IdCardConsoleSystem : SharedIdCardConsoleSystem
         base.Initialize();
 
         SubscribeLocalEvent<IdCardConsoleComponent, WriteToTargetIdMessage>(OnWriteToTargetIdMessage);
+        SubscribeLocalEvent<IdCardConsoleComponent, SetTargetIdAccessMessage>(OnSetTargetIdAccessMessage); // Pirate: id card console fix
 
         // one day, maybe bound user interfaces can be shared too.
         SubscribeLocalEvent<IdCardConsoleComponent, ComponentStartup>(UpdateUserInterface);
@@ -376,5 +377,57 @@ public sealed class IdCardConsoleSystem : SharedIdCardConsoleSystem
         return didEject;
     }
 
+    #endregion
+
+    #region Pirate: id card console fix
+    private void TrySetTargetIdAccess(EntityUid uid,
+        ProtoId<AccessLevelPrototype> access,
+        bool enabled,
+        EntityUid player,
+        IdCardConsoleComponent? component = null)
+    {
+        if (!Resolve(uid, ref component))
+            return;
+
+        if (component.TargetIdSlot.Item is not { Valid: true } targetId || !PrivilegedIdIsAuthorized(uid, component))
+            return;
+
+        if (!component.AccessLevels.Contains(access))
+        {
+            _sawmill.Warning($"User {ToPrettyString(uid)} tried to write unknown access tag.");
+            return;
+        }
+
+        var privilegedId = component.PrivilegedIdSlot.Item;
+        var privilegedPerms = _accessReader.FindAccessTags(privilegedId!.Value).ToHashSet();
+        if (!privilegedPerms.Contains(access))
+        {
+            _sawmill.Warning($"User {ToPrettyString(uid)} tried to modify permissions they could not give/take!");
+            return;
+        }
+
+        var oldTags = (_access.TryGetTags(targetId) ?? new List<ProtoId<AccessLevelPrototype>>()).ToHashSet();
+        if (oldTags.Contains(access) == enabled)
+            return;
+
+        if (enabled)
+            oldTags.Add(access);
+        else
+            oldTags.Remove(access);
+
+        _access.TrySetTags(targetId, oldTags.ToList());
+
+        var delta = (enabled ? "+" : "-") + access;
+        _adminLogger.Add(LogType.Action, LogImpact.Medium,
+            $"{ToPrettyString(player):player} has modified {ToPrettyString(targetId):entity} with the following accesses: [{delta}] [{string.Join(", ", oldTags)}]");
+    }
+    private void OnSetTargetIdAccessMessage(EntityUid uid, IdCardConsoleComponent component, SetTargetIdAccessMessage args)
+    {
+        if (args.Actor is not { Valid: true } player)
+            return;
+
+        TrySetTargetIdAccess(uid, args.Access, args.Enabled, player, component);
+        UpdateUserInterface(uid, component, args);
+    }
     #endregion
 }
