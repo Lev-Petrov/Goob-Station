@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Content.Goobstation.Common.Cloning;
 using Content.Server.GameTicking;
 using Content.Server.Ghost.Roles.Components;
 using Content.Server.Mind;
@@ -11,6 +12,7 @@ using Content.Shared.GameTicking;
 using Content.Shared.Ghost;
 using Content.Shared.Mind;
 using Content.Shared.Mind.Components;
+using Content.Shared.Mobs;
 using Content.Goobstation.Shared.MisandryBox.Thunderdome;
 using Robust.Server.Player;
 using Robust.Shared.Configuration;
@@ -38,7 +40,9 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
         SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRoundRestartCleanup);
         SubscribeLocalEvent<MindContainerComponent, MindRemovedMessage>(OnMindRemoved);
         SubscribeLocalEvent<MindContainerComponent, MindAddedMessage>(OnMindAdded);
+        SubscribeLocalEvent<MindContainerComponent, MobStateChangedEvent>(OnMobStateChanged);
         SubscribeLocalEvent<PlayerAttachedEvent>(OnPlayerAttached);
+        SubscribeLocalEvent<TransferredToCloneEvent>(OnTransferredToClone);
 
         SubscribeNetworkEvent<GhostRespawnLobbyRequest>(OnGhostRespawnLobbyRequest);
     }
@@ -99,6 +103,12 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
             return;
         }
 
+        if (TryTrackTransferredCrewLife(userId, ent.Owner))
+        {
+            _pendingTransitions.Remove(userId);
+            return;
+        }
+
         EnsureInitialCrewCycle(userId, ent.Owner, args.Mind.Comp);
         _pendingTransitions.Remove(userId);
     }
@@ -112,6 +122,56 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
             ArmTimerIfNeeded(args.Player.UserId);
 
         SendStatus(args.Player);
+    }
+
+    private void OnMobStateChanged(Entity<MindContainerComponent> ent, ref MobStateChangedEvent args)
+    {
+        if (ent.Comp.Mind is not { } mindId ||
+            !TryComp<MindComponent>(mindId, out var mind) ||
+            mind.UserId is not { } userId)
+        {
+            return;
+        }
+
+        if (!TryGetState(userId, out var state) ||
+            !state.HasCrewCycle ||
+            state.CrewLifeEntity != ent.Owner)
+        {
+            return;
+        }
+
+        if (args.OldMobState == MobState.Dead && args.NewMobState is MobState.Alive or MobState.Critical)
+        {
+            ResetRespawnTimer(userId, state);
+            return;
+        }
+
+        if (args.NewMobState != MobState.Dead || !IsVisitingGhost(mind))
+            return;
+
+        RearmRespawnTimer(userId, state);
+    }
+
+    private void OnTransferredToClone(EntityUid uid, ref TransferredToCloneEvent args)
+    {
+        if (!TryComp<MindContainerComponent>(args.Cloned, out var clonedContainer) ||
+            clonedContainer.Mind is not { } mindId ||
+            !TryComp<MindComponent>(mindId, out var mind) ||
+            mind.UserId is not { } userId)
+        {
+            return;
+        }
+
+        if (!TryGetState(userId, out var state) ||
+            !state.HasCrewCycle ||
+            state.CrewLifeEntity != uid ||
+            !ShouldSeedCrewCycle(args.Cloned))
+        {
+            return;
+        }
+
+        state.CrewLifeEntity = args.Cloned;
+        ResetRespawnTimer(userId, state);
     }
 
     private void OnGhostRespawnLobbyRequest(GhostRespawnLobbyRequest ev, EntitySessionEventArgs args)
@@ -184,6 +244,7 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
 
         _states[userId] = new GhostRespawnState
         {
+            CrewLifeEntity = entity,
             HasCrewCycle = true,
             TimerArmed = false,
             RespawnAvailableAt = TimeSpan.Zero
@@ -202,6 +263,21 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
             return;
 
         EnsureCrewCycle(userId, entity);
+    }
+
+    private bool TryTrackTransferredCrewLife(NetUserId userId, EntityUid entity)
+    {
+        if (!TryGetState(userId, out var state) ||
+            !state.HasCrewCycle ||
+            state.CrewLifeEntity == entity ||
+            !ShouldSeedCrewCycle(entity))
+        {
+            return false;
+        }
+
+        state.CrewLifeEntity = entity;
+        ResetRespawnTimer(userId, state);
+        return true;
     }
 
     private bool ShouldSeedCrewCycle(EntityUid entity)
@@ -312,8 +388,39 @@ public sealed class PirateGhostRespawnSystem : EntitySystem
         _pendingTransitions.Remove(userId);
     }
 
+    private void ResetRespawnTimer(NetUserId userId, GhostRespawnState? state = null)
+    {
+        if (state == null && !TryGetState(userId, out state))
+            return;
+
+        if (!state.HasCrewCycle)
+            return;
+
+        state.TimerArmed = false;
+        state.RespawnAvailableAt = TimeSpan.Zero;
+        _pendingTransitions.Remove(userId);
+        SendStatusToUser(userId);
+    }
+
+    private void RearmRespawnTimer(NetUserId userId, GhostRespawnState state)
+    {
+        if (!state.HasCrewCycle)
+            return;
+
+        state.TimerArmed = true;
+        state.RespawnAvailableAt = _timing.CurTime + GetRespawnDelay();
+        _pendingTransitions.Remove(userId);
+        SendStatusToUser(userId);
+    }
+
+    private bool IsVisitingGhost(MindComponent mind)
+    {
+        return mind.VisitingEntity is { } visiting && HasComp<GhostComponent>(visiting);
+    }
+
     private sealed class GhostRespawnState
     {
+        public EntityUid CrewLifeEntity;
         public bool HasCrewCycle;
         public bool TimerArmed;
         public TimeSpan RespawnAvailableAt;
