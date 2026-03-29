@@ -1,7 +1,7 @@
 - type: entity
   id: BlankCoffeeCartridgePirate
   parent: BaseItem
-  name: "порожній картридж для кави"
+  name: blank coffee cartridge
   description: A blank coffee cartridge for use with the Modello 3 coffeemaker system.
   components:
     - type: Sprite
@@ -34,8 +34,8 @@
 - type: entity
   id: CoffeeCartridgePirate
   parent: BlankCoffeeCartridgePirate
-  name: "картридж для кавоварки — Caffè Generico"
-  description: "Звичайний картридж із кавою для кавоварки Modello 3."
+  name: coffeemaker cartridge - Caffe Generico
+  description: A coffee cartridge manufactured for use with the Modello 3 coffeemaker system.
   components:
     - type: CoffeeCartridge
       charges: 5
@@ -51,8 +51,8 @@
 - type: entity
   id: CoffeeCartridgeFancyPirate
   parent: CoffeeCartridgePirate
-  name: "картридж для кавоварки — Caffè Fantasioso"
-  description: "Вишуканий картридж із кавою для системи Modello 3."
+  name: coffeemaker cartridge - Caffe Fantasioso
+  description: A fancy coffee cartridge manufactured for use with the Modello 3 coffeemaker system.
   components:
     - type: CoffeeCartridge
       brewReagent: Coffee
@@ -74,7 +74,7 @@
 - type: entity
   id: CoffeeCartridgeDecafPirate
   parent: CoffeeCartridgePirate
-  name: "картридж для кавоварки — Caffè Decaffeinato"
+  name: coffeemaker cartridge - Caffe Decaffeinato
   description: A cartridge with decaf coffee for use with the Modello 3 coffeemaker system.
   components:
     - type: CoffeeCartridge
@@ -85,8 +85,8 @@
 - type: entity
   id: CoffeeCartridgeBootlegPirate
   parent: CoffeeCartridgePirate
-  name: "картридж для кавоварки — ботанічна суміш"
-  description: "Кустарний картридж. Працює, але гарантію анульовано."
+  name: coffeemaker cartridge - Botany blend
+  description: A jury-rigged cartridge. It works, but probably voids the warranty.
   components:
     - type: CoffeeCartridge
       brewReagent: Coffee
@@ -121,8 +121,8 @@
 - type: entity
   id: DrinkCoffeepotPirate
   parent: DrinkBaseCup
-  name: "кавник"
-  description: "Великий кавник. Вистачає на чотири стандартні чашки."
+  name: coffeepot
+  description: A large pot for dispensing coffee. Contains four standard cups.
   components:
     - type: SolutionContainerManager
       solutions:
@@ -154,8 +154,8 @@
 - type: entity
   id: DrinkCoffeeCupPirate
   parent: DrinkBaseCup
-  name: "кавова чашка"
-  description: "Пластикова чашка для гарячих напоїв."
+  name: coffee cup
+  description: A heat-formed plastic coffee cup.
   components:
     - type: SolutionContainerManager
       solutions:
@@ -198,7 +198,7 @@
   id: FoodCoffeeBeansPirate
   parent: BaseItem
   name: arabica coffee beans
-  description: "Сухі кавові зерна для кавоварок Impressa."
+  description: Dry coffee beans for impressa coffeemakers.
   components:
     - type: Sprite
       sprite: _Pirate/Objects/Specific/Hydroponics/coffee_beans.rsi
@@ -275,8 +275,8 @@
 - type: entity
   id: FoodCondimentPacketCreamerPirate
   parent: BaseFoodCondimentPacket
-  name: "пакетик вершків"
-  description: "Маленький пакетик із кавовими вершками."
+  name: creamer packet
+  description: A tiny packet of coffee creamer.
   components:
     - type: Tag
       tags:
@@ -306,8 +306,8 @@
 - type: entity
   id: FoodCondimentPacketSugarPirate
   parent: BaseFoodCondimentPacket
-  name: "пакетик цукру"
-  description: "Той самий космічний цукор"
+  name: sugar packet
+  description: Tasty spacey sugar!
   components:
     - type: Tag
       tags:
@@ -337,8 +337,8 @@
 - type: entity
   id: FoodCondimentPacketAstrotamePirate
   parent: BaseFoodCondimentPacket
-  name: "пакетик астротаму"
-  description: "Солодкий, як тисяча цукрів, але без калорій."
+  name: astrotame packet
+  description: The sweetness of a thousand sugars, but none of the calories.
   components:
     - type: Tag
       tags:
@@ -368,8 +368,8 @@
 - type: entity
   id: DrinkCreamCartonPirate
   parent: DrinkCreamCarton
-  name: "пакет вершків"
-  description: "Компактний пакет вершків для кавових станцій."
+  name: cream carton
+  description: A compact cream carton for coffee stations.
   components:
     - type: SolutionContainerManager
       solutions:
@@ -382,8 +382,8 @@
 - type: entity
   id: DrinkSugarBottlePirate
   parent: [DrinkBottleVisualsOpenable, DrinkBottlePlasticBaseFull]
-  name: "пляшка цукру"
-  description: "Невелика пляшка цукру-піску."
+  name: sugar bottle
+  description: A smaller sugar bottle used for coffee stations.
   components:
     - type: SolutionContainerManager
       solutions:
@@ -401,8 +401,8 @@
 - type: entity
   id: FoodCondimentPacketChocolatePirate
   parent: BaseFoodCondimentPacket
-  name: "пакетик какао"
-  description: "Дрібка какао-порошку для кави."
+  name: chocolate packet
+  description: A tiny packet of cocoa powder for coffee.
   components:
     - type: Tag
       tags:

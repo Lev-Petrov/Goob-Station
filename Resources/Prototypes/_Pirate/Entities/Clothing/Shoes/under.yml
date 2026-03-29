@@ -13,7 +13,7 @@
   parent: ClothingShoesBase
   id: ClothingUnderSocksPlain
   name: "прості панчохи до стегон"
-  description: "Просто пара смугастих панчіх до стегон."
+  description: "Просто пара простих панчіх до стегон."
   components:
   - type: Sprite
     sprite: _Pirate/Clothing/Under/Socks/plainsocks.rsi
@@ -24,7 +24,7 @@
   parent: ClothingShoesBase
   id: ClothingUnderSocksStripedWhite
   name: "смугасті білі панчохи до стегон"
-  description: "Просто пара смугастих панчіх до стегон."
+  description: "Просто пара простих панчіх до стегон."
   components:
   - type: Sprite
     sprite: _Pirate/Clothing/Under/Socks/stripesockswhite.rsi
@@ -35,7 +35,7 @@
   parent: ClothingShoesBase
   id: ClothingUnderSocksStripedPurple
   name: "смугасті фіолетові панчохи до стегон"
-  description: "Просто пара смугастих панчіх до стегон."
+  description: "Просто пара простих панчіх до стегон."
   components:
   - type: Sprite
     sprite: _Pirate/Clothing/Under/Socks/stripesockspurple.rsi
@@ -46,7 +46,7 @@
   parent: ClothingShoesBase
   id: ClothingUnderSocksStripedRainbow
   name: "смугасті райдужні панчохи до стегон"
-  description: "Просто пара смугастих панчіх до стегон."
+  description: "Просто пара простих панчіх до стегон."
   components:
   - type: Sprite
     sprite: _Pirate/Clothing/Under/Socks/stripesocksrainbow.rsi

@@ -40,7 +40,7 @@
   parent: ClothingShoesBase
   id: ClothingUnderSocksChiefEngi
   name: "панчохи головного інженера до стегон"
-  description: "Пара панчіх до стегон, стилізованих для головного інженера."
+  description: "Пара панчіх до стегон, стилізованих для логістичних ролей."
   components:
   - type: Sprite
     sprite: _Pirate/Clothing/Departmental/Engineering/chiefengisocks.rsi
@@ -64,7 +64,7 @@
   parent: ClothingShoesBase
   id: ClothingUnderSocksChaplain
   name: "панчохи капелана до стегон"
-  description: "Пара панчіх до стегон, як не дивно стилізованих для капелана."
+  description: "Пара панчіх до стегон, дивно, стилізованих для капелана."
   components:
   - type: Sprite
     sprite: _Pirate/Clothing/Departmental/Epistemics/chaplainsocks.rsi
@@ -87,8 +87,8 @@
 - type: entity
   parent: ClothingShoesMilitaryBase
   id: ClothingUnderSocksMantisEpi
-  name: "псіонічні панчохи богомола до стегон"
-  description: "Пара панчіх до стегон, стилізованих для псіонічного богомола."
+  name: "псионічні панчохи богомола до стегон"
+  description: "Пара панчіх до стегон, стилізованих для псионічного богомола."
   components:
   - type: Sprite
     sprite: _Pirate/Clothing/Departmental/Epistemics/mantisepisocks.rsi
@@ -100,7 +100,7 @@
   parent: ClothingShoesBase
   id: ClothingUnderSocksLogis
   name: "логістичні панчохи до стегон"
-  description: "Пара панчіх до стегон, стилізованих для головного інженера."
+  description: "Пара панчіх до стегон, стилізованих для логістичних ролей."
   components:
   - type: Sprite
     sprite: _Pirate/Clothing/Departmental/Logistics/logisocks.rsi
@@ -111,8 +111,8 @@
 - type: entity
   parent: ClothingShoesBase
   id: ClothingUnderSocksLOLogis
-  name: "панчохи офіцера логістики до стегон"
-  description: "Пара панчіх до стегон, стилізованих для головного інженера."
+  name: "панчохи логістичного офіцера до стегон"
+  description: "Пара панчіх до стегон, стилізованих для логістичних ролей."
   components:
   - type: Sprite
     sprite: _Pirate/Clothing/Departmental/Logistics/qmlogisocks.rsi
@@ -172,7 +172,7 @@
   parent: ClothingShoesBase
   id: ClothingUnderSocksCMO
   name: "панчохи головного лікаря до стегон"
-  description: "Пара панчіх до стегон, стилізованих для головного лікаря."
+  description: "Пара панчіх до стегон, стилізованих для ГЛ."
   components:
   - type: Sprite
     sprite: _Pirate/Clothing/Departmental/Medical/cmosocks.rsi
@@ -183,8 +183,8 @@
 - type: entity
   parent: ClothingShoesMilitaryBase
   id: ClothingUnderSocksSecurity
-  name: "панчохи служби безпеки до стегон"
-  description: "Пара панчіх до стегон, стилізованих для ролей служби безпеки."
+  name: "охоронні панчохи до стегон"
+  description: "Пара панчіх до стегон, стилізованих для охоронних ролей."
   components:
   - type: Sprite
     sprite: _Pirate/Clothing/Departmental/Security/secsocks.rsi
@@ -226,7 +226,7 @@
   parent: ClothingShoesMilitaryBase
   id: ClothingUnderSocksCorpsman
   name: "панчохи санітара до стегон"
-  description: "Пара панчіх до стегон, стилізованих для санітара."
+  description: "Пара панчіх до стегон, стилізованих для санітарів."
   components:
   - type: Sprite
     sprite: _Pirate/Clothing/Departmental/Security/corpsmansocks.rsi
@@ -288,8 +288,8 @@
 - type: entity
   parent: ClothingShoesBase
   id: ClothingUnderSocksChef
-  name: "панчохи шеф-кухаря до стегон"
-  description: "Пара панчіх до стегон, стилізованих для шеф-кухаря."
+  name: "панчохи шефа до стегон"
+  description: "Пара панчіх до стегон, стилізованих для шефа."
   components:
   - type: Sprite
     sprite: _Pirate/Clothing/Departmental/Service/chefsocks.rsi
