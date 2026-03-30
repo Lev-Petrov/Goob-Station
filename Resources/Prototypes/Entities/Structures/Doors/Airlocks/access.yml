@@ -373,6 +373,8 @@
   - type: ContainerFill
     containers:
       board: [ DoorElectronicsCaptain ]
+  - type: Sprite
+    sprite: _Pirate/Structures/Doors/Airlocks/Standard/captain.rsi # Pirate Changes
 
 - type: entity
   parent: AirlockCommand
@@ -382,6 +384,8 @@
   - type: ContainerFill
     containers:
       board: [ DoorElectronicsChiefMedicalOfficer ]
+  - type: Sprite
+    sprite: _Pirate/Structures/Doors/Airlocks/Standard/chief_medic.rsi # Pirate Changes
 
 - type: entity
   parent: AirlockCommand
@@ -391,6 +395,8 @@
   - type: ContainerFill
     containers:
       board: [ DoorElectronicsChiefEngineer ]
+  - type: Sprite
+    sprite: _Pirate/Structures/Doors/Airlocks/Standard/chief_engineer.rsi # Pirate Changes
 
 - type: entity
   parent: AirlockCommand
@@ -400,6 +406,8 @@
   - type: ContainerFill
     containers:
       board: [ DoorElectronicsHeadOfSecurity ]
+  - type: Sprite
+    sprite: _Pirate/Structures/Doors/Airlocks/Standard/head_of_security.rsi # Pirate Changes
 
 - type: entity
   parent: AirlockCommand
@@ -409,6 +417,8 @@
   - type: ContainerFill
     containers:
       board: [ DoorElectronicsResearchDirector ]
+  - type: Sprite
+    sprite: _Pirate/Structures/Doors/Airlocks/Standard/research_director.rsi # Pirate Changes
 
 - type: entity
   parent: AirlockCommand
@@ -418,6 +428,8 @@
   - type: ContainerFill
     containers:
       board: [ DoorElectronicsHeadOfPersonnel ]
+  - type: Sprite
+    sprite: _Pirate/Structures/Doors/Airlocks/Standard/head_of_personel.rsi # Pirate Changes
 
 - type: entity
   parent: AirlockCommand
@@ -427,6 +439,8 @@
   - type: ContainerFill
     containers:
       board: [ DoorElectronicsQuartermaster ]
+  - type: Sprite
+    sprite: _Pirate/Structures/Doors/Airlocks/Standard/quartermaster.rsi # Pirate Changes
 
 - type: entity
   parent: AirlockSecurity
@@ -777,6 +791,7 @@
     containers:
       board: [ DoorElectronicsCaptain ]
 
+
 - type: entity
   parent: AirlockCommandGlass
   id: AirlockChiefMedicalOfficerGlassLocked
@@ -785,6 +800,8 @@
   - type: ContainerFill
     containers:
       board: [ DoorElectronicsChiefMedicalOfficer ]
+  - type: Sprite
+    sprite: _Pirate/Structures/Doors/Airlocks/Glass/chief_medic.rsi # Pirate Changes
 
 - type: entity
   parent: AirlockCommandGlass
@@ -794,6 +811,8 @@
   - type: ContainerFill
     containers:
       board: [ DoorElectronicsChiefEngineer ]
+  - type: Sprite
+    sprite: _Pirate/Structures/Doors/Airlocks/Glass/chief_engineer.rsi # Pirate Changes
 
 - type: entity
   parent: AirlockCommandGlass
@@ -803,6 +822,8 @@
   - type: ContainerFill
     containers:
       board: [ DoorElectronicsHeadOfSecurity ]
+  - type: Sprite
+    sprite: _Pirate/Structures/Doors/Airlocks/Glass/head_of_security.rsi # Pirate Changes
 
 - type: entity
   parent: AirlockCommandGlass
@@ -812,6 +833,8 @@
   - type: ContainerFill
     containers:
       board: [ DoorElectronicsResearchDirector ]
+  - type: Sprite
+    sprite: _Pirate/Structures/Doors/Airlocks/Glass/research_director.rsi # Pirate Changes
 
 - type: entity
   parent: AirlockCommandGlass
@@ -830,6 +853,8 @@
   - type: ContainerFill
     containers:
       board: [ DoorElectronicsQuartermaster ]
+  - type: Sprite
+    sprite: _Pirate/Structures/Doors/Airlocks/Standard/quartermaster.rsi # Pirate Changes
 
 - type: entity
   parent: AirlockSecurityGlass

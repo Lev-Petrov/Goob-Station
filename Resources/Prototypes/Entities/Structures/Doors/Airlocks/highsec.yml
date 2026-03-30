@@ -136,7 +136,6 @@
     fuel: 10
     time: 10
   - type: Airlock
-  - type: AirlockIllumination # Pirate changes
   - type: NavMapDoor
   - type: DoorBolt
   - type: AccessReader

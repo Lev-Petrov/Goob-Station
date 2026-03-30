@@ -20,12 +20,6 @@
       "name": "closed_unlit"
     },
     {
-      "name": "open"
-    },
-    {
-      "name": "open_unlit"
-    },
-    {
       "name": "closing",
       "delays": [
         [
@@ -58,6 +52,14 @@
           0.1,
           0.1,
           0.1
+        ]
+      ]
+    },
+    {
+      "name": "open",
+      "delays": [
+        [
+          1
         ]
       ]
     },
@@ -101,7 +103,12 @@
       ]
     },
     {
-      "name": "panel_open"
+      "name": "panel_open",
+      "delays": [
+        [
+          1
+        ]
+      ]
     },
     {
       "name": "panel_opening",
