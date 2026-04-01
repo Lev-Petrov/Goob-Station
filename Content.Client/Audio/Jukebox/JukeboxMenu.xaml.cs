@@ -68,7 +68,7 @@ public sealed partial class JukeboxMenu : FancyWindow
         };
         PlaybackSlider.OnReleased += PlaybackSliderKeyUp;
 
-        // Frontier: Shuffle & Repeat
+        // Pirate: Shuffle & Repeat
         ShuffleButton.OnToggled += args =>
         {
             RepeatButton.Pressed = false;
@@ -79,7 +79,7 @@ public sealed partial class JukeboxMenu : FancyWindow
             ShuffleButton.Pressed = false;
             OnModeChanged?.Invoke(RepeatButton.Pressed ? JukeboxPlaybackMode.Repeat : JukeboxPlaybackMode.Single);
         };
-        // End Frontier: Shuffle & Repeat
+        // End Pirate: Shuffle & Repeat
 
         SetPlayPauseButton(_audioSystem.IsPlaying(_audio), force: true);
     }
@@ -183,7 +183,7 @@ public sealed partial class JukeboxMenu : FancyWindow
         }
     }
 
-    // Frontier: Shuffle & Repeat
+    // Pirat: Shuffle & Repeat
     public void UpdateState(BoundUserInterfaceState state)
     {
         if (state is not JukeboxInterfaceState convState)
@@ -197,5 +197,5 @@ public sealed partial class JukeboxMenu : FancyWindow
         ShuffleButton.Pressed = state.PlaybackMode == JukeboxPlaybackMode.Shuffle;
         RepeatButton.Pressed = state.PlaybackMode == JukeboxPlaybackMode.Repeat;
     }
-    // End Frontier: Shuffle & Repeat
+    // End Pirate: Shuffle & Repeat
 }

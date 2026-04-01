@@ -10,14 +10,14 @@ using Robust.Client.UserInterface.Controls;
 using Robust.Client.UserInterface.RichText;
 using Robust.Shared.Input;
 using Robust.Shared.Utility;
-using Content.Client.UserInterface.ControlExtensions;
+using Content.Client.UserInterface.ControlExtensions; // Pirate
 
 namespace Content.Client.Guidebook.RichText;
 
 [UsedImplicitly]
 public sealed class TextLinkTag : IMarkupTagHandler
 {
-    public static Color LinkColor => Color.CornflowerBlue;
+    public static Color LinkColor => Color.CornflowerBlue; // Pirate
 
     public string Name => "textlink";
 
@@ -36,7 +36,7 @@ public sealed class TextLinkTag : IMarkupTagHandler
         label.Text = text;
 
         label.MouseFilter = Control.MouseFilterMode.Stop;
-        label.FontColorOverride = LinkColor;
+        label.FontColorOverride = LinkColor; // Pirate
         label.DefaultCursorShape = Control.CursorShape.Hand;
 
         label.OnMouseEntered += _ => label.FontColorOverride = Color.LightSkyBlue;

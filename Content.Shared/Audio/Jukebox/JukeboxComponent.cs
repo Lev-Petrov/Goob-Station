@@ -17,7 +17,7 @@ public sealed partial class JukeboxComponent : Component
     [DataField, AutoNetworkedField]
     public ProtoId<JukeboxPrototype>? SelectedSongId;
 
-    // Frontier: Shuffle & Repeat
+    // Pirate: Shuffle & Repeat
     /// <summary>
     /// Whether or not the currently selected song is the first being played.
     /// Useful for shuffle.
@@ -27,7 +27,7 @@ public sealed partial class JukeboxComponent : Component
 
     [ViewVariables]
     public JukeboxPlaybackMode PlaybackMode = JukeboxPlaybackMode.Single;
-    // End Frontier: Shuffle & Repeat
+    // End Pirate: Shuffle & Repeat
 
     [DataField, AutoNetworkedField]
     public EntityUid? AudioStream;
@@ -78,7 +78,7 @@ public sealed class JukeboxSetTimeMessage(float songTime) : BoundUserInterfaceMe
     public float SongTime { get; } = songTime;
 }
 
-// Frontier: Shuffle & Repeat
+// Pirate: Shuffle & Repeat
 [Serializable, NetSerializable]
 public sealed class JukeboxSetPlaybackModeMessage(JukeboxPlaybackMode playbackMode) : BoundUserInterfaceMessage
 {
@@ -92,7 +92,7 @@ public enum JukeboxPlaybackMode : byte
     Shuffle,
     Repeat,
 }
-// End Frontier: Shuffle & Repeat
+// End Pirate: Shuffle & Repeat
 
 [Serializable, NetSerializable]
 public enum JukeboxVisuals : byte
