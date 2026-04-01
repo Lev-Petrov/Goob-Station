@@ -15,8 +15,3 @@
   effects:
   - !type:GroupLoadoutEffect
     proto: GrandMasterSalvageSpecialist
-
-- type: startingGear
-  id: SalvageEspecialistEnsemble
-  equipment:
-    neck: ClothingNeckEnsembleSalvager
