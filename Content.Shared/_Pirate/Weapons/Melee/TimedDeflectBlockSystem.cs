@@ -47,6 +47,7 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
         SubscribeLocalEvent<TimedDeflectBlockComponent, ItemUnwieldedEvent>(OnUnwielded);
         SubscribeLocalEvent<TimedDeflectBlockComponent, ComponentStartup>(OnStartup);
         SubscribeLocalEvent<TimedDeflectBlockComponent, AfterAutoHandleStateEvent>(OnAfterState);
+        SubscribeLocalEvent<TimedDeflectBlockComponent, ItemSwitchedEvent>(OnItemSwitched);
         SubscribeLocalEvent<TimedDeflectBlockComponent, HeldRelayedEvent<ProjectileReflectAttemptEvent>>(OnProjectileReflectAttempt);
         SubscribeLocalEvent<TimedDeflectBlockComponent, AttemptMeleeEvent>(OnAttemptMelee);
         SubscribeLocalEvent<TimedDeflectBlockComponent, GetMeleeDamageEvent>(OnGetMeleeDamage);
@@ -93,6 +94,11 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
         ApplyReplicatedVisualState(ent.Owner, GetVisualState(ent.Comp));
     }
 
+    private void OnItemSwitched(Entity<TimedDeflectBlockComponent> ent, ref ItemSwitchedEvent args)
+    {
+        ApplyReplicatedVisualState(ent.Owner, GetVisualState(ent.Comp));
+    }
+
     private void OnUnwielded(Entity<TimedDeflectBlockComponent> ent, ref ItemUnwieldedEvent args)
     {
         ent.Comp.DeflectWindowEnd = TimeSpan.Zero;
@@ -121,7 +127,7 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
             return;
         }
 
-        ApplyDefense(ent.Owner, ent.Owner, ent.Comp, args.Args.Component.Shooter, args.Args.ProjUid, out _);
+        ApplyDefense(args.Args.Target, ent.Owner, ent.Comp, args.Args.Component.Shooter, args.Args.ProjUid, out _);
         args.Args.Cancelled = true;
     }
 
@@ -183,7 +189,7 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
             AddDeflectPower(weapon, block);
             block.DeflectWindowEnd = _timing.CurTime + TimeSpan.FromSeconds(GetDeflectWindow(block));
             AdjustStamina(defender, -GetDeflectStaminaRegen(block), attacker, weapon);
-            _sparks.DoSparks(Transform(weapon).Coordinates, playSound: false);
+            _sparks.DoSparks(Transform(weapon).Coordinates, minSparks: 1, maxSparks: 2, playSound: false);
             _audio.PlayPredicted(block.DeflectSound, weapon, attacker);
         }
         else
@@ -232,6 +238,7 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
     private void UpdateVisualState(EntityUid weapon, TimedDeflectBlockComponent block)
     {
         var state = GetVisualState(block);
+        var wieldedState = GetWieldedInhandState(state);
 
         if (TryComp<ItemSwitchComponent>(weapon, out var itemSwitch) &&
             itemSwitch.State != state)
@@ -242,23 +249,31 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
         if (!TryComp<WieldableComponent>(weapon, out var wieldable))
             return;
 
-        wieldable.WieldedInhandPrefix = state;
+        wieldable.WieldedInhandPrefix = wieldedState;
         wieldable.OldInhandPrefix = state;
 
         if (TryComp<ItemComponent>(weapon, out var item) && wieldable.Wielded)
-            _item.SetHeldPrefix(weapon, state, component: item);
+            _item.SetHeldPrefix(weapon, wieldedState, component: item);
 
         Dirty(weapon, wieldable);
     }
 
     private void ApplyReplicatedVisualState(EntityUid weapon, string state)
     {
+        var wieldedState = GetWieldedInhandState(state);
         var changed = false;
 
-        if (TryComp<ItemComponent>(weapon, out var item) && item.HeldPrefix != state)
+        if (TryComp<ItemComponent>(weapon, out var item))
         {
-            _item.SetHeldPrefix(weapon, state, component: item);
-            changed = true;
+            var targetHeldPrefix = TryComp<WieldableComponent>(weapon, out var wieldableState) && wieldableState.Wielded
+                ? wieldedState
+                : state;
+
+            if (item.HeldPrefix != targetHeldPrefix)
+            {
+                _item.SetHeldPrefix(weapon, targetHeldPrefix, component: item);
+                changed = true;
+            }
         }
 
         if (TryComp<ClothingComponent>(weapon, out var clothing) && clothing.EquippedPrefix != state)
@@ -269,9 +284,9 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
 
         if (TryComp<WieldableComponent>(weapon, out var wieldable))
         {
-            if (wieldable.WieldedInhandPrefix != state)
+            if (wieldable.WieldedInhandPrefix != wieldedState)
             {
-                wieldable.WieldedInhandPrefix = state;
+                wieldable.WieldedInhandPrefix = wieldedState;
                 changed = true;
             }
 
@@ -337,5 +352,10 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
         return level <= 0
             ? block.BaseVisualState
             : $"{block.LevelVisualStatePrefix}{level}";
+    }
+
+    private string GetWieldedInhandState(string state)
+    {
+        return $"{state}-wielded";
     }
 }

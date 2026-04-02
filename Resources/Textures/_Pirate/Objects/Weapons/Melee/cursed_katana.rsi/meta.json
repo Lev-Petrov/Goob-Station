@@ -15,6 +15,14 @@
             "directions": 4
         },
         {
+            "name": "dormant-wielded-inhand-left",
+            "directions": 4
+        },
+        {
+            "name": "dormant-wielded-inhand-right",
+            "directions": 4
+        },
+        {
             "name": "dormant-inhand-right",
             "directions": 4
         },
@@ -31,6 +39,14 @@
         },
         {
             "name": "level-1-inhand-left",
+            "directions": 4
+        },
+        {
+            "name": "level-1-wielded-inhand-left",
+            "directions": 4
+        },
+        {
+            "name": "level-1-wielded-inhand-right",
             "directions": 4
         },
         {
@@ -53,6 +69,14 @@
             "directions": 4
         },
         {
+            "name": "level-2-wielded-inhand-left",
+            "directions": 4
+        },
+        {
+            "name": "level-2-wielded-inhand-right",
+            "directions": 4
+        },
+        {
             "name": "level-2-inhand-right",
             "directions": 4
         },
@@ -69,6 +93,14 @@
         },
         {
             "name": "level-3-inhand-left",
+            "directions": 4
+        },
+        {
+            "name": "level-3-wielded-inhand-left",
+            "directions": 4
+        },
+        {
+            "name": "level-3-wielded-inhand-right",
             "directions": 4
         },
         {
@@ -91,6 +123,14 @@
             "directions": 4
         },
         {
+            "name": "level-4-wielded-inhand-left",
+            "directions": 4
+        },
+        {
+            "name": "level-4-wielded-inhand-right",
+            "directions": 4
+        },
+        {
             "name": "level-4-inhand-right",
             "directions": 4
         },
@@ -107,6 +147,14 @@
         },
         {
             "name": "level-5-inhand-left",
+            "directions": 4
+        },
+        {
+            "name": "level-5-wielded-inhand-left",
+            "directions": 4
+        },
+        {
+            "name": "level-5-wielded-inhand-right",
             "directions": 4
         },
         {
@@ -136,6 +184,66 @@
         },
         {
             "name": "level-6-inhand-left",
+            "directions": 4,
+            "delays": [
+                [
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1
+                ],
+                [
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1
+                ],
+                [
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1
+                ],
+                [
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1
+                ]
+            ]
+        },
+        {
+            "name": "level-6-wielded-inhand-left",
+            "directions": 4,
+            "delays": [
+                [
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1
+                ],
+                [
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1
+                ],
+                [
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1
+                ],
+                [
+                    0.1,
+                    0.1,
+                    0.1,
+                    0.1
+                ]
+            ]
+        },
+        {
+            "name": "level-6-wielded-inhand-right",
             "directions": 4,
             "delays": [
                 [
