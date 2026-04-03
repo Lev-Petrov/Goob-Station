@@ -1157,8 +1157,9 @@
   minLimit: 0
   loadouts:
   - Bodycam # Goobstation - Body cameras
-  - CameraCollar # Pirate
   #- ClothingNeckCWPSec # Pirate disable
+  - ClothingNeckMantleVeteranSecurity
+  - CameraCollar # Pirate
 
 #honkops
 

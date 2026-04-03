@@ -77,11 +77,10 @@ public sealed class XenomorphLarvaSystem : EntitySystem
             return;
 
         _container.Remove(uid, container);
-        // Pirate start
+        // Pirate: chestbursters damage the torso instead of gibbing the victim.
         var damage = new DamageSpecifier();
         damage.DamageDict.Add("Blunt", 120);
         damage.DamageDict.Add("Piercing", 80);
         _damageableSystem.TryChangeDamage(uid: victim, damage: damage, ignoreResistances: true, interruptsDoAfters: false, targetPart: TargetBodyPart.Chest);
-        // Pirate end
     }
 }
