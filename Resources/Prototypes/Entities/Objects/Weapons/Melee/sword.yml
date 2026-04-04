@@ -294,9 +294,9 @@
     slots:
     - Back
     - Belt
-  - type: Wieldable # Pirate: gunplay
-    wieldedInhandPrefix: wielded # Pirate: gunplay
-  - type: TimedDeflectBlock # Pirate: gunplay
+  - type: Wieldable # Pirate: katana
+    wieldedInhandPrefix: wielded # Pirate: katana
+  - type: TimedDeflectBlock # Pirate: katana
   - type: DisarmMalus
 
 - type: entity
@@ -307,8 +307,8 @@
   components:
   - type: Sprite
     sprite: Objects/Weapons/Melee/energykatana.rsi
-  - type: MeleeWeapon # Pirate: gunplay
-    wideAnimationRotation: -60 # Pirate: gunplay
+  - type: MeleeWeapon # Pirate: katana
+    wideAnimationRotation: -60 # Pirate: katana
   - type: Item
     storedSprite:
       state: storage
@@ -329,9 +329,9 @@
   - type: Reflect
     slotFlags:
     - NONE
-  - type: TimedDeflectBlock # Pirate: gunplay
-    deflectToSource: true # Pirate: gunplay
-  - type: DisarmMalus # Pirate: gunplay - override Katana's malus so the katana IS disarmable
+  - type: TimedDeflectBlock # Pirate: katana
+    deflectToSource: true # Pirate: katana
+  - type: DisarmMalus # Pirate: katana - override Katana's malus so the katana IS disarmable
     malus: 0
 
 #Greatswords

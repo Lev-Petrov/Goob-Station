@@ -41,13 +41,13 @@ public sealed partial class TimedDeflectBlockComponent : Component
 
     /// <summary>
     /// Bonus damage added per power level, supports multiple types.
-    /// e.g. { "Slash": 2, "Holy": 2 } adds 2 Slash and 2 Holy damage per level.
+    /// e.g. { "Slash": 1.5, "Holy": 1.5 } adds 1.5 Slash and 1.5 Holy damage per level.
     /// </summary>
     [DataField]
     public Dictionary<string, float> BonusDamagePerLevel = new() { ["Slash"] = 3f };
 
     [DataField]
-    public float BlockStaminaDamageReductionPerLevel = 0.01f;
+    public float BlockStaminaDamageReductionPerLevel = 0.005f;
 
     [DataField]
     public float DeflectWindowBonusPerLevel = 0.1f;
