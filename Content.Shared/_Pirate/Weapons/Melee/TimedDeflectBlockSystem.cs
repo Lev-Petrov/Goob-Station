@@ -107,9 +107,7 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
 
     private void OnWielded(Entity<TimedDeflectBlockComponent> ent, ref ItemWieldedEvent args)
     {
-        if (_net.IsServer)
-            ent.Comp.DeflectWindowStart = _timing.CurTime - GetActivationGrace(args.User, ent.Comp);
-
+        ent.Comp.DeflectWindowStart = _timing.CurTime - GetActivationGrace(args.User, ent.Comp);
         ent.Comp.DeflectWindowEnd = _timing.CurTime + TimeSpan.FromSeconds(GetDeflectWindow(ent.Comp));
 
         if (_net.IsServer)
@@ -533,6 +531,18 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
         return now >= block.DeflectWindowStart && now <= block.DeflectWindowEnd + lagComp;
     }
 
+    // session.Ping is RTT in milliseconds.
+    // Dividing by 2000f converts to one-way latency in seconds (RTT / 2 / 1000ms).
+    // Dividing by 1000f converts to full RTT in seconds (RTT / 1000ms).
+    private const float OneWayPingDivisor = 2000f;
+    private const float RttPingDivisor = 1000f;
+
+    /// <summary>
+    /// How much extra time to add to the deflect window end for incoming hit detection.
+    /// Uses one-way latency (RTT/2): a shot fired on the client takes one-way time to reach
+    /// the server, so we extend the window by that amount to avoid false misses.
+    /// Scaled by <see cref="TimedDeflectBlockComponent.DeflectLagCompensationMultiplier"/>.
+    /// </summary>
     private TimeSpan GetDeflectLagCompensation(EntityUid defender, TimedDeflectBlockComponent block)
     {
         if (block.DeflectLagCompensationMultiplier <= 0f ||
@@ -544,11 +554,18 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
 
         var compensationSeconds = MathF.Min(
             block.MaxDeflectLagCompensation,
-            session.Ping / 2000f * block.DeflectLagCompensationMultiplier);
+            session.Ping / OneWayPingDivisor * block.DeflectLagCompensationMultiplier);
 
         return TimeSpan.FromSeconds(compensationSeconds);
     }
 
+    /// <summary>
+    /// How far back to push the deflect window start when the holder wields the weapon.
+    /// Uses full RTT: the client pressed wield at time T, but the server only processes it
+    /// after a full round-trip, so the window start is pushed back by RTT to align with
+    /// when the client believed the deflect became active.
+    /// Scaled by <see cref="TimedDeflectBlockComponent.BlockActivationLagCompensationMultiplier"/>.
+    /// </summary>
     private TimeSpan GetActivationGrace(EntityUid? holder, TimedDeflectBlockComponent block)
     {
         if (!_net.IsServer ||
@@ -562,7 +579,7 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
 
         var graceSeconds = MathF.Min(
             block.MaxBlockActivationLagCompensation,
-            session.Ping / 1000f * block.BlockActivationLagCompensationMultiplier);
+            session.Ping / RttPingDivisor * block.BlockActivationLagCompensationMultiplier);
 
         return TimeSpan.FromSeconds(graceSeconds);
     }
