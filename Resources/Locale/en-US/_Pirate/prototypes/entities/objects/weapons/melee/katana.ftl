@@ -6,3 +6,6 @@ ent-EnergyKatana = energy katana
 
 ent-CursedKatana = cursed katana
     .desc = Cursed craftwork with blood-soaked fabric wrapped around the blade. Successful deflects awaken it, while neglect lets it fall back to dormant.
+
+ent-NullrodCursedKatana = holy catana
+    .desc = Blessed craftwork with blood-soaked fabric wrapped around the blade. Successful deflects awaken it, while neglect lets it fall back to dormant.

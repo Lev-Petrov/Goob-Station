@@ -12,9 +12,6 @@ public sealed partial class TimedDeflectBlockComponent : Component
     public float BlockStaminaDamageFraction = 0.1f;
 
     [DataField]
-    public float DeflectStaminaRegenFraction;
-
-    [DataField]
     public SoundSpecifier DeflectSound = new SoundCollectionSpecifier("PirateBladeDeflects");
 
     [DataField]
@@ -48,9 +45,6 @@ public sealed partial class TimedDeflectBlockComponent : Component
     public float BlockStaminaDamageReductionPerLevel = 0.01f;
 
     [DataField]
-    public float DeflectStaminaRegenBonusPerLevel = 0.01f;
-
-    [DataField]
     public float DeflectWindowBonusPerLevel = 0.1f;
 
     [DataField]
@@ -58,6 +52,18 @@ public sealed partial class TimedDeflectBlockComponent : Component
 
     [DataField]
     public float MaxDeflectLagCompensation = 0.75f;
+
+    [DataField]
+    public float BlockActivationLagCompensationMultiplier = 0.5f;
+
+    [DataField]
+    public float MaxBlockActivationLagCompensation = 0.2f;
+
+    [DataField]
+    public bool DeflectToSource;
+
+    [DataField]
+    public float BackflipChance = 0.3f;
 
     [DataField]
     public string BonusDamageType = "Slash";
@@ -70,6 +76,12 @@ public sealed partial class TimedDeflectBlockComponent : Component
 
     [AutoNetworkedField]
     public float CurrentPower;
+
+    [AutoNetworkedField]
+    public TimeSpan DeflectWindowStart = TimeSpan.Zero;
+
+    [AutoNetworkedField]
     public TimeSpan DeflectWindowEnd = TimeSpan.Zero;
+
     public TimeSpan LastDeflectTime = TimeSpan.Zero;
 }

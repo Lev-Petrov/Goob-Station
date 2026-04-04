@@ -1,0 +1,25 @@
+- type: entity
+  parent: CursedKatana
+  id: NullrodCursedKatana
+  name: holy catana
+  components:
+  - type: DivineIntervention
+  - type: AlternatePrayable
+  - type: Reflect
+    reflectProb: 1
+    reflects:
+    - Magic
+    slotFlags:
+    - NONE
+  - type: Nullrod
+    DamageOnUntrainedUse:
+      types:
+        Slash: 20
+    UntrainedUseString: nullrod-holyclaymore-untrained-usage-popup
+  - type: TransferableUnremoveable
+  - type: TimedDeflectBlock
+    bonusDamageType: Holy
+  - type: Tag
+    tags:
+    - Katana
+    - Nullrod
