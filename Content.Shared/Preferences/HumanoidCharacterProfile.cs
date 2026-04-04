@@ -62,6 +62,7 @@ using Content.Shared.Random.Helpers;
 using Content.Shared.Roles;
 using Content.Goobstation.Common.Barks; // Goob Station - Barks
 using Content.Shared.Traits;
+using Content.Shared._Pirate.CCVars; // Pirate - traits rework
 using Robust.Shared.Collections;
 using Robust.Shared.Configuration;
 using Robust.Shared.Enums;
@@ -841,7 +842,11 @@ namespace Content.Shared.Preferences
             _antagPreferences.UnionWith(antags);
 
             _traitPreferences.Clear(); // Pirate: port and modified DV traits system
-            _traitPreferences.UnionWith(GetValidTraits(traits, prototypeManager));
+            // Pirate start - traits rework
+            var maxPoints = configManager.GetCVar(PirateVars.MaxTraitPoints);
+            var maxCount = configManager.GetCVar(PirateVars.MaxTraitCount);
+            _traitPreferences.UnionWith(GetValidTraits(traits, prototypeManager, maxPoints, maxCount));
+            // Pirate end - traits rework
 
             // Checks prototypes exist for all loadouts and dump / set to default if not.
             var toRemove = new ValueList<string>();
@@ -868,25 +873,39 @@ namespace Content.Shared.Preferences
         /// Takes in an IEnumerable of traits and returns a List of the valid traits.
         /// </summary>
         // Pirate start: port and modified DV traits system
-        public List<ProtoId<TraitPrototype>> GetValidTraits(IEnumerable<ProtoId<TraitPrototype>> traits, IPrototypeManager protoManager)
+        public List<ProtoId<TraitPrototype>> GetValidTraits(
+            IEnumerable<ProtoId<TraitPrototype>> traits,
+            IPrototypeManager protoManager,
+            int maxGlobalPoints,
+            int maxGlobalCount)
         {
             // Track points count for each group.
             var groups = new Dictionary<string, int>();
+            var counts = new Dictionary<string, int>();
             var result = new List<ProtoId<TraitPrototype>>();
+            var totalPoints = 0;
+            var totalCount = 0;
 
             var sortedTraits = traits
                 .Where(protoManager.HasIndex)
                 .OrderBy(id => protoManager.Index(id).Cost);
 
-            foreach (var trait in sortedTraits)
+            foreach (var traitId in sortedTraits)
             {
-                if (!protoManager.TryIndex(trait, out var traitProto))
+                if (!protoManager.TryIndex(traitId, out var traitProto))
                     continue;
 
-                // Always valid.
+                if (totalCount + 1 > maxGlobalCount)
+                    continue;
+
+                if (totalPoints + traitProto.Cost > maxGlobalPoints)
+                    continue;
+
                 if (traitProto.Category == null)
                 {
-                    result.Add(trait);
+                    result.Add(traitId);
+                    totalPoints += traitProto.Cost;
+                    totalCount++;
                     continue;
                 }
 
@@ -894,15 +913,23 @@ namespace Content.Shared.Preferences
                 if (!protoManager.TryIndex(traitProto.Category, out var category))
                     continue;
 
-                var existing = groups.GetOrNew(category.ID);
-                existing += traitProto.Cost;
+                var existingPoints = groups.GetValueOrDefault(category.ID, 0);
+                var existingCount = counts.GetValueOrDefault(category.ID, 0);
 
-                // Too expensive.
-                if (existing > category.MaxTraitPoints)
+                var maxCatPoints = category.MaxPoints ?? category.MaxTraitPoints;
+
+                if (maxCatPoints.HasValue && existingPoints + traitProto.Cost > maxCatPoints.Value)
                     continue;
 
-                groups[category.ID] = existing;
-                result.Add(trait);
+                // Too expensive.
+                if (category.MaxTraits.HasValue && existingCount + 1 > category.MaxTraits.Value)
+                    continue;
+
+                groups[category.ID] = existingPoints + traitProto.Cost;
+                counts[category.ID] = existingCount + 1;
+                result.Add(traitId);
+                totalPoints += traitProto.Cost;
+                totalCount++;
             }
 
             return result;
