@@ -9,6 +9,7 @@ using Robust.Client.Player;
 using Robust.Client.UserInterface;
 using Robust.Client.UserInterface.Controls;
 using Robust.Shared.GameObjects;
+using Robust.Shared.Input;
 using Robust.Shared.IoC;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Utility;
@@ -34,15 +35,44 @@ public sealed class ComboHelperWidget : UIWidget
     [Dependency] private readonly IPlayerManager _player = default!;
 
     private readonly SpriteSystem _spriteSystem;
+    private readonly BoxContainer _root;
     private readonly BoxContainer _container;
+    private readonly DragButton _dragHandle;
+
+    private bool _dragging;
+    private bool _customPosition;
+    private Vector2 _dragOffset;
 
     public ComboHelperWidget()
     {
         IoCManager.InjectDependencies(this);
         _spriteSystem = _entManager.System<SpriteSystem>();
 
-        LayoutContainer.SetAnchorAndMarginPreset(this, LayoutContainer.LayoutPreset.CenterBottom, margin: 5);
-        MouseFilter = MouseFilterMode.Ignore;
+        LayoutContainer.SetAnchorAndMarginPreset(this, LayoutContainer.LayoutPreset.BottomWide, margin: 5);
+        LayoutContainer.SetGrowVertical(this, LayoutContainer.GrowDirection.Begin);
+        HorizontalAlignment = HAlignment.Center;
+        VerticalAlignment = VAlignment.Bottom;
+        MouseFilter = MouseFilterMode.Pass;
+
+        _root = new BoxContainer
+        {
+            Orientation = BoxContainer.LayoutOrientation.Vertical,
+            HorizontalAlignment = HAlignment.Center,
+            VerticalAlignment = VAlignment.Bottom,
+            SeparationOverride = 4,
+            MouseFilter = MouseFilterMode.Pass
+        };
+
+        _dragHandle = new DragButton
+        {
+            Text = ":::",
+            HorizontalAlignment = HAlignment.Center,
+            MinSize = new Vector2(32, 20),
+            MouseFilter = MouseFilterMode.Stop
+        };
+        _dragHandle.OnMouseDown += StartDragging;
+        _dragHandle.OnMouseUp += StopDragging;
+        _dragHandle.OnMouseMove += ContinueDragging;
 
         _container = new BoxContainer
         {
@@ -54,7 +84,9 @@ public sealed class ComboHelperWidget : UIWidget
             MouseFilter = MouseFilterMode.Ignore
         };
 
-        AddChild(_container);
+        _root.AddChild(_dragHandle);
+        _root.AddChild(_container);
+        AddChild(_root);
     }
 
     public void UpdateFromComponent(ComboHelperComponent component)
@@ -74,6 +106,46 @@ public sealed class ComboHelperWidget : UIWidget
         }
 
         Visible = false;
+    }
+
+    private void StartDragging(GUIBoundKeyEventArgs args)
+    {
+        if (args.Function != EngineKeyFunctions.UIClick || Parent == null)
+            return;
+
+        if (!_customPosition)
+        {
+            var currentPosition = Position;
+            LayoutContainer.SetAnchorPreset(this, LayoutContainer.LayoutPreset.TopLeft);
+            LayoutContainer.SetPosition(this, currentPosition);
+            _customPosition = true;
+        }
+
+        _dragging = true;
+        _dragOffset = args.PointerLocation.Position / UIScale - Position;
+        SetPositionLast();
+    }
+
+    private void StopDragging(GUIBoundKeyEventArgs args)
+    {
+        if (args.Function != EngineKeyFunctions.UIClick)
+            return;
+
+        _dragging = false;
+        _dragOffset = Vector2.Zero;
+        UserInterfaceManager.KeyboardFocused?.ReleaseKeyboardFocus();
+    }
+
+    private void ContinueDragging(GUIMouseMoveEventArgs args)
+    {
+        if (!_dragging || Parent == null)
+            return;
+
+        var maxPosition = Vector2.Max(Parent.Size - Size, Vector2.Zero);
+        var globalPos = Vector2.Clamp(args.GlobalPosition, Vector2.Zero, Parent.Size);
+        var newPosition = Vector2.Clamp(globalPos - _dragOffset, Vector2.Zero, maxPosition);
+
+        LayoutContainer.SetPosition(this, newPosition);
     }
 
     private bool TryRenderPrototypeCombos(ComboHelperComponent component)
@@ -205,5 +277,34 @@ public sealed class ComboHelperWidget : UIWidget
         }
 
         return icons;
+    }
+
+    private sealed class DragButton : Button
+    {
+        public event Action<GUIBoundKeyEventArgs>? OnMouseDown;
+        public event Action<GUIBoundKeyEventArgs>? OnMouseUp;
+        public event Action<GUIMouseMoveEventArgs>? OnMouseMove;
+
+        protected override void MouseMove(GUIMouseMoveEventArgs args)
+        {
+            base.MouseMove(args);
+            OnMouseMove?.Invoke(args);
+        }
+
+        protected override void KeyBindDown(GUIBoundKeyEventArgs args)
+        {
+            base.KeyBindDown(args);
+
+            if (args.Function == EngineKeyFunctions.UIClick)
+                OnMouseDown?.Invoke(args);
+        }
+
+        protected override void KeyBindUp(GUIBoundKeyEventArgs args)
+        {
+            base.KeyBindUp(args);
+
+            if (args.Function == EngineKeyFunctions.UIClick)
+                OnMouseUp?.Invoke(args);
+        }
     }
 }
