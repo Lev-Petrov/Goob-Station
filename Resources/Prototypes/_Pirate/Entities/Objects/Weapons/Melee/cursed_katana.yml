@@ -20,7 +20,7 @@
     - Back
     - Belt
   - type: Wieldable
-    wieldedInhandPrefix: dormant
+    wieldedInhandPrefix: dormant-wielded
   - type: TimedDeflectBlock
   - type: ItemSwitch
     state: dormant
