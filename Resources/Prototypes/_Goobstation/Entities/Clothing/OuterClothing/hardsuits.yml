@@ -250,9 +250,9 @@
   description: A light hardsuit with an in-built plate carrier to provide moderate protection while remaining mobile.
   components:
   - type: Sprite
-    sprite: _Pirate/Clothing/OuterClothing/Hardsuits/security.rsi # Pirate edit
+    sprite: _Goobstation/Clothing/OuterClothing/Voidsuits/security.rsi
   - type: Clothing
-    sprite: _Pirate/Clothing/OuterClothing/Hardsuits/security.rsi # Pirate edit
+    sprite: _Goobstation/Clothing/OuterClothing/Voidsuits/security.rsi
   - type: PressureProtection
     highPressureMultiplier: 0.05
     lowPressureMultiplier: 1000
