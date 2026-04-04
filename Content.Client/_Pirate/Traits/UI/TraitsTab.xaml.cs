@@ -164,9 +164,28 @@ public sealed partial class TraitsTab : BoxContainer
             _selectedTraits.Add(traitId);
             _currentTraitCount++;
             _currentPointsSpent += trait.Cost;
-        }
-        else
-        {
+            }
+            else
+            {
+            if (_currentPointsSpent - trait.Cost > _maxGlobalPoints)
+            {
+                RevertTraitToggle(traitId);
+                return;
+            }
+
+            if (trait.Category != null && _prototype.TryIndex<TraitCategoryPrototype>(trait.Category.Value, out var category))
+            {
+                var maxCatPoints = category.MaxPoints ?? category.MaxTraitPoints;
+                if (maxCatPoints.HasValue && _categoryUis.TryGetValue(category.ID, out var categoryUi))
+                {
+                    if (categoryUi.PointsSpent - trait.Cost > maxCatPoints.Value)
+                    {
+                        RevertTraitToggle(traitId);
+                        return;
+                    }
+                }
+            }
+
             _selectedTraits.Remove(traitId);
             _currentTraitCount--;
             _currentPointsSpent -= trait.Cost;
