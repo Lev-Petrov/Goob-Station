@@ -581,7 +581,8 @@ public abstract partial class SharedGunSystem : EntitySystem
         // Pirate: gunplay
         Physics.UpdateIsPredicted(uid, physics);
 
-        TransformSystem.SetWorldRotation(uid, direction.ToWorldAngle() + projectile.Angle);
+        // Pirate: gunplay (fix projectile rotation on fire, it had 0 angle(south) regardless of gun target)
+        TransformSystem.SetWorldRotationNoLerp((uid, Transform(uid)), direction.ToWorldAngle() + projectile.Angle);
         if (targetCoordinates.HasValue) // Goobstation
             projectile.TargetCoordinates = targetCoordinates.Value; // Goobstation
 
