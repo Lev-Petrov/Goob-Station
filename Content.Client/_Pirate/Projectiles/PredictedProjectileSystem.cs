@@ -109,8 +109,8 @@ public sealed class PredictedProjectileSystem : EntitySystem
                 ? physics.LinearVelocity
                 : Vector2.Zero;
 
-            // LinearVelocity is in world space, but LocalPosition is in
-            // parent (grid) space. Transform velocity into grid-local space.
+            // LinearVelocity is relative to the broadphase (grid) but uses
+            // world-axis orientation. Rotate into grid-local axis to match LocalPosition.
             var parentRot = _transform.GetWorldRotation(xform.ParentUid);
             var localVel = (-parentRot).RotateVec(worldVel);
 
