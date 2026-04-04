@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Diagnostics.CodeAnalysis;
 using Content.Goobstation.Common.Grab;
@@ -55,7 +55,7 @@ using Robust.Shared.Physics.Components;
 
 namespace Content.Pirate.Shared._JustDecor.MartialArts;
 
-public sealed class SharedBigBosCQCSystem : EntitySystem
+public sealed class SharedLegendaryCQCSystem : EntitySystem
 {
     [Dependency] private readonly SharedPopupSystem _popup = default!;
     [Dependency] private readonly IGameTiming _timing = default!;
@@ -83,45 +83,37 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
     [Dependency] private readonly SharedChatSystem _chat = default!;
     [Dependency] private readonly SleepingSystem _sleeping = default!;
 
-    // Словник для зберігання кулдаунів
     private readonly Dictionary<EntityUid, Dictionary<string, TimeSpan>> _cooldowns = new();
 
     public override void Initialize()
     {
         base.Initialize();
 
-        // Події для BigBos CQC combo
-        SubscribeLocalEvent<CanPerformComboComponent, BigBosCqcTakedownPerformedEvent>(OnBigBosCQCTakedown);
-        SubscribeLocalEvent<CanPerformComboComponent, BigBosCqcDisarmPerformedEvent>(OnBigBosCQCDisarm);
-        SubscribeLocalEvent<CanPerformComboComponent, BigBosCqcThrowPerformedEvent>(OnBigBosCQCThrow);
-        SubscribeLocalEvent<CanPerformComboComponent, BigBosCqcChokePerformedEvent>(OnBigBosCQCChoke);
-        SubscribeLocalEvent<CanPerformComboComponent, BigBosCqcChainPerformedEvent>(OnBigBosCQCChain);
-        SubscribeLocalEvent<CanPerformComboComponent, BigBosCqcCounterPerformedEvent>(OnBigBosCQCCounter);
-        SubscribeLocalEvent<CanPerformComboComponent, BigBosCqcInterrogationPerformedEvent>(OnBigBosCQCInterrogation);
-        SubscribeLocalEvent<CanPerformComboComponent, BigBosCqcStealthTakedownPerformedEvent>(OnBigBosCQCStealthTakedown);
-        SubscribeLocalEvent<CanPerformComboComponent, BigBosCqcRushPerformedEvent>(OnBigBosCQCRush);
-        SubscribeLocalEvent<CanPerformComboComponent, BigBosCqcFinisherPerformedEvent>(OnBigBosCQCFinisher);
+        SubscribeLocalEvent<CanPerformComboComponent, LegendaryCQCTakedownPerformedEvent>(OnLegendaryCQCTakedown);
+        SubscribeLocalEvent<CanPerformComboComponent, LegendaryCQCDisarmPerformedEvent>(OnLegendaryCQCDisarm);
+        SubscribeLocalEvent<CanPerformComboComponent, LegendaryCQCThrowPerformedEvent>(OnLegendaryCQCThrow);
+        SubscribeLocalEvent<CanPerformComboComponent, LegendaryCQCChokePerformedEvent>(OnLegendaryCQCChoke);
+        SubscribeLocalEvent<CanPerformComboComponent, LegendaryCQCChainPerformedEvent>(OnLegendaryCQCChain);
+        SubscribeLocalEvent<CanPerformComboComponent, LegendaryCQCCounterPerformedEvent>(OnLegendaryCQCCounter);
+        SubscribeLocalEvent<CanPerformComboComponent, LegendaryCQCInterrogationPerformedEvent>(OnLegendaryCQCInterrogation);
+        SubscribeLocalEvent<CanPerformComboComponent, LegendaryCQCStealthTakedownPerformedEvent>(OnLegendaryCQCStealthTakedown);
+        SubscribeLocalEvent<CanPerformComboComponent, LegendaryCQCRushPerformedEvent>(OnLegendaryCQCRush);
+        SubscribeLocalEvent<CanPerformComboComponent, LegendaryCQCFinisherPerformedEvent>(OnLegendaryCQCFinisher);
 
-        // DoAfter події
-        SubscribeLocalEvent<BigBosCqcInterrogationDoAfterEvent>(OnInterrogationComplete);
-        SubscribeLocalEvent<BigBosCqcChokeDoAfterEvent>(OnChokeComplete);
+        SubscribeLocalEvent<LegendaryCQCInterrogationDoAfterEvent>(OnInterrogationComplete);
+        SubscribeLocalEvent<LegendaryCQCChokeDoAfterEvent>(OnChokeComplete);
 
-        // Додаткові підписки на події
-        SubscribeLocalEvent<BigBosCqcRushBuffComponent, RefreshMovementSpeedModifiersEvent>(OnRefreshMovespeed);
-        SubscribeLocalEvent<BigBosCqcKnowledgeComponent, RefreshMovementSpeedModifiersEvent>(OnRefreshCombatMovespeed);
-        SubscribeLocalEvent<BigBosCqcCounterBuffComponent, DamageModifyEvent>(OnCounterDamageModify);
-        SubscribeLocalEvent<BigBosCqcKnowledgeComponent, ComponentStartup>(OnKnowledgeStartup);
+        SubscribeLocalEvent<LegendaryCQCRushBuffComponent, RefreshMovementSpeedModifiersEvent>(OnRefreshMovespeed);
+        SubscribeLocalEvent<LegendaryCQCKnowledgeComponent, RefreshMovementSpeedModifiersEvent>(OnRefreshCombatMovespeed);
+        SubscribeLocalEvent<LegendaryCQCCounterBuffComponent, DamageModifyEvent>(OnCounterDamageModify);
+        SubscribeLocalEvent<LegendaryCQCKnowledgeComponent, ComponentStartup>(OnKnowledgeStartup);
 
-        // Пасивна абілка
-        SubscribeLocalEvent<BigBosCqcKnowledgeComponent, MeleeHitEvent>(OnMeleeHit);
+        SubscribeLocalEvent<LegendaryCQCKnowledgeComponent, MeleeHitEvent>(OnMeleeHit);
 
-        // Події для отримання знання
-        SubscribeLocalEvent<Components.GrantBigBosCQCComponent, MapInitEvent>(OnGrantMapInit);
-        SubscribeLocalEvent<Components.GrantBigBosCQCComponent, ComponentStartup>(OnGrantStartup);
-        SubscribeLocalEvent<Components.GrantBigBosCQCComponent, UseInHandEvent>(OnCqcItemUsed);
+        SubscribeLocalEvent<Components.GrantLegendaryCQCComponent, MapInitEvent>(OnGrantMapInit);
+        SubscribeLocalEvent<Components.GrantLegendaryCQCComponent, UseInHandEvent>(OnLegendaryManualUsed);
 
-        // Події для очищення кулдаунів при видаленні сутності
-        SubscribeLocalEvent<BigBosCqcKnowledgeComponent, ComponentShutdown>(OnKnowledgeShutdown);
+        SubscribeLocalEvent<LegendaryCQCKnowledgeComponent, ComponentShutdown>(OnKnowledgeShutdown);
     }
 
     public override void Update(float frameTime)
@@ -132,9 +124,8 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         UpdateChokeholds(frameTime);
     }
 
-    // --- Основні методи комбо ---
 
-    private void OnBigBosCQCTakedown(Entity<CanPerformComboComponent> ent, ref BigBosCqcTakedownPerformedEvent args)
+    private void OnLegendaryCQCTakedown(Entity<CanPerformComboComponent> ent, ref LegendaryCQCTakedownPerformedEvent args)
     {
         if (!TryGetTarget(ent, out var target, out var proto) || IsDown(target))
             return;
@@ -142,7 +133,6 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         if (!CheckCooldown(ent, "Takedown"))
             return;
 
-        // МИТТЄВИЙ нокдаун з шкодою
         DoDamage(ent, target, "Blunt", proto.ExtraDamage);
         _stun.TryKnockdown(target, TimeSpan.FromSeconds(proto.ParalyzeTime), true);
 
@@ -150,18 +140,17 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         staminaDamage.DamageDict.Add("Stamina", 40f);
         _damageable.TryChangeDamage(target, staminaDamage, origin: ent);
 
-        // Всі предмети з рук цілі падають, разом з ціллю
         DropAllItems(target);
         if (TryComp<PullableComponent>(target, out var pullable))
             _pulling.TryStopPull(target, pullable, ent, true);
 
         _audio.PlayPvs(new SoundPathSpecifier("/Audio/Weapons/genhit3.ogg"), target);
-        ComboPopup(ent, target, "CQC Takedown");
+        ComboPopup(ent, target, "legendary-cqc-takedown-name");
         SetCooldown(ent, "Takedown", TimeSpan.FromSeconds(1.5));
         ClearLastAttacks(ent);
     }
 
-    private void OnBigBosCQCDisarm(Entity<CanPerformComboComponent> ent, ref BigBosCqcDisarmPerformedEvent args)
+    private void OnLegendaryCQCDisarm(Entity<CanPerformComboComponent> ent, ref LegendaryCQCDisarmPerformedEvent args)
     {
         if (!TryGetTarget(ent, out var target, out var proto))
             return;
@@ -169,15 +158,16 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         if (!CheckCooldown(ent, "Disarm"))
             return;
 
-        // Краде речі з рук цілі
-        StealAllItems(ent.Owner, target);
+        var stoleAnyItems = StealAllItems(ent.Owner, target);
+        if (stoleAnyItems && TryComp<PullableComponent>(target, out var pullable))
+            _pulling.TryStopPull(target, pullable, ent, true);
         _audio.PlayPvs(new SoundPathSpecifier("/Audio/Effects/thudswoosh.ogg"), target);
-        ComboPopup(ent, target, "Disarming Strike");
+        ComboPopup(ent, target, "legendary-cqc-disarm-name");
         SetCooldown(ent, "Disarm", TimeSpan.FromSeconds(1));
         ClearLastAttacks(ent);
     }
 
-    private void OnBigBosCQCThrow(Entity<CanPerformComboComponent> ent, ref BigBosCqcThrowPerformedEvent args)
+    private void OnLegendaryCQCThrow(Entity<CanPerformComboComponent> ent, ref LegendaryCQCThrowPerformedEvent args)
     {
         if (!TryGetTarget(ent, out var target, out var proto))
             return;
@@ -197,12 +187,12 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
             _pulling.TryStopPull(target, pullable, ent, true);
 
         _audio.PlayPvs(new SoundPathSpecifier("/Audio/Weapons/genhit1.ogg"), target);
-        ComboPopup(ent, target, "Over-Shoulder Throw");
+        ComboPopup(ent, target, "legendary-cqc-throw-name");
         SetCooldown(ent, "Throw", TimeSpan.FromSeconds(1));
         ClearLastAttacks(ent);
     }
 
-    private void OnBigBosCQCChoke(Entity<CanPerformComboComponent> ent, ref BigBosCqcChokePerformedEvent args)
+    private void OnLegendaryCQCChoke(Entity<CanPerformComboComponent> ent, ref LegendaryCQCChokePerformedEvent args)
     {
         if (!TryGetTarget(ent, out var target, out var proto))
             return;
@@ -210,8 +200,7 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         if (!CheckCooldown(ent, "Choke"))
             return;
 
-        // Чокхолд івент
-        var doAfterArgs = new DoAfterArgs(EntityManager, ent, TimeSpan.FromSeconds(3), new BigBosCqcChokeDoAfterEvent(), ent, target)
+        var doAfterArgs = new DoAfterArgs(EntityManager, ent, TimeSpan.FromSeconds(3), new LegendaryCQCChokeDoAfterEvent(), ent, target)
         {
             BreakOnMove = true,
             BreakOnDamage = true,
@@ -219,12 +208,12 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         };
 
         _doAfter.TryStartDoAfter(doAfterArgs);
-        ComboPopup(ent, target, "Chokehold Started");
+        ComboPopup(ent, target, "legendary-cqc-popup-choke-started");
         SetCooldown(ent, "Choke", TimeSpan.FromSeconds(2));
         ClearLastAttacks(ent);
     }
 
-    private void OnChokeComplete(BigBosCqcChokeDoAfterEvent args)
+    private void OnChokeComplete(LegendaryCQCChokeDoAfterEvent args)
     {
         if (args.Cancelled || args.Args.Target == null)
             return;
@@ -244,10 +233,10 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
             _statusEffects.TryAddStatusEffectDuration(target, "StatusEffectForcedSleeping", out _, TimeSpan.FromSeconds(8));
         }
 
-        ComboPopup(ent, target, "Chokehold Complete");
+        ComboPopup(ent, target, "legendary-cqc-popup-choke-complete");
     }
 
-    private void OnBigBosCQCChain(Entity<CanPerformComboComponent> ent, ref BigBosCqcChainPerformedEvent args)
+    private void OnLegendaryCQCChain(Entity<CanPerformComboComponent> ent, ref LegendaryCQCChainPerformedEvent args)
     {
         if (!TryGetTarget(ent, out var target, out var proto))
             return;
@@ -255,17 +244,14 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         if (!CheckCooldown(ent, "Chain"))
             return;
 
-        // Серія багаторазових ударів
         DoDamage(ent, target, "Blunt", proto.ExtraDamage);
 
         var staminaDamage = new DamageSpecifier();
         staminaDamage.DamageDict.Add("Stamina", proto.StaminaDamage);
         _damageable.TryChangeDamage(target, staminaDamage, origin: ent);
 
-        // Декілька звукових ефектів для серії
         _audio.PlayPvs(new SoundPathSpecifier("/Audio/Weapons/genhit1.ogg"), target);
 
-        // Затримка другого удару
         Timer.Spawn(TimeSpan.FromMilliseconds(300), () =>
         {
             if (TerminatingOrDeleted(target) || TerminatingOrDeleted(ent))
@@ -275,12 +261,12 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
             _audio.PlayPvs(new SoundPathSpecifier("/Audio/Weapons/genhit2.ogg"), target);
         });
 
-        ComboPopup(ent, target, "Chain Attack");
+        ComboPopup(ent, target, "legendary-cqc-chain-name");
         SetCooldown(ent, "Chain", TimeSpan.FromSeconds(1.5));
         ClearLastAttacks(ent);
     }
 
-    private void OnBigBosCQCCounter(Entity<CanPerformComboComponent> ent, ref BigBosCqcCounterPerformedEvent args)
+    private void OnLegendaryCQCCounter(Entity<CanPerformComboComponent> ent, ref LegendaryCQCCounterPerformedEvent args)
     {
         if (!TryGetTarget(ent, out var target, out var proto))
             return;
@@ -288,7 +274,6 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         if (!CheckCooldown(ent, "Counter"))
             return;
 
-        // Контратака з ефектом оглушення
         DoDamage(ent, target, "Blunt", 20f);
         _stun.TryKnockdown(target, TimeSpan.FromSeconds(8), true);
 
@@ -296,17 +281,16 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         staminaDamage.DamageDict.Add("Stamina", 60f);
         _damageable.TryChangeDamage(target, staminaDamage, origin: ent);
 
-        // Коротка невразливість для користувача
-        var counterBuff = EnsureComp<BigBosCqcCounterBuffComponent>(ent);
+        var counterBuff = EnsureComp<LegendaryCQCCounterBuffComponent>(ent);
         counterBuff.EndTime = _timing.CurTime + TimeSpan.FromSeconds(2);
 
         _audio.PlayPvs(new SoundPathSpecifier("/Audio/Weapons/genhit3.ogg"), target);
-        ComboPopup(ent, target, "Counter Attack");
+        ComboPopup(ent, target, "legendary-cqc-counter-name");
         SetCooldown(ent, "Counter", TimeSpan.FromSeconds(2));
         ClearLastAttacks(ent);
     }
 
-    private void OnBigBosCQCInterrogation(Entity<CanPerformComboComponent> ent, ref BigBosCqcInterrogationPerformedEvent args)
+    private void OnLegendaryCQCInterrogation(Entity<CanPerformComboComponent> ent, ref LegendaryCQCInterrogationPerformedEvent args)
     {
         if (!TryGetTarget(ent, out var target, out var proto))
             return;
@@ -314,32 +298,28 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         if (!TryComp<NpcInterrogatableComponent>(target, out var interrogatable) || interrogatable.Prototype == null)
         {
             if (_netManager.IsServer)
-                _popup.PopupEntity("Ціль не піддається інтерогації.", ent, ent);
+                _popup.PopupEntity(Loc.GetString("legendary-cqc-popup-invalid-interrogation-target"), ent, ent);
             return;
         }
 
         if (!CheckCooldown(ent, "Interrogation"))
             return;
 
-        // Скидання стану
         interrogatable.PendingLinkedAnswers = null;
-        var questionToSay = "Відповідай!";
+        var questionToSay = Loc.GetString("legendary-cqc-say-interrogation-default-question");
 
         if (_proto.TryIndex(interrogatable.Prototype.Value, out var interrogationProto))
         {
-            // Створення зваженого списку опцій:
             // 0 = General Question (weight based on count)
             // 1 = Linked Question (weight based on count)
 
             var options = new List<(string Question, List<string>? specificAnswers)>();
 
-            // Додаємо всі загальні запитання (якщо є)
             foreach (var q in interrogationProto.Questions)
             {
                 options.Add((q, null));
             }
 
-            // Додаємо всі пов'язані запитання (якщо є)
             foreach (var linked in interrogationProto.Linked)
             {
                 if (!string.IsNullOrWhiteSpace(linked.Question))
@@ -348,7 +328,6 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
                 }
             }
 
-            // Вибираємо одне випадково, якщо є опції
             if (options.Count > 0)
             {
                 var selected = _random.Pick(options);
@@ -360,23 +339,22 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         TrySay(ent, questionToSay);
 
         // Start interrogation DoAfter
-        var doAfterArgs = new DoAfterArgs(EntityManager, ent, TimeSpan.FromSeconds(3), new BigBosCqcInterrogationDoAfterEvent(), ent, target)
+        var doAfterArgs = new DoAfterArgs(EntityManager, ent, TimeSpan.FromSeconds(3), new LegendaryCQCInterrogationDoAfterEvent(), ent, target)
         {
             BreakOnMove = true,
             BreakOnDamage = false,
             NeedHand = false
         };
 
-        // Починаємо "елімінувати" їх негайно, щоб вони не чинили опір під час процесу
         EnsureComp<Content.Shared.CombatMode.Pacification.PacifiedComponent>(target);
 
         _doAfter.TryStartDoAfter(doAfterArgs);
-        ComboPopup(ent, target, "Interrogation Started");
+        ComboPopup(ent, target, "legendary-cqc-popup-interrogation-started");
         SetCooldown(ent, "Interrogation", TimeSpan.FromSeconds(2));
         ClearLastAttacks(ent);
     }
 
-    private void OnInterrogationComplete(BigBosCqcInterrogationDoAfterEvent args)
+    private void OnInterrogationComplete(LegendaryCQCInterrogationDoAfterEvent args)
     {
         if (args.Cancelled || args.Args.Target == null)
             return;
@@ -384,12 +362,10 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         var ent = args.Args.User;
         var target = args.Args.Target.Value;
 
-        // Ефекти допиту - розкриває інформацію, накладає страх
         var staminaDamage = new DamageSpecifier();
         staminaDamage.DamageDict.Add("Stamina", 40f);
         _damageable.TryChangeDamage(target, staminaDamage, origin: ent);
 
-        // Логіка допиту NPC
         if (TryComp<NpcInterrogatableComponent>(target, out var interrogatable))
         {
             string? answer = null;
@@ -403,10 +379,9 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
                 }
             }
 
-            // Резервна відповідь за замовчуванням
             if (string.IsNullOrEmpty(answer))
             {
-                answer = "Відпусти!";
+                answer = Loc.GetString("legendary-cqc-say-interrogation-default-answer");
             }
 
             if (_netManager.IsServer)
@@ -422,18 +397,16 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
             interrogatable.Interrogated = true;
             interrogatable.PendingLinkedAnswers = null;
 
-            // Елімінувати NPC - зробити пацифікованим та зупинити ШІ
-            // NpcEliminatedComponent відновить ШІ через певний час
             EnsureComp<NpcEliminatedComponent>(target);
             EnsureComp<Content.Shared.CombatMode.Pacification.PacifiedComponent>(target);
 
-            _popup.PopupEntity("Ціль елімінована та не становитиме загрози.", ent, ent);
+            _popup.PopupEntity(Loc.GetString("legendary-cqc-popup-interrogation-success"), ent, ent);
         }
 
-        ComboPopup(ent, target, "Interrogation Complete");
+        ComboPopup(ent, target, "legendary-cqc-popup-interrogation-complete");
     }
 
-    private void OnBigBosCQCStealthTakedown(Entity<CanPerformComboComponent> ent, ref BigBosCqcStealthTakedownPerformedEvent args)
+    private void OnLegendaryCQCStealthTakedown(Entity<CanPerformComboComponent> ent, ref LegendaryCQCStealthTakedownPerformedEvent args)
     {
         if (!TryGetTarget(ent, out var target, out var proto))
             return;
@@ -441,25 +414,22 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         if (!CheckCooldown(ent, "StealthTakedown"))
             return;
 
-        // Стелс-повалення працює тільки коли ціль НЕ в бойовому режимі
         if (TryComp<CombatModeComponent>(target, out var combatMode) && combatMode.IsInCombatMode)
         {
-            _popup.PopupEntity("Ціль у бойовому режимі! Стелс атака неможлива.", ent, ent);
+            _popup.PopupEntity(Loc.GetString("legendary-cqc-popup-stealth-fail-alert"), ent, ent);
             return;
         }
 
-        // Тихе повалення зі спини
         DoDamage(ent, target, "Blunt", 25f);
         _stun.TryKnockdown(target, TimeSpan.FromSeconds(12), true);
         _statusEffects.TryAddStatusEffectDuration(target, "StatusEffectForcedSleeping", out _, TimeSpan.FromSeconds(8));
 
-        // Без звуку для стелсу
-        ComboPopup(ent, target, "Stealth Takedown");
+        ComboPopup(ent, target, "legendary-cqc-stealth-name");
         SetCooldown(ent, "StealthTakedown", TimeSpan.FromSeconds(2));
         ClearLastAttacks(ent);
     }
 
-    private void OnBigBosCQCRush(Entity<CanPerformComboComponent> ent, ref BigBosCqcRushPerformedEvent args)
+    private void OnLegendaryCQCRush(Entity<CanPerformComboComponent> ent, ref LegendaryCQCRushPerformedEvent args)
     {
         if (!TryGetTarget(ent, out var target, out var proto))
             return;
@@ -467,7 +437,6 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         if (!CheckCooldown(ent, "Rush"))
             return;
 
-        // Штурмова атака з переміщенням
         var mapPos = _transform.GetMapCoordinates(ent).Position;
         var hitPos = _transform.GetMapCoordinates(target).Position;
         var dir = (hitPos - mapPos).Normalized();
@@ -479,17 +448,16 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         _damageable.TryChangeDamage(target, staminaDamage, origin: ent);
         _grabThrowing.Throw(target, ent, dir, 5f);
 
-        // Додаємо баф швидкості руху користувачу
-        var rushBuff = EnsureComp<BigBosCqcRushBuffComponent>(ent);
+        var rushBuff = EnsureComp<LegendaryCQCRushBuffComponent>(ent);
         rushBuff.EndTime = _timing.CurTime + TimeSpan.FromSeconds(3);
 
         _audio.PlayPvs(new SoundPathSpecifier("/Audio/Weapons/genhit1.ogg"), target);
-        ComboPopup(ent, target, "CQC Rush");
+        ComboPopup(ent, target, "legendary-cqc-rush-name");
         SetCooldown(ent, "Rush", TimeSpan.FromSeconds(1));
         ClearLastAttacks(ent);
     }
 
-    private void OnBigBosCQCFinisher(Entity<CanPerformComboComponent> ent, ref BigBosCqcFinisherPerformedEvent args)
+    private void OnLegendaryCQCFinisher(Entity<CanPerformComboComponent> ent, ref LegendaryCQCFinisherPerformedEvent args)
     {
         if (!TryGetTarget(ent, out var target, out var proto))
             return;
@@ -497,19 +465,16 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         if (!CheckCooldown(ent, "Finisher"))
             return;
 
-        // Ультимативний добиваючий прийом - працює тільки на важко поранених цілях
         if (TryComp<DamageableComponent>(target, out var damageable))
         {
             damageable.Damage.DamageDict.TryGetValue("Stamina", out var staminaDamageValue);
             var staminaDamageAmount = staminaDamageValue;
-            if (staminaDamageAmount > 80f) // Критичний поріг стаміни
+            if (staminaDamageAmount > 80f)
             {
-                // Нищівна шкода
                 DoDamage(ent, target, "Blunt", 40f);
                 _stun.TryKnockdown(target, TimeSpan.FromSeconds(20), true);
                 _statusEffects.TryAddStatusEffectDuration(target, "StatusEffectForcedSleeping", out _, TimeSpan.FromSeconds(15));
 
-                // Потенційний перелом шиї, якщо умови виконані
                 if (TryComp(ent, out PullerComponent? puller) && puller.Pulling == target &&
                     TryComp(ent, out GrabIntentComponent? grabIntent) &&
                     TryComp(target, out PullableComponent? pullable) &&
@@ -523,20 +488,19 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
                     var blunt = new DamageSpecifier(_proto.Index<DamageTypePrototype>("Blunt"), damageToKill.Value);
                     _damageable.TryChangeDamage(target, blunt, true, targetPart: TargetBodyPart.Head);
 
-                    ComboPopup(ent, target, "FINISHING MOVE");
+                    ComboPopup(ent, target, "legendary-cqc-popup-finishing-move");
                 }
                 else
                 {
-                    ComboPopup(ent, target, "Devastator");
+                    ComboPopup(ent, target, "legendary-cqc-popup-devastator");
                 }
             }
         }
         else
         {
-            // Звичайна сильна атака, якщо ціль не в критичному стані
             DoDamage(ent, target, "Blunt", proto.ExtraDamage);
             _stun.TryKnockdown(target, TimeSpan.FromSeconds(8), true);
-            ComboPopup(ent, target, "Heavy Strike");
+            ComboPopup(ent, target, "legendary-cqc-popup-heavy-strike");
         }
 
         _audio.PlayPvs(new SoundPathSpecifier("/Audio/Weapons/genhit3.ogg"), target);
@@ -544,49 +508,60 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         ClearLastAttacks(ent);
     }
 
-    // --- Обробники подій для предметів, бафів та модифікаторів ---
 
-    private void OnGrantStartup(EntityUid uid, Components.GrantBigBosCQCComponent component, ComponentStartup args)
+    private void OnGrantMapInit(EntityUid uid, Components.GrantLegendaryCQCComponent component, MapInitEvent args)
     {
-        GrantBigBosCQC(uid);
+        if (!HasComp<MobStateComponent>(uid))
+            return;
+
+        GrantLegendaryCQC(uid);
     }
 
-    private void OnGrantMapInit(EntityUid uid, Components.GrantBigBosCQCComponent component, MapInitEvent args)
+    private void OnLegendaryManualUsed(EntityUid uid, Components.GrantLegendaryCQCComponent comp, UseInHandEvent args)
     {
-        GrantBigBosCQC(uid);
-    }
+        if (args.Handled)
+            return;
 
-    private void OnCqcItemUsed(EntityUid uid, Components.GrantBigBosCQCComponent comp, UseInHandEvent args)
-    {
+        args.Handled = true;
+
+        if (!_netManager.IsServer)
+            return;
+
         var user = args.User;
 
-        // Перевірка, чи вже має користувач знання CQC
-        if (HasComp<BigBosCqcKnowledgeComponent>(user))
+        if (HasComp<LegendaryCQCKnowledgeComponent>(user))
         {
-            _popup.PopupEntity("Ви вже володієте навичками CQC!", user, user);
+            _popup.PopupEntity(Loc.GetString("legendary-cqc-popup-already-known"), user, user);
             return;
         }
 
-        GrantBigBosCQC(user);
+        GrantLegendaryCQC(user);
 
-        _popup.PopupEntity(Loc.GetString("bigbos-cqc-knowledge-gained"), user, user);
+        _popup.PopupEntity(Loc.GetString("legendary-cqc-knowledge-gained"), user, user);
 
-        // Видалення предмета після використання
-        QueueDel(uid);
-    }
+        var coords = Transform(user).Coordinates;
+        _audio.PlayPvs(comp.SoundOnUse, coords);
 
-    private void GrantBigBosCQC(EntityUid user)
-    {
-        if (HasComp<BigBosCqcKnowledgeComponent>(user))
+        if (comp.MultiUse)
             return;
 
-        EnsureComp<BigBosCqcKnowledgeComponent>(user);
+        QueueDel(uid);
+        if (comp.SpawnedProto != null)
+            Spawn(comp.SpawnedProto, coords);
+    }
+
+    private void GrantLegendaryCQC(EntityUid user)
+    {
+        if (HasComp<LegendaryCQCKnowledgeComponent>(user))
+            return;
+
+        EnsureComp<LegendaryCQCKnowledgeComponent>(user);
         var canPerformCombo = EnsureComp<CanPerformComboComponent>(user);
         EnsureComp<MartialArtsKnowledgeComponent>(user);
         EnsureComp<PullerComponent>(user);
         EnsureComp<MeleeWeaponComponent>(user);
 
-        if (_proto.TryIndex<MartialArtPrototype>("BigBosCloseQuartersCombat", out var martialArtsPrototype))
+        if (_proto.TryIndex<MartialArtPrototype>("LegendaryCloseQuartersCombat", out var martialArtsPrototype))
         {
             if (_proto.TryIndex(martialArtsPrototype.RoundstartCombos, out var comboListPrototype))
             {
@@ -599,82 +574,76 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
 
             if (TryComp<MartialArtsKnowledgeComponent>(user, out var knowledge))
             {
-                knowledge.MartialArtsForm = MartialArtsForms.BigBosCloseQuartersCombat;
+                knowledge.MartialArtsForm = MartialArtsForms.LegendaryCloseQuartersCombat;
             }
         }
 
         Dirty(user, canPerformCombo);
     }
 
-    private void OnRefreshMovespeed(EntityUid uid, BigBosCqcRushBuffComponent comp, RefreshMovementSpeedModifiersEvent args)
+    private void OnRefreshMovespeed(EntityUid uid, LegendaryCQCRushBuffComponent comp, RefreshMovementSpeedModifiersEvent args)
     {
         if (_timing.CurTime < comp.EndTime)
         {
-            args.ModifySpeed(1.5f, 1.5f); // 50% збільшення швидкості
+            args.ModifySpeed(1.5f, 1.5f);
         }
     }
 
-    private void OnRefreshCombatMovespeed(EntityUid uid, BigBosCqcKnowledgeComponent comp, RefreshMovementSpeedModifiersEvent args)
+    private void OnRefreshCombatMovespeed(EntityUid uid, LegendaryCQCKnowledgeComponent comp, RefreshMovementSpeedModifiersEvent args)
     {
-        // Невелике збільшення швидкості в бойовому режимі - ONLY if in combat mode
         if (TryComp<CombatModeComponent>(uid, out var combat) && combat.IsInCombatMode)
         {
-            args.ModifySpeed(1.15f, 1.15f); // 15% збільшення швидкості
+            args.ModifySpeed(1.15f, 1.15f);
         }
     }
 
-    private void OnCounterDamageModify(EntityUid uid, BigBosCqcCounterBuffComponent comp, DamageModifyEvent args)
+    private void OnCounterDamageModify(EntityUid uid, LegendaryCQCCounterBuffComponent comp, DamageModifyEvent args)
     {
         if (_timing.CurTime < comp.EndTime)
         {
-            // Зменшення отримуваної шкоди на 75% під час Counter бафу
             args.Damage *= 0.25f;
         }
     }
 
-    private void OnKnowledgeStartup(EntityUid uid, BigBosCqcKnowledgeComponent comp, ComponentStartup args)
+    private void OnKnowledgeStartup(EntityUid uid, LegendaryCQCKnowledgeComponent comp, ComponentStartup args)
     {
-        // Ініціалізація компоненту знань
         if (!_cooldowns.ContainsKey(uid))
         {
             _cooldowns[uid] = new Dictionary<string, TimeSpan>();
         }
     }
 
-    private void OnKnowledgeShutdown(EntityUid uid, BigBosCqcKnowledgeComponent comp, ComponentShutdown args)
+    private void OnKnowledgeShutdown(EntityUid uid, LegendaryCQCKnowledgeComponent comp, ComponentShutdown args)
     {
-        // Очищення кулдаунів при видаленні компоненту
         _cooldowns.Remove(uid);
     }
 
-    // --- Методи оновлення ---
 
     private void UpdateBuffs(float frameTime)
     {
-        var query = EntityQueryEnumerator<BigBosCqcRushBuffComponent>();
+        var query = EntityQueryEnumerator<LegendaryCQCRushBuffComponent>();
         while (query.MoveNext(out var uid, out var rushBuff))
         {
             if (_timing.CurTime >= rushBuff.EndTime)
             {
-                RemComp<BigBosCqcRushBuffComponent>(uid);
+                RemComp<LegendaryCQCRushBuffComponent>(uid);
                 _movementSpeed.RefreshMovementSpeedModifiers(uid);
             }
         }
 
-        var counterQuery = EntityQueryEnumerator<BigBosCqcCounterBuffComponent>();
+        var counterQuery = EntityQueryEnumerator<LegendaryCQCCounterBuffComponent>();
         while (counterQuery.MoveNext(out var uid, out var counterBuff))
         {
             if (_timing.CurTime >= counterBuff.EndTime)
             {
-                RemComp<BigBosCqcCounterBuffComponent>(uid);
+                RemComp<LegendaryCQCCounterBuffComponent>(uid);
             }
         }
     }
 
     private void UpdateCombatModes(float frameTime)
     {
-        // Оновлення бойових режимів та стану
-        var query = EntityQueryEnumerator<BigBosCqcKnowledgeComponent, CombatModeComponent>();
+        var query = EntityQueryEnumerator<LegendaryCQCKnowledgeComponent, CombatModeComponent>();
         while (query.MoveNext(out var uid, out var knowledge, out var combat))
         {
             UpdateCombatState(uid, frameTime);
@@ -694,7 +663,7 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         }
     }
 
-    private void UpdateAttackSpeed(EntityUid uid, BigBosCqcKnowledgeComponent knowledge)
+    private void UpdateAttackSpeed(EntityUid uid, LegendaryCQCKnowledgeComponent knowledge)
     {
         if (!TryComp<MeleeWeaponComponent>(uid, out var melee))
             return;
@@ -707,7 +676,7 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         Dirty(uid, melee);
     }
 
-    private void AddHaste(EntityUid uid, BigBosCqcKnowledgeComponent knowledge, float amount)
+    private void AddHaste(EntityUid uid, LegendaryCQCKnowledgeComponent knowledge, float amount)
     {
         knowledge.HasteMeter = Math.Min(1.0f, knowledge.HasteMeter + amount);
         UpdateAttackSpeed(uid, knowledge);
@@ -715,11 +684,8 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
 
     private void UpdateChokeholds(float frameTime)
     {
-        // Оновлення активних удушень
-        // Цей метод може бути розширений для обробки специфічної логіки удушень
     }
 
-    // --- Допоміжні методи ---
 
     private bool CheckCooldown(EntityUid uid, string ability)
     {
@@ -745,20 +711,21 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
 
     private void UpdateCombatState(EntityUid uid, float frameTime)
     {
-        // Combo state reset is handled in SharedBigBosCQCSystem.Update
+        // Combo state reset is handled in SharedLegendaryCQCSystem.Update
     }
 
     private void DropAllItems(EntityUid uid)
     {
-        // Викинути предмети з усіх рук
         foreach (var handName in _hands.EnumerateHands(uid))
         {
             _hands.TryDrop(uid, handName);
         }
     }
 
-    private void StealAllItems(EntityUid user, EntityUid target)
+    private bool StealAllItems(EntityUid user, EntityUid target)
     {
+        var stoleAnyItems = false;
+
         foreach (var handName in _hands.EnumerateHands(target))
         {
             var item = _hands.GetHeldItem(target, handName);
@@ -767,10 +734,12 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
 
             if (_hands.TryDrop(target, handName))
             {
-                // Спробувати підібрати будь-якою вільною рукою, інакше залишиться на підлозі
+                stoleAnyItems = true;
                 _hands.TryPickupAnyHand(user, item.Value);
             }
         }
+
+        return stoleAnyItems;
     }
 
     private bool TryGetTarget(Entity<CanPerformComboComponent> ent, out EntityUid target, [NotNullWhen(true)] out ComboPrototype? proto)
@@ -793,27 +762,22 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         _damageable.TryChangeDamage(target, damage, origin: user);
     }
 
-    private void OnMeleeHit(EntityUid uid, BigBosCqcKnowledgeComponent knowledge, MeleeHitEvent args)
+    private void OnMeleeHit(EntityUid uid, LegendaryCQCKnowledgeComponent knowledge, MeleeHitEvent args)
     {
-        // 1. Логіка прискорення
         if (args.IsHit)
         {
-            AddHaste(uid, knowledge, 0.25f); // 25% прискорення за удар
+            AddHaste(uid, knowledge, 0.25f);
         }
 
-        // 2. Логіка Running Tackle (Збивання з ніг на бігу)
         if (!args.IsHit || args.HitEntities.Count == 0)
             return;
 
-        // Перевіряємо, чи користувач дійсно рухається з високою швидкістю
         if (!TryComp<PhysicsComponent>(uid, out var physics))
             return;
 
-        // Вимагає значної швидкості (4+ м/с) для активації
         if (physics.LinearVelocity.Length() < 4.0f)
             return;
 
-        // Перевірка кулдауну
         if (!CheckCooldown(uid, "RunningTackle"))
             return;
 
@@ -822,21 +786,18 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
         if (IsDown(target))
             return;
 
-        // Running tackle: збивання з ніг + кидок
         _stun.TryKnockdown(target, TimeSpan.FromSeconds(3), true);
 
-        // Кинути ціль у напрямку руху
         if (args.Direction != null)
         {
             var direction = args.Direction.Value.Normalized();
             _throwing.TryThrow(target, direction * 4, 15f); // 4 units distance
         }
 
-        // Додати бонусну шкоду до running tackle
         args.BonusDamage.DamageDict["Blunt"] = args.BonusDamage.DamageDict.GetValueOrDefault("Blunt") + 10f;
 
-        _popup.PopupEntity("BigBos виконує Running Tackle!", uid, uid);
-        _popup.PopupEntity("Вас збивають з ніг!", target, target);
+        _popup.PopupEntity(Loc.GetString("legendary-cqc-popup-running-tackle-user"), uid, uid);
+        _popup.PopupEntity(Loc.GetString("legendary-cqc-popup-running-tackle-target"), target, target);
 
         SetCooldown(uid, "RunningTackle", TimeSpan.FromSeconds(5));
     }
@@ -850,13 +811,14 @@ public sealed class SharedBigBosCQCSystem : EntitySystem
             hideChat: false, hideLog: true, checkRadioPrefix: false);
     }
 
-    private void ComboPopup(EntityUid user, EntityUid target, string comboName)
+    private void ComboPopup(EntityUid user, EntityUid target, string comboLocId)
     {
         if (!_netManager.IsServer)
             return;
 
-        _popup.PopupEntity($"BigBos executes: {comboName}!", user, user);
-        _popup.PopupEntity($"BigBos uses {comboName} on you!", target, target);
+        var comboName = Loc.GetString(comboLocId);
+        _popup.PopupEntity(Loc.GetString("legendary-cqc-popup-user", ("combo", comboName)), user, user);
+        _popup.PopupEntity(Loc.GetString("legendary-cqc-popup-target", ("combo", comboName)), target, target);
     }
 
     private void ClearLastAttacks(Entity<CanPerformComboComponent> ent)

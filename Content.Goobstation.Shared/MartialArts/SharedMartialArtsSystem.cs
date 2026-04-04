@@ -300,7 +300,7 @@ public abstract partial class SharedMartialArtsSystem : EntitySystem
                 OnCapoeiraAttackPerformed(ent, ref args);
                 break;
             // Pirate Changes Start Here Власне Бойове Мистецтво
-            case MartialArtsForms.BigBosCloseQuartersCombat:
+            case MartialArtsForms.LegendaryCloseQuartersCombat:
                 OnCQCAttackPerformed(ent, ref args);
                 break;
                 // Pirate Changes End Here Власне Бойове Мистецтво

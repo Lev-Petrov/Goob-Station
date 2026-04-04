@@ -7,33 +7,32 @@ using Robust.Shared.Timing;
 namespace Content.Pirate.Shared._JustDecor.MartialArts.Components;
 
 /// <summary>
-/// Компонент для отримання знання BigBos CQC
+/// Grants Legendary CQC knowledge from entities such as manuals.
 /// </summary>
 [RegisterComponent]
-public sealed partial class GrantBigBosCQCComponent : GrantMartialArtKnowledgeComponent
+public sealed partial class GrantLegendaryCQCComponent : GrantMartialArtKnowledgeComponent
 {
     [DataField]
-    public override MartialArtsForms MartialArtsForm { get; set; } = MartialArtsForms.BigBosCloseQuartersCombat;
+    public override MartialArtsForms MartialArtsForm { get; set; } = MartialArtsForms.LegendaryCloseQuartersCombat;
 
-    public override LocId? LearnMessage { get; set; } = "bigbos-cqc-success-learned";
+    public override LocId? LearnMessage { get; set; } = "legendary-cqc-success-learned";
 }
 
-
 /// <summary>
-/// Компонент для бафу кулдаунів BigBos CQC
+/// Stores per-ability cooldowns for Legendary CQC.
 /// </summary>
 [RegisterComponent]
-public sealed partial class BigBosCqcCooldownsComponent : Component
+public sealed partial class LegendaryCQCCooldownsComponent : Component
 {
     [DataField]
     public Dictionary<string, TimeSpan> CooldownTimers = new();
 }
 
 /// <summary>
-/// Компонент для бафу "знання" BigBos CQC
+/// Tracks the temporary state attached to a Legendary CQC user.
 /// </summary>
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
-public sealed partial class BigBosCqcKnowledgeComponent : Component
+public sealed partial class LegendaryCQCKnowledgeComponent : Component
 {
     [ViewVariables(VVAccess.ReadWrite), DataField, AutoNetworkedField]
     public int CombosPerformed = 0;
@@ -63,20 +62,20 @@ public sealed partial class BigBosCqcKnowledgeComponent : Component
     public float HasteMeter = 0f;
 
     [ViewVariables(VVAccess.ReadWrite), DataField, AutoNetworkedField]
-    public float MaxHasteBonus = 0.8f; // Max 60% speed bonus (was 40%)
+    public float MaxHasteBonus = 0.8f;
 
     [ViewVariables(VVAccess.ReadWrite), DataField, AutoNetworkedField]
-    public float HasteDecayRate = 0.1f; // Decay per second (was 0.2)
+    public float HasteDecayRate = 0.1f;
 
     [ViewVariables(VVAccess.ReadWrite), DataField, AutoNetworkedField]
     public float? OriginalAttackRate;
 }
 
 /// <summary>
-/// Компонент для бафу Rush (збільшення швидкості)
+/// Temporary speed buff gained from the rush combo.
 /// </summary>
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
-public sealed partial class BigBosCqcRushBuffComponent : Component
+public sealed partial class LegendaryCQCRushBuffComponent : Component
 {
     [DataField, AutoNetworkedField]
     public TimeSpan EndTime;
@@ -86,10 +85,10 @@ public sealed partial class BigBosCqcRushBuffComponent : Component
 }
 
 /// <summary>
-/// Компонент для бафу (зменшення/відбиття шкоди)
+/// Temporary counter window that reduces incoming damage.
 /// </summary>
 [RegisterComponent]
-public sealed partial class BigBosCqcCounterBuffComponent : Component
+public sealed partial class LegendaryCQCCounterBuffComponent : Component
 {
     [DataField]
     public TimeSpan EndTime;
@@ -105,7 +104,7 @@ public sealed partial class BigBosCqcCounterBuffComponent : Component
 }
 
 /// <summary>
-/// Компонент для удушення
+/// Marks an entity that is currently being choked.
 /// </summary>
 [RegisterComponent]
 public sealed partial class InChokeholdComponent : Component
