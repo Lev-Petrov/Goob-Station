@@ -218,10 +218,6 @@
           Quantity: 1
   - type: Item
     size: Tiny
-  - type: PhysicalComposition #Goobstation - Recycle update
-    materialComposition:
-      Paper: 25
-
 - type: entity
   name: paper
   parent: BasePaper
@@ -258,6 +254,7 @@
   - type: PhysicalComposition
     materialComposition:
       SheetPrinter: 100
+      Paper: 100 # Pirate: camera
   # Pirate Port Document Printer ^^^
 
 - type: entity

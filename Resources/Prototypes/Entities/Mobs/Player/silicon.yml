@@ -159,6 +159,7 @@
     - ActionAIViewLaws
     - ActionOpenRemoteDevicesMenu # Corvax-Next-AiRemoteControl
     - ActionOpenCameraWarpMenu # Goobstation-Ai-Camera-Jumping
+    - ActionAIRedPhone # Pirate-AI-RedPhone
   - type: UserInterface
     interfaces:
       enum.RadarConsoleUiKey.Key:
@@ -429,8 +430,51 @@
       state: ai_female
   - type: NameIdentifier
     group: StationAi
+  - type: LanguageKnowledge
+    speaks:
+    - TauCetiBasic
+    - Canilunzt
+    - Bubblish
+    - Nekomimetic
+    - Draconic
+    - SolCommon
+    - RootSpeak
+    - Moffic
+    - ValyrianStandard
+    - Chittin
+    - SiikMaas
+    - RobotTalk
+    - DroneTalk
+    - Marish
+    - Elyran
+    - Freespeak
+    - Tradeband
+    - Schechi
+    - NewKinPidgin
+    understands:
+    - TauCetiBasic
+    - Canilunzt
+    - Bubblish
+    - Nekomimetic
+    - Draconic
+    - SolCommon
+    - RootSpeak
+    - Moffic
+    - ValyrianStandard
+    - Chittin
+    - SiikMaas
+    - RobotTalk
+    - DroneTalk
+    - Marish
+    - Elyran
+    - Freespeak
+    - Tradeband
+    - Sign
+    - Schechi
+    - NewKinPidgin
   - type: SpeechSynthesis # Corvax-Frontier-Barks
     voice: Borg
+
 
 # Hologram projection that the AI's eye tracks.
 - type: entity
@@ -448,6 +492,7 @@
   - type: NoFTL
   - type: WarpPoint
     follow: true
+  - type: StationAiHolo # DOWNSTREAM-TPirates: ghost follow menu update
   - type: Eye
     pvsScale: 1.5
   - type: Visibility
@@ -470,6 +515,7 @@
     anchored: true
   - type: WarpPoint
     follow: true
+  - type: StationAiHolo # DOWNSTREAM-TPirates: ghost follow menu update
   - type: Eye
   - type: ContentEye
   - type: Examiner
