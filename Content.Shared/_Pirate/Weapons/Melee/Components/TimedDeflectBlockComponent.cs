@@ -22,6 +22,9 @@ public sealed partial class TimedDeflectBlockComponent : Component
     public float PowerGainOnDeflect = 10f;
 
     [DataField]
+    public float PowerLossOnMeleeHit = 5f;
+
+    [DataField]
     public float PowerDecayDelay = 30f;
 
     [DataField]

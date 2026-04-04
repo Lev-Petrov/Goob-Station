@@ -140,7 +140,7 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
         if (args.Cancelled || args.Type != HarmfulActionType.Harm)
             return;
 
-        if (!TryGetActiveDeflectWeapon(ent, out var weapon, out var block))
+        if (!TryGetActiveDeflectWeapon(ent, out var weapon, out var block) || block == null)
             return;
 
         ApplyDefense(ent.Owner, weapon, block, args.User, projectile: null, out var deflected);
@@ -236,13 +236,13 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
         if (!_net.IsServer)
             return;
 
-        SetPower(ent.Owner, ent.Comp, ent.Comp.CurrentPower - 5f);
+        SetPower(ent.Owner, ent.Comp, ent.Comp.CurrentPower - ent.Comp.PowerLossOnMeleeHit);
     }
 
     private bool TryGetActiveDeflectWeapon(
         Entity<HandsComponent> user,
         out EntityUid weapon,
-        out TimedDeflectBlockComponent block)
+        out TimedDeflectBlockComponent? block)
     {
         EntityUid bestWeapon = EntityUid.Invalid;
         TimedDeflectBlockComponent? bestBlock = null;
@@ -275,7 +275,7 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
         }
 
         weapon = bestWeapon;
-        block = bestBlock!;
+        block = bestBlock;
         return bestBlock != null;
     }
 
