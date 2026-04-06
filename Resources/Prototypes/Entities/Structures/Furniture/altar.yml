@@ -324,13 +324,13 @@
     radius: 1.5
     energy: 1
     color: "#fbceb1"
-  - type: AltarSource # Pirate: katana
-    rodProto: NullrodCursedKatana # Pirate: katana
-    effectProto: EffectSpark # Pirate: katana
-    soundPath: /Audio/Effects/hallelujah.ogg # Pirate: katana
-  - type: Construction # Pirate: katana
-    graph: AltarsGraph # Pirate: katana
-    node: OrangeAltarNode # Pirate: katana
+  - type: AltarSource # Pirate: port EE item offer
+    rodProto: NullrodHolyKatana # Pirate: port EE item offer
+    effectProto: EffectSpark # Pirate: port EE item offer
+    soundPath: /Audio/Effects/hallelujah.ogg # Pirate: port EE item offer
+  - type: Construction # Pirate: port EE item offer
+    graph: AltarsGraph # Pirate: port EE item offer
+    node: OrangeAltarNode # Pirate: port EE item offer
 
 - type: entity
   id: AltarConvertRed

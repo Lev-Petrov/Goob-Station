@@ -1,0 +1,117 @@
+- type: entity
+  abstract: true
+  parent: [ ClothingBeltBase, ClothingSlotBase, BaseMajorContraband ]
+  id: ClothingBeltKatanaSheathBase
+  name: katana sheath
+  description: A sheath that houses the nimble katana.
+  components:
+  - type: Item
+    size: Ginormous
+  - type: ItemSlots
+    slots:
+      item:
+        name: Katana
+        insertVerbText: sheath-insert-verb
+        ejectVerbText: sheath-eject-verb
+        insertSound: /Audio/Items/sheath.ogg
+        ejectSound: /Audio/Items/unsheath.ogg
+  - type: KatanaSheath
+  - type: Appearance
+
+- type: entity
+  abstract: true
+  parent: [ ClothingBeltBase, ClothingSlotBase, BaseMajorContraband ]
+  id: ClothingBeltEnergyKatanaSheathBase
+  name: energy katana sheath
+  description: A high tech katana sheath that allows for quick blade movements.
+  components:
+  - type: Item
+    size: Ginormous
+  - type: ItemSlots
+    slots:
+      item:
+        name: Katana
+        insertVerbText: sheath-insert-verb
+        ejectVerbText: sheath-eject-verb
+        insertSound: /Audio/Items/sheath.ogg
+        ejectSound: /Audio/Items/unsheath.ogg
+  - type: Appearance
+
+- type: entity
+  parent: ClothingBeltKatanaSheathBase
+  id: ClothingBeltKatanaSheath
+  components:
+  - type: Sprite
+    sprite: _Pirate/Clothing/Belt/katana_sheath.rsi
+    state: sheath
+  - type: Clothing
+    sprite: _Pirate/Clothing/Belt/katana_sheath.rsi
+    slots: [belt, back]
+  - type: ItemSlots
+    slots:
+      item:
+        whitelist:
+          tags:
+          - Katana
+
+- type: entity
+  parent: ClothingBeltKatanaSheath
+  id: ClothingBeltKatanaSheathFilled
+  suffix: Filled
+  components:
+  - type: ContainerFill
+    containers:
+      item:
+      - Katana
+
+- type: entity
+  parent: ClothingBeltKatanaSheathBase
+  id: ClothingBeltHanzoKatanaSheath
+  name: hanzo katana sheath
+  description: A normal black sheath meant to house the legendary hanzo steel.
+  components:
+  - type: Sprite
+    sprite: _Pirate/Clothing/Belt/hanzo_sheath.rsi
+    state: sheath
+  - type: Clothing
+    sprite: _Pirate/Clothing/Belt/hanzo_sheath.rsi
+    slots: [belt, back]
+  - type: ItemSlots
+    slots:
+      item:
+        whitelist:
+          tags:
+          - Katana
+
+- type: entity
+  parent: ClothingBeltEnergyKatanaSheathBase
+  id: ClothingBeltEnergyKatanaSheath
+  components:
+  - type: Sprite
+    sprite: _Pirate/Clothing/Belt/energy_katana_sheath.rsi
+    state: sheath
+  - type: Clothing
+    sprite: _Pirate/Clothing/Belt/energy_katana_sheath.rsi
+    slots: [belt]
+  - type: ItemSlots
+    slots:
+      item:
+        whitelist:
+          components:
+          - EnergyKatana
+  - type: ItemMapper
+    mapLayers:
+      sheath-energy-katana:
+        whitelist:
+          components:
+          - EnergyKatana
+
+- type: entity
+  parent: ClothingBeltEnergyKatanaSheath
+  id: ClothingBeltEnergyKatanaSheathFilled
+  suffix: Filled
+  components:
+  - type: ContainerFill
+    containers:
+      item:
+      - EnergyKatana

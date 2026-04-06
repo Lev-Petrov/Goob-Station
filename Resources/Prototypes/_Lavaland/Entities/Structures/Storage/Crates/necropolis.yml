@@ -48,7 +48,7 @@
     - id: LavalandCursedHeart
     - id: ClothingOuterArmorCult
     - id: LavalandVampirismCrystal
-    - id: CursedKatana # Pirate: katana
+    - id: HolyKatana # Pirate: port EE item offer
     # TODO add more interesting obtain methods for crusher upgrades (from megafauna, ruins, etc.)
     - id: CrusherUpgradeMainRudeBuster
 

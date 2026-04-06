@@ -4,8 +4,11 @@ ent-Katana = katana
 ent-EnergyKatana = energy katana
     .desc = A katana infused with strong energy.
 
-ent-CursedKatana = cursed katana
-    .desc = Cursed craftwork with blood-soaked fabric wrapped around the blade. Successful deflects awaken it, while neglect lets it fall back to dormant.
+ent-HolyKatana = holy katana
+    .desc = Holy craftwork with blood-soaked fabric wrapped around the blade. Successful deflects awaken it, while neglect lets it fall back to dormant.
 
-ent-NullrodCursedKatana = holy katana
+ent-NullrodHolyKatana = holy katana
     .desc = Blessed craftwork with blood-soaked fabric wrapped around the blade. Successful deflects awaken it, while neglect lets it fall back to dormant.
+
+ent-CursedKatana = cursed katana
+    .desc = A cursed katana that clings to its wielder and refuses to be sheathed.

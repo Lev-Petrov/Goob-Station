@@ -273,6 +273,11 @@
   - type: Tag
     tags:
     - Katana
+  - type: KatanaSheathHandle # Pirate: katana
+    sprite: _Pirate/Objects/Weapons/Melee/katana.rsi # Pirate: katana
+    inventoryState: handle-INVENTORY # Pirate: katana
+    beltState: handle-BELT # Pirate: katana
+    backpackState: handle-BACKPACK # Pirate: katana
   - type: Sprite
     sprite: Objects/Weapons/Melee/katana.rsi
   - type: MeleeWeapon

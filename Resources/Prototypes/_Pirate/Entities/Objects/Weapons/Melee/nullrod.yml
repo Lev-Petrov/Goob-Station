@@ -1,7 +1,7 @@
 - type: entity
-  parent: CursedKatana
-  id: NullrodCursedKatana
-  name: holy catana
+  parent: HolyKatana
+  id: NullrodHolyKatana
+  name: holy katana
   components:
   - type: DivineIntervention
   - type: AlternatePrayable

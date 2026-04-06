@@ -1,0 +1,18 @@
+- type: entity
+  parent: Katana
+  id: OldKatana
+  name: katana
+  description: Woefully underpowered in D20.
+  components:
+  - type: Tag
+    tags:
+    - Katana
+  - type: KatanaSheathHandle
+    sprite: Objects/Weapons/Melee/katana.rsi
+    inventoryState: handle-ICON
+    beltState: handle-BELT
+    backpackState: handle-BACKPACK
+  - type: Sprite
+    sprite: Objects/Weapons/Melee/katana.rsi
+  - type: Clothing
+    sprite: Objects/Weapons/Melee/katana.rsi

@@ -1,0 +1,41 @@
+{
+    "version": 1,
+    "license": "CC-BY-SA-3.0",
+    "copyright": "Uses tgstation ninja sheath object sprites from icons/obj/clothing/belts.dmi for inventory icons and worn sprites from icons/mob/clothing/belt.dmi for belt states.",
+    "size": {
+        "x": 32,
+        "y": 32
+    },
+    "states": [
+        {
+            "name": "inhand-left",
+            "directions": 4
+        },
+        {
+            "name": "inhand-right",
+            "directions": 4
+        },
+        {
+            "name": "equipped-BELT",
+            "directions": 4
+        },
+        {
+            "name": "sheath-energy-katana-equipped-BELT",
+            "directions": 4
+        },
+        {
+            "name": "sheath-energy-katana-inhand-left",
+            "directions": 4
+        },
+        {
+            "name": "sheath-energy-katana-inhand-right",
+            "directions": 4
+        },
+        {
+            "name": "sheath-energy-katana"
+        },
+        {
+            "name": "sheath"
+        }
+    ]
+}
