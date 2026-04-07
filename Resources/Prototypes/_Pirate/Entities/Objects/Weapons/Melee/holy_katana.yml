@@ -1,8 +1,8 @@
 - type: entity
   parent: Katana
   id: HolyKatana
-  name: holy katana
-  description: Holy craftwork with blood-soaked fabric wrapped around the blade. Successful deflects awaken it, while neglect lets it fall back to dormant.
+  name: suncatcher
+  description: Cursed blade of dull gold. Once wielded by a disciplined swordsman who fell from grace
   components:
   - type: Tag
     tags:
