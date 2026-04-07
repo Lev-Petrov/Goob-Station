@@ -4,9 +4,10 @@
     outerClothing: ClothingOuterPlagueSuitDeath
     jumpsuit: ClothingUniformJumpsuitChaplain
     shoes: ClothingShoesChameleonNoSlips
+    neck: ClothingNeckCloakCOG
     mask: ClothingMaskPlague
     head: ClothingHeadHatPlaguedoctor
-    id: ERTChaplainIDCard
+    id: AgentIDCard
     back: WeaponScytheDeath
     belt: BoxFolderCentComClipboardDeath
     ears: ClothingHeadsetAltCentCom

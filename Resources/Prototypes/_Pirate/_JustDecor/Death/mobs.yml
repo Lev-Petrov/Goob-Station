@@ -3,11 +3,19 @@
   name: Кістлява смерть
   description: Величезний скелет у рясі, що несе косу смерті.
   parent: BaseMobSkeletonPerson
-  suffix: Death
+  suffix: JustDecor, Death
   components:
+    - type: HumanoidAppearance
+      species: Skeleton
+      skinColor: "#000000"
     - type: Damageable
       damageContainer: Biological
       damageModifierSet: Skeleton
+      healthIcons:
+        Alive: HealthIconDead
+        Critical: HealthIconDead
+        Dead: HealthIconDead
+      healthBarThreshold: 9999
     - type: MobThresholds
       thresholds:
         0: Alive
@@ -45,6 +53,12 @@
     - type: Loadout
       prototypes: [SkeletonDeathGear]
     - type: GhostTargeting
+    - type: ActionGrant
+      actions:
+      - ActionToggleLighting
+      - ActionToggleFov
+      - ActionToggleGhosts
+    - type: Spectral
     - type: Tag
       tags:
       - CanPilot
@@ -70,3 +84,12 @@
       damageRecovery:
         types:
           Asphyxiation: -10.0
+    - type: GhostHearing
+    - type: Eye
+      drawFov: false
+      visMask:
+        - Normal
+        - Ghost
+        - TargetingGhost
+        - CosmicCultMonument # DeltaV - Cosmic Cult
+        - Abductor # Shitmed - Starlight Abductors

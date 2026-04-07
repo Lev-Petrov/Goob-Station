@@ -1,6 +1,6 @@
 - type: entity
   id: JustDecorHandTeleporterBackrooms
-  suffix: Backrooms, JustDecor
+  suffix: JustDecor, Poratel
   parent: BaseItem
   name: BackRooms
   components:

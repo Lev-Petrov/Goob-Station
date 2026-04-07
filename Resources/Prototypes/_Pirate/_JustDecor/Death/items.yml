@@ -1,0 +1,246 @@
+- type: entity
+  id: WeaponScytheDeath
+  suffix: Death
+  name: Коса Смерті
+  parent: BaseItem
+  description: Коса, що випромінює загрозу. Лезо вкрите засохлою кров'ю.
+  components:
+  - type: Sharp
+  - type: Sprite
+    sprite: _DV/CosmicCult/Objects/cosmicscythe.rsi
+    layers:
+      - state: icon
+      - state: icon-overlay
+        shader: unshaded
+  - type: MeleeWeapon
+    attackRate: 2
+    range: 1.3
+    damage:
+      types:
+       Slash: 15
+    wideAnimationRotation: 135
+    heavyStaminaCost: 2
+    angle: 120
+  - type: TeleportStrike
+    maxRange: 7
+    behindOffset: 0.5
+    returnDelay: 0.25
+  - type: Tool
+    qualities:
+      - Prying
+  - type: Utensil
+    breakChance: 0
+  - type: AutoRecharge
+    rechargeDuration: 10
+  - type: Tag
+    tags:
+    - Katana
+    - BotanyHatchet
+  - type: ThrowingAngle
+    angle: 315
+  - type: Clothing
+    sprite: _DV/CosmicCult/Objects/cosmicscythe.rsi
+    slots:
+    - back
+  - type: BoneSaw
+    speed: 0.35
+  - type: SurgeryTool
+    startSound:
+      path: /Audio/_Shitmed/Medical/Surgery/saw.ogg
+  - type: Item
+    size: Ginormous
+    sprite: _DV/CosmicCult/Objects/cosmicscythe-inhands.rsi
+    inhandVisuals:
+      left:
+      - state: inhand-left
+      right:
+      - state: inhand-right
+  - type: IncreaseDamageOnWield
+    damage:
+      types:
+        Structural: 5
+  - type: Reflect
+    reflectProb: .35
+    spread: 120
+    soundOnReflect:
+      path: /Audio/_DV/CosmicCult/cosmicsword_glance.ogg
+      params:
+        variation: 0.2
+        volume: -6
+  - type: Wieldable
+    wieldSound:
+      path: /Audio/_DV/CosmicCult/cosmic_wield.ogg
+      params:
+        variation: 0.2
+        volume: -2
+    unwieldSound:
+      path: /Audio/_DV/CosmicCult/cosmic_unwield.ogg
+      params:
+        variation: 0.2
+        volume: 0
+  - type: DamageOtherOnHit
+    damage:
+      types:
+        Slash: 12
+        Holy: 12
+  - type: Boomerang
+
+- type: entity
+  id: ClothingOuterPlagueSuitDeath
+  suffix: Death
+  parent: [ClothingOuterPlagueSuit]
+  components:
+  - type: PressureProtection
+    highPressureMultiplier: 0.6
+    lowPressureMultiplier: 1000
+  - type: TemperatureProtection
+  - type: Armor
+    modifiers:
+      coefficients:
+        Blunt: 0.1
+        Slash: 0.1
+        Piercing: 0.1
+        Heat: 0.1
+  - type: Unremoveable
+  - type: Storage
+    grid:
+    - 0,0,2,1
+  - type: ContainerContainer
+    containers:
+      storagebase: !type:Container
+        ents: []
+  - type: UserInterface
+    interfaces:
+      enum.StorageUiKey.Key:
+        type: StorageBoundUserInterface
+  - type: StorageFill
+    contents:
+      - id: AmnestizineHypospray
+      - id: BoxAmnestizineCartridge
+
+- type: entity
+  id: BoxFolderCentComClipboardDeath
+  parent: BoxFolderCentComClipboard
+  suffix: Death
+  components:
+  - type: StorageFill
+    contents:
+    - id: DeathTicket
+      amount: 10
+
+#Власні предмети:
+
+- type: entity
+  parent: ClothingNeckBase
+  id: ClothingNeckCloakCOG
+  name: "Стара мантія"
+  description: "Стародавнє багряне вбрання з нині неіснуючого культу."
+  components:
+  - type: Sprite
+    scale: 0.6, 0.6
+    sprite: _Mono/Clothing/Neck/Cloaks/cogcloakicon.rsi
+  - type: Clothing
+    sprite: _Mono/Clothing/Neck/Cloaks/cogcloak.rsi
+  - type: ContainerContainer
+    containers:
+      toggleable-clothing: !type:Container { }
+      storagebase: !type:Container
+        ents: [ ]
+  - type: ToggleableClothing
+    requiredSlot: neck
+    blockUnequipWhenAttached: false
+    replaceCurrentClothing: true
+    clothingPrototypes:
+      head: ClothingHeadHatCOG
+
+- type: entity
+  parent: ClothingUniformSkirtBase
+  id: ClothingUniformMNKBlackShoulder
+  name: "Вбрання МНК з відкритими плечима"
+  description: "Вбрання МНК із відкритими плечима."
+  components:
+  - type: Sprite
+    sprite: _Pirate/Clothing/Misc/exposed_shoulder.rsi
+  - type: Clothing
+    sprite: _Pirate/Clothing/Misc/exposed_shoulder.rsi
+
+- type: entity
+  parent: ClothingHandsBase
+  id: ClothingHandsGlovesConquest
+  name: "вільтрумітовий протез"
+  description: "Готуйся до мого прибуття, черв'як."
+  components:
+  - type: Sprite
+    sprite: _Goobstation/Clothing/Hands/Gloves/conquest.rsi
+  - type: Clothing
+    sprite: _Goobstation/Clothing/Hands/Gloves/conquest.rsi
+  - type: Insulated
+  - type: MeleeWeapon
+    attackRate: 0.8
+    damage:
+      types:
+        Blunt: 80
+        Structural: 120
+    mustBeEquippedToUse: true
+  - type: StaminaDamageOnHit
+    damage: 45
+    overtime: 80
+  - type: Prying
+    pryPowered: true
+    force: true
+    speedModifier: 8 
+
+- type: entity
+  parent: ClothingShoesBootsMagEmergencyResponseTeam
+  id: ClothingShoesBootsMagDeathsquad
+  name: "магнітні черевики загону смерті"
+  description: "Звук цих черевиків є культовим; звук терору."
+  components:
+  - type: Sprite
+    sprite: _Goobstation/Clothing/Shoes/Boots/deathsquad.rsi
+    state: icon
+  - type: Clothing
+    sprite: _Goobstation/Clothing/Shoes/Boots/deathsquad.rsi
+  - type: Item
+    sprite: _Goobstation/Clothing/Shoes/Boots/deathsquad.rsi
+  - type: ClothingSpeedModifier
+    walkModifier: 1.10
+    sprintModifier: 1.10
+  - type: FootstepModifier
+    footstepSoundCollection:
+      collection: FootstepHeavySuit
+  - type: GasTank
+    outputPressure: 42.6
+    air:
+      # 2 minutes of thrust
+      volume: 2
+      temperature: 293.15
+      moles:
+      - 0.153853429 # oxygen
+      - 0.153853429 # nitrogen
+  - type: Tag
+    tags: [] # ignore "WhitelistChameleon" tag
+
+- type: entity
+  name: "резонансна коса"
+  description: "Здається, відповідь тут... Але плід ще недостатньо солодкий."
+  parent: BaseItem
+  id: ReverbScythe
+  components:
+  - type: Sharp
+  - type: Sprite
+    sprite: _Goobstation/Objects/Weapons/Melee/breverb.rsi
+    state: icon
+  - type: MeleeWeapon
+    wideAnimationRotation: 65
+    attackRate: 1.25
+    damage:
+      types:
+        Slash: 65
+    soundHit:
+        path: /Audio/Weapons/bladeslice.ogg
+  - type: Item
+    size: Normal
+    sprite: _Goobstation/Objects/Weapons/Melee/breverb.rsi
+  - type: DisarmMalus
+  - type: Execution
