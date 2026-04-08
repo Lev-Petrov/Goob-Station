@@ -20,19 +20,19 @@
             "directions": 4
         },
         {
-            "name": "sheath-energy-katana-equipped-BELT",
+            "name": "sheath-katana-equipped-BELT",
             "directions": 4
         },
         {
-            "name": "sheath-energy-katana-inhand-left",
+            "name": "sheath-katana-inhand-left",
             "directions": 4
         },
         {
-            "name": "sheath-energy-katana-inhand-right",
+            "name": "sheath-katana-inhand-right",
             "directions": 4
         },
         {
-            "name": "sheath-energy-katana"
+            "name": "sheath-katana"
         },
         {
             "name": "sheath"

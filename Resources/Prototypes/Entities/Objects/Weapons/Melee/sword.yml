@@ -273,9 +273,10 @@
   - type: Tag
     tags:
     - Katana
+    - KatanaSheathable # Pirate: kataba
   - type: KatanaSheathHandle # Pirate: katana
-    sprite: _Pirate/Objects/Weapons/Melee/katana.rsi # Pirate: katana
-    inventoryState: handle-INVENTORY # Pirate: katana
+    sprite: Objects/Weapons/Melee/katana.rsi # Pirate: kataba
+    inventoryState: handle-ICON # Pirate: port EE item offer
     beltState: handle-BELT # Pirate: katana
     backpackState: handle-BACKPACK # Pirate: katana
   - type: Sprite
@@ -310,6 +311,9 @@
   id: EnergyKatana
   description: A katana infused with strong energy.
   components:
+  - type: Tag # Pirate: kataba
+    tags: # Pirate: kataba
+    - Katana # Pirate: kataba
   - type: Sprite
     sprite: Objects/Weapons/Melee/energykatana.rsi
   - type: MeleeWeapon # Pirate: katana

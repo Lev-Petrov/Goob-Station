@@ -1,18 +1,19 @@
 - type: entity
   parent: Katana
-  id: OldKatana
+  id: Uchigatana
   name: katana
   description: Woefully underpowered in D20.
   components:
   - type: Tag
     tags:
     - Katana
+    - KatanaSheathable
   - type: KatanaSheathHandle
-    sprite: Objects/Weapons/Melee/katana.rsi
+    sprite: _Pirate/Objects/Weapons/Melee/uchigatana.rsi
     inventoryState: handle-ICON
     beltState: handle-BELT
     backpackState: handle-BACKPACK
   - type: Sprite
-    sprite: Objects/Weapons/Melee/katana.rsi
+    sprite: _Pirate/Objects/Weapons/Melee/uchigatana.rsi
   - type: Clothing
-    sprite: Objects/Weapons/Melee/katana.rsi
+    sprite: _Pirate/Objects/Weapons/Melee/uchigatana.rsi

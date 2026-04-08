@@ -56,6 +56,7 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
     [Dependency] private readonly SharedStealthSystem _stealth = default!;
     [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly SharedTransformSystem _transform = default!;
+    [Dependency] private readonly SharedWieldableSystem _wieldable = default!;
 
     public override void Initialize()
     {
@@ -69,7 +70,6 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
         SubscribeLocalEvent<TimedDeflectBlockComponent, HeldRelayedEvent<ProjectileReflectAttemptEvent>>(OnProjectileReflectAttempt);
         SubscribeLocalEvent<TimedDeflectBlockComponent, HeldRelayedEvent<HitScanReflectAttemptEvent>>(OnHitscanReflectAttempt);
         SubscribeLocalEvent<TimedDeflectBlockComponent, HeldRelayedEvent<HitScanBlockAttemptEvent>>(OnHitscanBlockAttempt);
-        SubscribeLocalEvent<TimedDeflectBlockComponent, AttemptMeleeEvent>(OnAttemptMelee);
         SubscribeLocalEvent<TimedDeflectBlockComponent, MeleeHitEvent>(OnMeleeHit);
         SubscribeLocalEvent<TimedDeflectBlockComponent, GetMeleeDamageEvent>(OnGetMeleeDamage);
 
@@ -156,6 +156,18 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
 
         ApplyDefense(ent.Owner, weapon, block, args.User, projectile: null, out var deflected);
         args.Cancel();
+
+        // If the attacker was wielding a TimedDeflectBlock weapon, break their grip —
+        // a blocked swing counts as "reaching the target" for the wield-break rule.
+        // BeforeHarmfulActionEvent is shared, but wield state is server-authoritative.
+        if (_net.IsServer &&
+            _hands.TryGetActiveItem(args.User, out var attackerWeapon) &&
+            TryComp<TimedDeflectBlockComponent>(attackerWeapon, out _) &&
+            TryComp<WieldableComponent>(attackerWeapon, out var attackerWieldable) &&
+            attackerWieldable.Wielded)
+        {
+            _wieldable.TryUnwield(attackerWeapon.Value, attackerWieldable, args.User, force: true);
+        }
     }
 
     private void OnProjectileReflectAttempt(
@@ -217,14 +229,6 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
         args.Args.Cancelled = true;
     }
 
-    private void OnAttemptMelee(Entity<TimedDeflectBlockComponent> ent, ref AttemptMeleeEvent args)
-    {
-        if (!TryComp<WieldableComponent>(ent, out var wieldable) || !wieldable.Wielded)
-            return;
-
-        args.Cancelled = true;
-    }
-
     private void OnGetMeleeDamage(Entity<TimedDeflectBlockComponent> ent, ref GetMeleeDamageEvent args)
     {
         var level = GetLevel(ent.Comp);
@@ -248,6 +252,13 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
             return;
 
         SetPower(ent.Owner, ent.Comp, ent.Comp.CurrentPower - ent.Comp.PowerLossOnMeleeHit);
+
+        // Only break the wield when the swing actually reached a target (miss = empty list).
+        if (args.HitEntities.Count > 0 &&
+            TryComp<WieldableComponent>(ent, out var wieldable) && wieldable.Wielded)
+        {
+            _wieldable.TryUnwield(ent.Owner, wieldable, args.User, force: true);
+        }
     }
 
     private bool TryGetActiveDeflectWeapon(

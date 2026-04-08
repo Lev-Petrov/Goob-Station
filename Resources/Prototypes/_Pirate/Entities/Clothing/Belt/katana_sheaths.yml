@@ -50,9 +50,11 @@
   - type: ItemSlots
     slots:
       item:
+        insertSound: /Audio/Items/sheath.ogg
+        ejectSound: /Audio/Items/unsheath.ogg
         whitelist:
           tags:
-          - Katana
+          - KatanaSheathable
 
 - type: entity
   parent: ClothingBeltKatanaSheath
@@ -62,7 +64,7 @@
   - type: ContainerFill
     containers:
       item:
-      - Katana
+      - Uchigatana
 
 - type: entity
   parent: ClothingBeltKatanaSheathBase
@@ -79,9 +81,31 @@
   - type: ItemSlots
     slots:
       item:
+        insertSound: /Audio/Items/sheath.ogg
+        ejectSound: /Audio/Items/unsheath.ogg
         whitelist:
           tags:
-          - Katana
+          - KatanaSheathable
+
+- type: entity
+  parent: ClothingBeltHanzoKatanaSheath
+  id: ClothingBeltHanzoKatanaSheathKatanaFilled
+  suffix: Filled - Katana
+  components:
+  - type: ContainerFill
+    containers:
+      item:
+      - Katana
+
+- type: entity
+  parent: ClothingBeltHanzoKatanaSheath
+  id: ClothingBeltHanzoKatanaSheathUchigatanaFilled
+  suffix: Filled - Uchigatana
+  components:
+  - type: ContainerFill
+    containers:
+      item:
+      - Uchigatana
 
 - type: entity
   parent: ClothingBeltEnergyKatanaSheathBase
@@ -96,12 +120,14 @@
   - type: ItemSlots
     slots:
       item:
+        insertSound: /Audio/Items/sheath.ogg
+        ejectSound: /Audio/Items/unsheath.ogg
         whitelist:
           components:
           - EnergyKatana
   - type: ItemMapper
     mapLayers:
-      sheath-energy-katana:
+      sheath-katana:
         whitelist:
           components:
           - EnergyKatana

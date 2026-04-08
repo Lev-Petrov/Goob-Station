@@ -36,17 +36,41 @@ public sealed class KatanaSheathSystem : EntitySystem
 
     private void UpdateAppearance(Entity<KatanaSheathComponent> ent)
     {
-        if (!_itemSlots.TryGetSlot(ent, ent.Comp.Slot, out var slot) ||
-            slot.Item is not { } stored ||
-            !TryComp<KatanaSheathHandleComponent>(stored, out var handle))
+        if (!_itemSlots.TryGetSlot(ent, ent.Comp.Slot, out var slot) || slot.Item is not { } stored)
         {
             ClearAppearance(ent);
             return;
         }
 
-        _appearance.SetData(ent, KatanaSheathVisuals.InventoryHandle, CreateLayer(handle.Sprite, handle.InventoryState));
-        _appearance.SetData(ent, KatanaSheathVisuals.BeltHandle, CreateLayer(handle.Sprite, handle.BeltState));
-        _appearance.SetData(ent, KatanaSheathVisuals.BackpackHandle, CreateLayer(handle.Sprite, handle.BackpackState));
+        ResPath sprite;
+        string inventoryState, beltState, backpackState;
+
+        if (TryComp<KatanaSheathHandleComponent>(stored, out var handle))
+        {
+            sprite = handle.Sprite;
+            inventoryState = handle.InventoryState;
+            beltState = handle.BeltState;
+            backpackState = handle.BackpackState;
+        }
+        else if (ent.Comp.FallbackSprite is { } fallbackSprite &&
+                 ent.Comp.FallbackInventoryState is { } fallbackInventory &&
+                 ent.Comp.FallbackBeltState is { } fallbackBelt &&
+                 ent.Comp.FallbackBackpackState is { } fallbackBackpack)
+        {
+            sprite = fallbackSprite;
+            inventoryState = fallbackInventory;
+            beltState = fallbackBelt;
+            backpackState = fallbackBackpack;
+        }
+        else
+        {
+            ClearAppearance(ent);
+            return;
+        }
+
+        _appearance.SetData(ent, KatanaSheathVisuals.InventoryHandle, CreateLayer(sprite, inventoryState));
+        _appearance.SetData(ent, KatanaSheathVisuals.BeltHandle, CreateLayer(sprite, beltState));
+        _appearance.SetData(ent, KatanaSheathVisuals.BackpackHandle, CreateLayer(sprite, backpackState));
     }
 
     private void ClearAppearance(Entity<KatanaSheathComponent> ent)

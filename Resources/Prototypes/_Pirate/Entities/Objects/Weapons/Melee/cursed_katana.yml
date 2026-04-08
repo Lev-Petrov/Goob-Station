@@ -5,7 +5,8 @@
   description: A cursed katana that clings to its wielder and refuses to be sheathed.
   components:
   - type: Tag
-    tags: []
+    tags:
+    - Katana # unremovable, can't place in sheath
   - type: Sprite
     sprite: _Pirate/Objects/Weapons/Melee/cursed_katana.rsi
     state: icon
