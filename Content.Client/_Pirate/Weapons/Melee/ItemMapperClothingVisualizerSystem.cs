@@ -3,16 +3,16 @@ using Content.Shared.Clothing;
 using Content.Shared.Clothing.Components;
 using Content.Shared.Item;
 using Content.Shared.Storage.Components;
-using Content.Shared.Storage.EntitySystems;
+using Content.Shared._Pirate.Weapons.Melee.Components;
 using Robust.Client.GameObjects;
-using Robust.Shared.Containers;
 
 namespace Content.Client._Pirate.Weapons.Melee;
 
 /// <summary>
 /// Mirrors ItemMapper layers onto equipped clothing states when the RSI provides
 /// corresponding equipped sprites such as "layer-equipped-BELT".
-/// This is useful for single-item sheaths that use full-sheath filled states.
+/// Requires <see cref="ItemMapperClothingVisualizerComponent"/> on the entity alongside
+/// <c>ItemMapperComponent</c> and <c>AppearanceComponent</c>.
 /// </summary>
 public sealed class ItemMapperClothingVisualizerSystem : EntitySystem
 {
@@ -38,25 +38,20 @@ public sealed class ItemMapperClothingVisualizerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ItemMapperComponent, EntInsertedIntoContainerMessage>(OnContainerChanged,
-            after: [typeof(SharedItemMapperSystem)]);
-        SubscribeLocalEvent<ItemMapperComponent, EntRemovedFromContainerMessage>(OnContainerChanged,
-            after: [typeof(SharedItemMapperSystem)]);
-        SubscribeLocalEvent<ItemMapperComponent, GetEquipmentVisualsEvent>(OnGetEquipmentVisuals,
+        // Subscribe on the marker component to avoid duplicate-subscription conflicts
+        // with SharedItemMapperSystem (which subscribes on ItemMapperComponent).
+        // AppearanceChangeEvent fires after SetData, so ShowLayerData is already current.
+        SubscribeLocalEvent<ItemMapperClothingVisualizerComponent, AppearanceChangeEvent>(OnAppearanceChange);
+        SubscribeLocalEvent<ItemMapperClothingVisualizerComponent, GetEquipmentVisualsEvent>(OnGetEquipmentVisuals,
             after: [typeof(ClientClothingSystem)]);
     }
 
-    private void OnContainerChanged(Entity<ItemMapperComponent> ent, ref EntInsertedIntoContainerMessage args)
+    private void OnAppearanceChange(Entity<ItemMapperClothingVisualizerComponent> ent, ref AppearanceChangeEvent args)
     {
         _item.VisualsChanged(ent);
     }
 
-    private void OnContainerChanged(Entity<ItemMapperComponent> ent, ref EntRemovedFromContainerMessage args)
-    {
-        _item.VisualsChanged(ent);
-    }
-
-    private void OnGetEquipmentVisuals(Entity<ItemMapperComponent> ent, ref GetEquipmentVisualsEvent args)
+    private void OnGetEquipmentVisuals(Entity<ItemMapperClothingVisualizerComponent> ent, ref GetEquipmentVisualsEvent args)
     {
         if (!TryComp<AppearanceComponent>(ent, out var appearance) ||
             !TryComp<ClothingComponent>(ent, out var clothing) ||

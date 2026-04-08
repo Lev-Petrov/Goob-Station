@@ -131,6 +131,7 @@
         whitelist:
           components:
           - EnergyKatana
+  - type: ItemMapperClothingVisualizer
 
 - type: entity
   parent: ClothingBeltEnergyKatanaSheath
