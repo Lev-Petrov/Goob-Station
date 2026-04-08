@@ -479,25 +479,6 @@
   loadouts:
   - BlackShoes
   - WinterBoots 
-  #Pirate Changes Start
-  - SocksPlain
-  - SocksStripedWhite
-  - SocksStripedPurple
-  - SocksStripedRainbow
-  - SocksPrideRainbow
-  - SocksPrideAce
-  - SocksPrideAro
-  - SocksPrideBi
-  - SocksPrideGay
-  - SocksPrideInter
-  - SocksPrideLesbian
-  - SocksPrideNon
-  - SocksPridePan
-  - SocksPrideTrans
-  - SocksCoder
-  - SocksCoderValid
-  - SocksBee 
-  # Pirate Changes End
 
 - type: loadoutGroup
   id: BartenderHead
@@ -919,7 +900,6 @@
   loadouts:
   - BrownShoes
   - CargoWinterBoots
-  - SocksLOLogis # Pirate
 
 - type: loadoutGroup
   id: CargoTechnicianHead
@@ -963,7 +943,6 @@
   loadouts:
   - BlackShoes
   - CargoWinterBoots
-  - SocksLogis # Pirate
 
 - type: loadoutGroup
   id: SalvageSpecialistBackpack
@@ -1034,7 +1013,6 @@
   - BrownShoes
   - EngineeringWinterBoots
   - BootsAwaria # Pirate
-  - SocksChiefEngi # Pirate
 
 - type: loadoutGroup
   id: TechnicalAssistantJumpsuit
@@ -1092,7 +1070,6 @@
   - WorkBoots
   - EngineeringWinterBoots
   - BootsAwaria # Pirate
-  - SocksEngi # Pirate
 
 - type: loadoutGroup
   id: StationEngineerID
@@ -1145,7 +1122,6 @@
   - WhiteShoes
   - EngineeringWinterBoots
   - BootsAwaria # Pirate
-  - SocksEngi # Pirate
 
 - type: loadoutGroup
   id: SurvivalExtended
@@ -1206,7 +1182,6 @@
   loadouts:
   - BrownShoes
   - ScienceWinterBoots
-  - SocksEpiHead # Pirate
 
 - type: loadoutGroup
   id: ScientistHead
@@ -1264,7 +1239,6 @@
   - WhiteShoes
   - BlackShoes
   - ScienceWinterBoots
-  - SocksEpi # Pirate
 
 - type: loadoutGroup
   id: ScientistGloves
@@ -1377,6 +1351,7 @@
   #- SeniorOfficerJumpsuit # Pirate
   #- SeniorOfficerJumpskirt # Pirate
   #- TrooperUniform # Pirate
+  #- VeteranOfficerBlackJumpsuit # Goobstation
 
 - type: loadoutGroup
   id: SecurityBackpack
@@ -1403,6 +1378,7 @@
   - ArmorVestSlim
   - SecurityOfficerWintercoat
   #- WinterCoatSeniorSecArmored # Goobstation # Pirate disable
+  #- VeteranOfficerArmor # Goobstation # Pirate disable
 
 - type: loadoutGroup
   id: SecurityShoes
@@ -1411,8 +1387,6 @@
   - JackBoots
   - CombatBoots # Goobstation
   - SecurityWinterBoots
-  - SocksSecurity # Pirate
-  - SocksDetective # Pirate
 
 - type: loadoutGroup
   id: SecurityPDA
@@ -1526,7 +1500,6 @@
   loadouts:
   - BrownShoes
   - MedicalWinterBoots
-  - SocksCMO # Pirate
 
 - type: loadoutGroup
   id: MedicalDoctorHead
@@ -1578,8 +1551,6 @@
   loadouts:
   - WhiteShoes
   - MedicalWinterBoots
-  - SocksMedic # Pirate
-  - SocksChemist # Pirate
 
 - type: loadoutGroup
   id: MedicalDoctorPDA
@@ -1675,7 +1646,6 @@
   - BlueShoes
   - WhiteShoes
   - MedicalWinterBoots
-  - SocksParaMedic # Pirate
 
 - type: loadoutGroup
   id: MedicalEyewear

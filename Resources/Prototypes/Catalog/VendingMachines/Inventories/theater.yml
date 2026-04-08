@@ -121,10 +121,6 @@
     ClothingOuterSuitPickle: 1
     ClothingOuterSuitTutu: 2 # Goob
     ClothingHeadHatTinfoilHat: 2 # Goobstation
-    # Pirate Changes Start
-    ClothingUnderSocksMusician: 2
-    ClothingUnderSocksStripedWhite: 1
-    # Pirate Changes End
   contrabandInventory:
     ClothingHeadHatRichard: 1
     ClothingShoesBling: 1

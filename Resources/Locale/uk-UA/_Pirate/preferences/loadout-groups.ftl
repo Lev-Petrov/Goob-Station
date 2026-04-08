@@ -24,12 +24,3 @@ loadout-group-interdyne-stamp-officer = Печатка офіцера Інтер
 loadout-group-interdyne-stamp-deputy = Печатка заступника офіцера Інтердайну
 loadout-group-interdyne-surgery = Хірургічне спорядження Інтердайну
 loadout-group-interdyne-key = Ключ шифрування Інтердайну
-
-loadout-group-captain-shoes = Взуття капітана
-loadout-group-hop-shoes = Взуття голови персоналу
-loadout-group-bartender-shoes = Взуття бармена
-loadout-group-chef-shoes = Взуття шеф-кухаря
-loadout-group-chaplain-shoes = Взуття капелана
-loadout-group-janitor-shoes = Взуття прибиральника
-loadout-group-musician-shoes = Взуття музиканта
-loadout-group-service-worker-shoes = Взуття сервісного працівника

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Content.Client.UserInterface.Systems.Ghost.Widgets;
+using Content.Goobstation.Common.Cloning;
 using Content.Goobstation.Server.MisandryBox.Mind;
 using Content.Goobstation.Shared.MisandryBox.Thunderdome;
 using Content.IntegrationTests.Pair;
@@ -130,7 +131,7 @@ public sealed class GhostRespawnLobbyTests
     public async Task CriticalGhostStartsTimer()
     {
         var delay = TimeSpan.FromSeconds(5);
-        await using var pair = await SetupRoundPair(delay, ghostKillCrit: true);
+        await using var pair = await SetupRoundPair(delay, ghostKillCrit: false);
         var userId = pair.Client.User!.Value;
         var respawnSystem = pair.Server.System<PirateGhostRespawnSystem>();
         var mobState = pair.Server.System<MobStateSystem>();
@@ -398,6 +399,338 @@ public sealed class GhostRespawnLobbyTests
         {
             var button = GetReturnToRoundButton(ui);
             Assert.That(button.Disabled, Is.False);
+        });
+
+        await pair.CleanReturnAsync();
+    }
+
+    [Test]
+    public async Task RevivedCrewGhostRestartsRespawnTimer()
+    {
+        var delay = TimeSpan.FromSeconds(5);
+        await using var pair = await SetupRoundPair(delay);
+        var userId = pair.Client.User!.Value;
+        var respawnSystem = pair.Server.System<PirateGhostRespawnSystem>();
+        var mindSystem = pair.Server.System<MindSystem>();
+        var mobState = pair.Server.System<MobStateSystem>();
+
+        await pair.Server.WaitPost(() =>
+        {
+            var entity = pair.Server.PlayerMan.Sessions.Single().AttachedEntity!.Value;
+            mobState.ChangeMobState(entity, MobState.Dead);
+        });
+        await pair.RunTicksSync(5);
+
+        await Ghost(pair);
+
+        var originalAvailableAt = TimeSpan.Zero;
+        await pair.Server.WaitAssertion(() =>
+        {
+            var state = respawnSystem.GetDebugState(userId);
+            Assert.That(state.TimerArmed, Is.True);
+            originalAvailableAt = state.RespawnAvailableAt;
+        });
+
+        await pair.RunTicksSync(GetTicksForDelay(pair, delay) + 5);
+
+        await pair.Server.WaitPost(() =>
+        {
+            var session = pair.Server.PlayerMan.Sessions.Single();
+            Assert.That(mindSystem.TryGetMind(session.UserId, out EntityUid? mindId, out var mind), Is.True);
+            var body = mind!.OwnedEntity!.Value;
+            mobState.ChangeMobState(body, MobState.Alive);
+            mindSystem.UnVisit(mindId!.Value, mind);
+        });
+        await pair.RunTicksSync(10);
+
+        await pair.Server.WaitAssertion(() =>
+        {
+            var session = pair.Server.PlayerMan.Sessions.Single();
+            var state = respawnSystem.GetDebugState(userId);
+            Assert.That(session.AttachedEntity, Is.Not.Null);
+            Assert.That(pair.Server.EntMan.HasComponent<GhostComponent>(session.AttachedEntity!.Value), Is.False);
+            Assert.That(state.TimerArmed, Is.False);
+        });
+
+        await pair.Server.WaitPost(() =>
+        {
+            var entity = pair.Server.PlayerMan.Sessions.Single().AttachedEntity!.Value;
+            mobState.ChangeMobState(entity, MobState.Dead);
+        });
+        await pair.RunTicksSync(5);
+
+        await Ghost(pair);
+
+        await pair.Server.WaitAssertion(() =>
+        {
+            var state = respawnSystem.GetDebugState(userId);
+            var availability = respawnSystem.GetDebugAvailability(userId);
+            Assert.That(state.TimerArmed, Is.True);
+            Assert.That(state.RespawnAvailableAt, Is.GreaterThan(originalAvailableAt));
+            Assert.That(availability.CanRespawn, Is.False);
+            Assert.That(availability.RemainingTime, Is.GreaterThan(TimeSpan.Zero));
+        });
+
+        await pair.CleanReturnAsync();
+    }
+
+    [Test]
+    public async Task RevivedCrewDyingAgainWhileStillGhostRearmsRespawnTimer()
+    {
+        var delay = TimeSpan.FromSeconds(5);
+        await using var pair = await SetupRoundPair(delay);
+        var userId = pair.Client.User!.Value;
+        var respawnSystem = pair.Server.System<PirateGhostRespawnSystem>();
+        var mindSystem = pair.Server.System<MindSystem>();
+        var mobState = pair.Server.System<MobStateSystem>();
+        var ui = pair.Client.ResolveDependency<IUserInterfaceManager>();
+
+        await pair.Server.WaitPost(() =>
+        {
+            var entity = pair.Server.PlayerMan.Sessions.Single().AttachedEntity!.Value;
+            mobState.ChangeMobState(entity, MobState.Dead);
+        });
+        await pair.RunTicksSync(5);
+
+        await Ghost(pair);
+
+        await pair.Server.WaitAssertion(() =>
+        {
+            var state = respawnSystem.GetDebugState(userId);
+            Assert.That(state.TimerArmed, Is.True);
+        });
+
+        await pair.Server.WaitPost(() =>
+        {
+            var session = pair.Server.PlayerMan.Sessions.Single();
+            Assert.That(mindSystem.TryGetMind(session.UserId, out _, out var mind), Is.True);
+            var body = mind!.OwnedEntity!.Value;
+            mobState.ChangeMobState(body, MobState.Alive);
+        });
+        await pair.RunTicksSync(10);
+
+        await pair.Server.WaitAssertion(() =>
+        {
+            var state = respawnSystem.GetDebugState(userId);
+            Assert.That(state.TimerArmed, Is.False);
+        });
+
+        await pair.Client.WaitAssertion(() =>
+        {
+            var button = GetReturnToRoundButton(ui);
+            Assert.That(button.Visible, Is.False);
+        });
+
+        await pair.Server.WaitPost(() =>
+        {
+            var session = pair.Server.PlayerMan.Sessions.Single();
+            Assert.That(mindSystem.TryGetMind(session.UserId, out _, out var mind), Is.True);
+            var body = mind!.OwnedEntity!.Value;
+            mobState.ChangeMobState(body, MobState.Dead);
+        });
+        await pair.RunTicksSync(10);
+
+        await pair.Server.WaitAssertion(() =>
+        {
+            var state = respawnSystem.GetDebugState(userId);
+            var availability = respawnSystem.GetDebugAvailability(userId);
+            Assert.That(state.TimerArmed, Is.True);
+            Assert.That(availability.CanRespawn, Is.False);
+            Assert.That(availability.RemainingTime, Is.GreaterThan(TimeSpan.Zero));
+        });
+
+        await pair.Client.WaitAssertion(() =>
+        {
+            var button = GetReturnToRoundButton(ui);
+            Assert.That(button.Visible, Is.True);
+            Assert.That(button.Disabled, Is.True);
+            Assert.That(button.Text, Is.Not.Null.And.Not.Empty);
+        });
+
+        await pair.CleanReturnAsync();
+    }
+
+    [Test]
+    public async Task ClonedCrewGhostRestartsRespawnTimer()
+    {
+        var delay = TimeSpan.FromSeconds(5);
+        await using var pair = await SetupRoundPair(delay);
+        var userId = pair.Client.User!.Value;
+        var respawnSystem = pair.Server.System<PirateGhostRespawnSystem>();
+        var mindSystem = pair.Server.System<MindSystem>();
+        var mobState = pair.Server.System<MobStateSystem>();
+        var entMan = pair.Server.EntMan;
+
+        await pair.Server.WaitPost(() =>
+        {
+            var entity = pair.Server.PlayerMan.Sessions.Single().AttachedEntity!.Value;
+            mobState.ChangeMobState(entity, MobState.Dead);
+        });
+        await pair.RunTicksSync(5);
+
+        await Ghost(pair);
+
+        var originalAvailableAt = TimeSpan.Zero;
+        await pair.Server.WaitAssertion(() =>
+        {
+            var state = respawnSystem.GetDebugState(userId);
+            Assert.That(state.TimerArmed, Is.True);
+            originalAvailableAt = state.RespawnAvailableAt;
+        });
+
+        await pair.RunTicksSync(GetTicksForDelay(pair, delay) + 5);
+
+        await pair.Server.WaitPost(() =>
+        {
+            var session = pair.Server.PlayerMan.Sessions.Single();
+            Assert.That(mindSystem.TryGetMind(session.UserId, out EntityUid? mindId, out var mind), Is.True);
+            var originalBody = mind!.OwnedEntity!.Value;
+            var coords = entMan.GetComponent<TransformComponent>(originalBody).Coordinates;
+            var clone = entMan.SpawnEntity("MobHuman", coords);
+            mindSystem.TransferTo(mindId!.Value, clone, ghostCheckOverride: true, mind: mind);
+
+            var ev = new TransferredToCloneEvent(clone);
+            entMan.EventBus.RaiseLocalEvent(originalBody, ref ev);
+        });
+        await pair.RunTicksSync(10);
+
+        await pair.Server.WaitAssertion(() =>
+        {
+            var session = pair.Server.PlayerMan.Sessions.Single();
+            var state = respawnSystem.GetDebugState(userId);
+            Assert.That(session.AttachedEntity, Is.Not.Null);
+            Assert.That(pair.Server.EntMan.HasComponent<GhostComponent>(session.AttachedEntity!.Value), Is.False);
+            Assert.That(state.TimerArmed, Is.False);
+        });
+
+        await pair.Server.WaitPost(() =>
+        {
+            var entity = pair.Server.PlayerMan.Sessions.Single().AttachedEntity!.Value;
+            mobState.ChangeMobState(entity, MobState.Dead);
+        });
+        await pair.RunTicksSync(5);
+
+        await Ghost(pair);
+
+        var cloneAvailableAt = TimeSpan.Zero;
+        await pair.Server.WaitAssertion(() =>
+        {
+            var state = respawnSystem.GetDebugState(userId);
+            var availability = respawnSystem.GetDebugAvailability(userId);
+            Assert.That(state.TimerArmed, Is.True);
+            Assert.That(state.RespawnAvailableAt, Is.GreaterThan(originalAvailableAt));
+            Assert.That(availability.CanRespawn, Is.False);
+            Assert.That(availability.RemainingTime, Is.GreaterThan(TimeSpan.Zero));
+            cloneAvailableAt = state.RespawnAvailableAt;
+        });
+
+        await pair.RunTicksSync(GetTicksForDelay(pair, delay) + 5);
+
+        await pair.Server.WaitPost(() =>
+        {
+            var session = pair.Server.PlayerMan.Sessions.Single();
+            Assert.That(mindSystem.TryGetMind(session.UserId, out EntityUid? mindId, out var mind), Is.True);
+            var body = mind!.OwnedEntity!.Value;
+            mobState.ChangeMobState(body, MobState.Alive);
+            mindSystem.UnVisit(mindId!.Value, mind);
+        });
+        await pair.RunTicksSync(10);
+
+        await pair.Server.WaitAssertion(() =>
+        {
+            var state = respawnSystem.GetDebugState(userId);
+            Assert.That(state.TimerArmed, Is.False);
+        });
+
+        await pair.Server.WaitPost(() =>
+        {
+            var entity = pair.Server.PlayerMan.Sessions.Single().AttachedEntity!.Value;
+            mobState.ChangeMobState(entity, MobState.Dead);
+        });
+        await pair.RunTicksSync(5);
+
+        await Ghost(pair);
+
+        await pair.Server.WaitAssertion(() =>
+        {
+            var state = respawnSystem.GetDebugState(userId);
+            var availability = respawnSystem.GetDebugAvailability(userId);
+            Assert.That(state.TimerArmed, Is.True);
+            Assert.That(state.RespawnAvailableAt, Is.GreaterThan(cloneAvailableAt));
+            Assert.That(availability.CanRespawn, Is.False);
+            Assert.That(availability.RemainingTime, Is.GreaterThan(TimeSpan.Zero));
+        });
+
+        await pair.CleanReturnAsync();
+    }
+
+    [Test]
+    public async Task NonCloneTransferredCrewGhostRestartsRespawnTimer()
+    {
+        var delay = TimeSpan.FromSeconds(5);
+        await using var pair = await SetupRoundPair(delay);
+        var userId = pair.Client.User!.Value;
+        var respawnSystem = pair.Server.System<PirateGhostRespawnSystem>();
+        var mindSystem = pair.Server.System<MindSystem>();
+        var mobState = pair.Server.System<MobStateSystem>();
+        var entMan = pair.Server.EntMan;
+
+        await pair.Server.WaitPost(() =>
+        {
+            var entity = pair.Server.PlayerMan.Sessions.Single().AttachedEntity!.Value;
+            mobState.ChangeMobState(entity, MobState.Dead);
+        });
+        await pair.RunTicksSync(5);
+
+        await Ghost(pair);
+
+        var originalAvailableAt = TimeSpan.Zero;
+        await pair.Server.WaitAssertion(() =>
+        {
+            var state = respawnSystem.GetDebugState(userId);
+            Assert.That(state.TimerArmed, Is.True);
+            originalAvailableAt = state.RespawnAvailableAt;
+        });
+
+        await pair.RunTicksSync(GetTicksForDelay(pair, delay) + 5);
+
+        await pair.Server.WaitPost(() =>
+        {
+            var session = pair.Server.PlayerMan.Sessions.Single();
+            Assert.That(mindSystem.TryGetMind(session.UserId, out EntityUid? mindId, out var mind), Is.True);
+            var originalBody = mind!.OwnedEntity!.Value;
+            var coords = entMan.GetComponent<TransformComponent>(originalBody).Coordinates;
+            var replacement = entMan.SpawnEntity("MobHuman", coords);
+            mindSystem.TransferTo(mindId!.Value, replacement, ghostCheckOverride: true, mind: mind);
+        });
+        await pair.RunTicksSync(10);
+
+        await pair.Server.WaitAssertion(() =>
+        {
+            var session = pair.Server.PlayerMan.Sessions.Single();
+            var state = respawnSystem.GetDebugState(userId);
+            Assert.That(session.AttachedEntity, Is.Not.Null);
+            Assert.That(pair.Server.EntMan.HasComponent<GhostComponent>(session.AttachedEntity!.Value), Is.False);
+            Assert.That(state.TimerArmed, Is.False);
+        });
+
+        await pair.Server.WaitPost(() =>
+        {
+            var entity = pair.Server.PlayerMan.Sessions.Single().AttachedEntity!.Value;
+            mobState.ChangeMobState(entity, MobState.Dead);
+        });
+        await pair.RunTicksSync(5);
+
+        await Ghost(pair);
+
+        await pair.Server.WaitAssertion(() =>
+        {
+            var state = respawnSystem.GetDebugState(userId);
+            var availability = respawnSystem.GetDebugAvailability(userId);
+            Assert.That(state.TimerArmed, Is.True);
+            Assert.That(state.RespawnAvailableAt, Is.GreaterThan(originalAvailableAt));
+            Assert.That(availability.CanRespawn, Is.False);
+            Assert.That(availability.RemainingTime, Is.GreaterThan(TimeSpan.Zero));
         });
 
         await pair.CleanReturnAsync();

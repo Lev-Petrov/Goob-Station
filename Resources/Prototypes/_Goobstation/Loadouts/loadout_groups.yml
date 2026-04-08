@@ -1157,8 +1157,9 @@
   minLimit: 0
   loadouts:
   - Bodycam # Goobstation - Body cameras
-  - CameraCollar # Pirate
   #- ClothingNeckCWPSec # Pirate disable
+  - ClothingNeckMantleVeteranSecurity
+  - CameraCollar # Pirate
 
 #honkops
 
@@ -1302,6 +1303,7 @@
   minLimit: 0
   loadouts:
   - MinerCloak
+  - SalvageEspecialistEnsemble # Pirate
 
 # Chemist
 
@@ -1348,7 +1350,6 @@
   - JackBoots
   - SecurityWinterBoots
   - AdvancedJackBoots
-  - SocksHeadSecurity # Pirate
 
 - type: loadoutGroup
   id: HeadofSecurityEnvirohelm

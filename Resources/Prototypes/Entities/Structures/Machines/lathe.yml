@@ -904,6 +904,7 @@
     - MedicalBoards
     - Janitor
     - Genetics
+    - MedicalCloning
     # Einstein Engines Packs
     - Translators # Language
     - TranslatorImplanters # Language
@@ -948,7 +949,6 @@
     - ClothingScience
     - ClothingSecurity
     - ClothingService
-    - PirateSocksLatheRecipePackStatic # Pirate
     - WinterCoats
     - Ties
     - Scarves

@@ -15,6 +15,7 @@ using Content.Pirate.Shared.Traits.PhysicalPotential;
 using Robust.Shared.Random;
 using Robust.Shared.Physics.Components;
 using Robust.Shared.Timing;
+using Content.Shared.Alert;
 
 namespace Content.Pirate.Server.Traits.PhysicalPotential
 {
@@ -25,14 +26,23 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
         [Dependency] private readonly IGameTiming _timing = default!;
         [Dependency] private readonly HungerSystem _hungerSystem = default!;
         [Dependency] private readonly IRobustRandom _random = default!;
+        [Dependency] private readonly AlertsSystem _alertsSystem = default!;
 
         public override void Initialize()
         {
             base.Initialize();
             SubscribeLocalEvent<MeleeHitEvent>(OnMeleeHit);
-            SubscribeLocalEvent<PhysicalPotentialComponent, CloningEvent>(OnClone);
             SubscribeLocalEvent<PhysicalPotentialComponent, DamageModifyEvent>(OnDamageModify);
             SubscribeLocalEvent<PhysicalPotentialComponent, ForcedStandSucceededEvent>(OnForcedStandSucceeded);
+
+            SubscribeLocalEvent<PhysicalPotentialComponent, ComponentInit>(OnComponentInit);
+
+            SubscribeLocalEvent<PhysicalPotentialComponent, CloningEvent>(OnClone);
+        }
+
+        private void OnComponentInit(EntityUid uid, PhysicalPotentialComponent comp, ComponentInit args)
+        {
+            UpdateAlert(uid, comp);
         }
 
         public override void Update(float frameTime)
@@ -98,53 +108,6 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             return damageStrain;
         }
 
-        private void OnClone(Entity<PhysicalPotentialComponent> ent, ref CloningEvent args)
-        {
-            if (!args.Settings.EventComponents.Contains(Factory.GetRegistration(ent.Comp.GetType()).Name))
-                return;
-
-            var clone = EnsureComp<PhysicalPotentialComponent>(args.CloneUid);
-            clone.trainingEffectiveness = ent.Comp.trainingEffectiveness;
-            clone.Strains = new List<TrainingStrain>(ent.Comp.Strains.Count);
-            foreach (var strain in ent.Comp.Strains)
-            {
-                clone.Strains.Add(new TrainingStrain
-                {
-                    Damage = new DamageSpecifier(strain.Damage),
-                    Defense = strain.Defense,
-                    Stamina = strain.Stamina
-                });
-            }
-
-            clone.DamageBonus = new DamageSpecifier(ent.Comp.DamageBonus);
-            clone.MaxDamageBonus = ent.Comp.MaxDamageBonus;
-            clone.DamageRisingSpeed = ent.Comp.DamageRisingSpeed;
-            clone.DefenseRisingSpeed = ent.Comp.DefenseRisingSpeed;
-            clone.DefenseBonus = ent.Comp.DefenseBonus;
-            clone.MaxDefenseBonus = ent.Comp.MaxDefenseBonus;
-            clone.StaminaRisingSpeed = ent.Comp.StaminaRisingSpeed;
-            clone.MaxStamina = ent.Comp.MaxStamina;
-            clone.StaminaBonus = ent.Comp.StaminaBonus;
-            clone.SprintTimer = ent.Comp.SprintTimer;
-            clone.SprintInterval = ent.Comp.SprintInterval;
-            clone.PushUpsEfficiency = ent.Comp.PushUpsEfficiency;
-            clone.TimeForRest = ent.Comp.TimeForRest;
-            clone.EndRestTime = ent.Comp.EndRestTime;
-            clone.IsResting = ent.Comp.IsResting;
-            clone.NextStrainTime = ent.Comp.NextStrainTime;
-            clone.MaxStrainsNumber = ent.Comp.MaxStrainsNumber;
-            clone.StrainsApplyingDelay = ent.Comp.StrainsApplyingDelay;
-            clone.HungerCost = ent.Comp.HungerCost;
-
-            if (TryComp<StaminaComponent>(args.CloneUid, out var stamina))
-            {
-                stamina.CritThreshold += clone.StaminaBonus;
-                Dirty(args.CloneUid, stamina);
-            }
-
-            Dirty(args.CloneUid, clone);
-        }
-
         // -- DAMAGE --
         private void OnDamageModify(EntityUid uid, PhysicalPotentialComponent comp, DamageModifyEvent args)
         {
@@ -156,24 +119,6 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
                 var newStrain = new TrainingStrain { Defense = comp.DefenseRisingSpeed };
                 AddStrain(comp, newStrain);
             }
-        }
-
-        // -- PUSH-UP --
-        private void OnForcedStandSucceeded(EntityUid uid, PhysicalPotentialComponent comp, ForcedStandSucceededEvent args)
-        {
-            if (!TryComp<MeleeWeaponComponent>(uid, out var melee)) return;
-
-            var damageStrain = GetDamageStain(comp, melee.Damage);
-
-            // Create and queue a new training strain 
-            var newStrain = new TrainingStrain
-            {
-                Damage = damageStrain * comp.PushUpsEfficiency,
-                Defense = comp.DefenseRisingSpeed * comp.PushUpsEfficiency,
-                Stamina = comp.StaminaRisingSpeed * comp.PushUpsEfficiency
-            };
-
-            AddStrain(comp, newStrain);
         }
 
         private static bool ApplyDefenseReduction(DamageSpecifier damage, FixedPoint2 defenseBonus)
@@ -222,6 +167,23 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             return true;
         }
 
+        // -- PUSH-UP --
+        private void OnForcedStandSucceeded(EntityUid uid, PhysicalPotentialComponent comp, ForcedStandSucceededEvent args)
+        {
+            if (!TryComp<MeleeWeaponComponent>(uid, out var melee)) return;
+
+            // Create and queue a new training strain 
+            var newStrain = new TrainingStrain
+            {
+                Damage = GetDamageStain(comp, melee.Damage),
+                Defense = comp.DefenseRisingSpeed,
+                Stamina = comp.StaminaRisingSpeed
+            };
+
+            float effectivenes = comp.trainingEffectiveness * comp.PushUpsEfficiency;
+            AddStrain(comp, newStrain, effectivenes);
+        }
+
         // -- STAMINA AND SPRINT --
         private void UpdateSprintProgress(float frameTime, EntityUid uid, PhysicalPotentialComponent comp)
         {
@@ -251,29 +213,42 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
         #endregion
 
         #region Strain Handling 
-        // Adds a new training point to the processing queue 
-        public void AddStrain(PhysicalPotentialComponent comp, TrainingStrain strain)
+        public void AddStrain(PhysicalPotentialComponent comp, TrainingStrain strain, float? effectivenes = null)
         {
+            // Use the provided effectiveness value or fall back to the component's default
+            float currentEffectiveness = effectivenes ?? comp.trainingEffectiveness;
+
+            // Calculate the number of guaranteed additions (integer part)
+            int fullExecutions = (int) MathF.Floor(currentEffectiveness);
+
+            // Add strains as many times as the integer part allows
+            for (int i = 0; i < fullExecutions; i++)
+            {
+                // Stop adding if the maximum strain limit is reached
+                if (comp.Strains.Count >= comp.MaxStrainsNumber) break;
+                comp.Strains.Add(strain);
+            }
+
+            // If there is still room in the list, process the fractional part
             if (comp.Strains.Count < comp.MaxStrainsNumber)
             {
-                int fullExecutions = (int) MathF.Floor(comp.trainingEffectiveness);
+                // Calculate the remainder (e.g., 0.3 from 1.3)
+                float remainder = currentEffectiveness - (float) MathF.Floor(currentEffectiveness);
 
-                for (int i = 0; i < fullExecutions; i++)
-                {
-                    comp.Strains.Add(strain);
-                }
-
-                float remainder = comp.trainingEffectiveness - fullExecutions;
-                if (_random.Prob(remainder))
+                // Add a "bonus" strain based on the probability of the remainder
+                if (remainder > 0 && _random.Prob(remainder))
                 {
                     comp.Strains.Add(strain);
                 }
             }
 
-            // Set cooldown (rest period) before training absorption begins 
+            // Reset the rest timer and set the cooldown period
             comp.EndRestTime = _timing.CurTime + TimeSpan.FromSeconds(comp.TimeForRest);
             comp.IsResting = true;
         }
+
+
+
 
         private void HandleRecovery(EntityUid uid, PhysicalPotentialComponent comp)
         {
@@ -328,7 +303,9 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
                 }
             }
 
-            comp.Strains.RemoveAt(comp.Strains.Count -1);
+            comp.Strains.RemoveAt(comp.Strains.Count - 1);
+
+            UpdateAlert(uid, comp);
 
             // Mark component as dirty to sync data with the client 
             Dirty(uid, comp);
@@ -340,5 +317,66 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             }
         }
         #endregion
+
+        #region Alert
+        private void UpdateAlert(EntityUid uid, PhysicalPotentialComponent comp)
+        {
+            short stateIndex = (short) Math.Clamp(Math.Round(comp.PowerLevel / 10f * 9f), 0, 9);
+
+            _alertsSystem.ShowAlert(uid, "PhysicalPotential", stateIndex);
+        }
+
+
+
+
+
+        #endregion
+
+        private void OnClone(Entity<PhysicalPotentialComponent> ent, ref CloningEvent args)
+        {
+            if (!args.Settings.EventComponents.Contains(Factory.GetRegistration(ent.Comp.GetType()).Name))
+                return;
+
+            var clone = EnsureComp<PhysicalPotentialComponent>(args.CloneUid);
+            clone.trainingEffectiveness = ent.Comp.trainingEffectiveness;
+            clone.Strains = new List<TrainingStrain>(ent.Comp.Strains.Count);
+            foreach (var strain in ent.Comp.Strains)
+            {
+                clone.Strains.Add(new TrainingStrain
+                {
+                    Damage = new DamageSpecifier(strain.Damage),
+                    Defense = strain.Defense,
+                    Stamina = strain.Stamina
+                });
+            }
+
+            clone.DamageBonus = new DamageSpecifier(ent.Comp.DamageBonus);
+            clone.MaxDamageBonus = ent.Comp.MaxDamageBonus;
+            clone.DamageRisingSpeed = ent.Comp.DamageRisingSpeed;
+            clone.DefenseRisingSpeed = ent.Comp.DefenseRisingSpeed;
+            clone.DefenseBonus = ent.Comp.DefenseBonus;
+            clone.MaxDefenseBonus = ent.Comp.MaxDefenseBonus;
+            clone.StaminaRisingSpeed = ent.Comp.StaminaRisingSpeed;
+            clone.MaxStamina = ent.Comp.MaxStamina;
+            clone.StaminaBonus = ent.Comp.StaminaBonus;
+            clone.SprintTimer = ent.Comp.SprintTimer;
+            clone.SprintInterval = ent.Comp.SprintInterval;
+            clone.PushUpsEfficiency = ent.Comp.PushUpsEfficiency;
+            clone.TimeForRest = ent.Comp.TimeForRest;
+            clone.EndRestTime = ent.Comp.EndRestTime;
+            clone.IsResting = ent.Comp.IsResting;
+            clone.NextStrainTime = ent.Comp.NextStrainTime;
+            clone.MaxStrainsNumber = ent.Comp.MaxStrainsNumber;
+            clone.StrainsApplyingDelay = ent.Comp.StrainsApplyingDelay;
+            clone.HungerCost = ent.Comp.HungerCost;
+
+            if (TryComp<StaminaComponent>(args.CloneUid, out var stamina))
+            {
+                stamina.CritThreshold += clone.StaminaBonus;
+                Dirty(args.CloneUid, stamina);
+            }
+
+            Dirty(args.CloneUid, clone);
+        }
     }
 }

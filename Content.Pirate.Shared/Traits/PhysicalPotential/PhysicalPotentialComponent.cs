@@ -18,6 +18,9 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
 
         [DataField("stamina")]
         public float Stamina { get; set; }
+
+        [DataField("effectiveness")]
+        public float effectivenes;
     }
 
     /// <summary> 
@@ -27,7 +30,7 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
     public sealed partial class PhysicalPotentialComponent : Component
     {
         [DataField("trainingEffectiveness"), ViewVariables(VVAccess.ReadWrite)]
-        public float trainingEffectiveness = 0.5f;
+        public float trainingEffectiveness = 1f;
 
         #region Damage
         [DataField("strains")]
@@ -51,7 +54,7 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
         public FixedPoint2 DefenseBonus = new();
 
         [DataField("maxDefenseBonus"), ViewVariables(VVAccess.ReadWrite)]
-        public float MaxDefenseBonus = 5;
+        public float MaxDefenseBonus = 0.3f;
         #endregion
 
         #region Stamina and Sprint
@@ -71,11 +74,11 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
         #endregion
 
         [DataField("pushUpsEfficiency"), ViewVariables(VVAccess.ReadWrite)]
-        public float PushUpsEfficiency = 0.3f;
+        public float PushUpsEfficiency = 0.5f;
 
         #region Rest
         [DataField("timeForRest"), ViewVariables(VVAccess.ReadWrite)]
-        public float TimeForRest = 15f;
+        public float TimeForRest = 180f;
 
         [ViewVariables] public TimeSpan EndRestTime;
         [ViewVariables] public bool IsResting;
@@ -92,5 +95,18 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
         [DataField("hungerCost"), ViewVariables(VVAccess.ReadWrite)]
         public float HungerCost = 1f;
         #endregion
+
+        public float PowerLevel
+        {
+            get
+            {
+                // Перетворюємо кожну частину у float перед додаванням
+                float damage = DamageBonus.GetTotal().Float();
+                float defense = DefenseBonus.Float();
+                float stamina = (StaminaBonus / 50f);
+
+                return (damage + defense + stamina) / 3f;
+            }
+        }
     }
 }
