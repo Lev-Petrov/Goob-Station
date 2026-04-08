@@ -12,3 +12,19 @@ ent-NullrodHolyKatana = suncatcher
 
 ent-CursedKatana = cursed katana
     .desc = A cursed katana that clings to its wielder and refuses to be sheathed.
+
+ent-DarkShard = dark shard
+    .desc = An eerie metal shard wrapped in dark energy.
+
+ent-ActionCallCursedKatana = call cursed katana
+    .desc = Summon your cursed katana into your hand, or retract it back into the shard.
+
+ent-SurgeryRemoveDarkShard = Remove Dark Shard
+
+dark-shard-already-implanted = The shard rejects you — your body already carries one.
+dark-shard-no-blood = The dark shard rejects you — it requires a blood bond to function.
+dark-shard-no-chest = You don't have a chest to implant the shard into.
+dark-shard-insert-failed = The shard fails to merge with your body.
+dark-shard-implanted = The shard merges with your body. Your katana answers your call.
+dark-shard-removed = The shard is extracted. The bond is severed.
+dark-shard-no-free-hand = You need a free hand to summon the katana!

@@ -1,8 +1,6 @@
 - type: entity
   parent: BaseItem
   id: DarkShard
-  name: dark shard
-  description: An eerie metal shard surrounded by dark energies.
   components:
   - type: Sharp
   - type: Sprite
@@ -16,10 +14,6 @@
     damage:
       types:
         Slash: 7
-  - type: UseDelay
-    delay: 1
-  - type: SpawnItemsOnUse
-    items:
-    - id: CursedKatana
-    sound:
-      path: /Audio/Effects/demon_consume.ogg
+  - type: DarkShard
+  - type: Organ
+    slotId: dark_shard
