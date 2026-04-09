@@ -31,6 +31,7 @@ using Robust.Shared.Audio.Systems;
 using Robust.Shared.GameStates;
 using Robust.Shared.Map;
 using Robust.Shared.Network;
+using Robust.Shared.Containers;
 using Robust.Shared.Physics.Components;
 using Robust.Shared.Physics.Systems;
 using Robust.Shared.Player;
@@ -42,6 +43,7 @@ namespace Content.Shared._Pirate.Weapons.Melee;
 public sealed class TimedDeflectBlockSystem : EntitySystem
 {
     [Dependency] private readonly SharedAudioSystem _audio = default!;
+    [Dependency] private readonly SharedContainerSystem _containers = default!;
     [Dependency] private readonly ClothingSystem _clothing = default!;
     [Dependency] private readonly SharedHandsSystem _hands = default!;
     [Dependency] private readonly SharedItemSystem _item = default!;
@@ -86,17 +88,38 @@ public sealed class TimedDeflectBlockSystem : EntitySystem
         var query = EntityQueryEnumerator<TimedDeflectBlockComponent>();
         while (query.MoveNext(out var uid, out var block))
         {
+            // Detect sheath state by checking if the weapon is inside a SheathPreservesEnergy container.
+            var sheathed = _containers.TryGetContainingContainer((uid, null, null), out var container)
+                && HasComp<SheathPreservesEnergyComponent>(container.Owner);
+
+            if (sheathed && !block.IsSheathed)
+            {
+                // Just sheathed — record when.
+                block.IsSheathed = true;
+                block.SheathStartTime = _timing.CurTime;
+            }
+            else if (!sheathed && block.IsSheathed)
+            {
+                // Just unsheathed — push LastDeflectTime forward so the sheathed period
+                // only counts at SheathDecayMultiplier speed toward the decay delay.
+                var sheathDuration = _timing.CurTime - block.SheathStartTime;
+                block.LastDeflectTime += sheathDuration * (1.0 - block.SheathWindowMultiplier);
+                block.IsSheathed = false;
+            }
+
             if (_timing.CurTime - block.LastDeflectTime < TimeSpan.FromSeconds(block.PowerDecayDelay) ||
                 block.CurrentPower <= block.MinPower)
             {
                 continue;
             }
 
+            var decayRate = sheathed ? block.SheathDecayMultiplier : 1f;
+
             // Advance power locally every frame without marking dirty —
             // clients derive display and damage from the discrete level, not the float.
             var levelBefore = GetLevel(block);
             block.CurrentPower = Math.Clamp(
-                block.CurrentPower - block.PowerDecayPerSecond * frameTime,
+                block.CurrentPower - block.PowerDecayPerSecond * frameTime * decayRate,
                 block.MinPower,
                 block.MaxPower);
 

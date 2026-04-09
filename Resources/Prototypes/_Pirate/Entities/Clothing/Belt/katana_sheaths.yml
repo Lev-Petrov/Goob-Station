@@ -16,6 +16,7 @@
         insertSound: /Audio/Items/sheath.ogg
         ejectSound: /Audio/Items/unsheath.ogg
   - type: KatanaSheath
+  - type: SheathPreservesEnergy
   - type: Appearance
 
 - type: entity
@@ -35,6 +36,7 @@
         ejectVerbText: sheath-eject-verb
         insertSound: /Audio/Items/sheath.ogg
         ejectSound: /Audio/Items/unsheath.ogg
+  - type: SheathPreservesEnergy
   - type: Appearance
 
 - type: entity
@@ -55,6 +57,9 @@
         whitelist:
           tags:
           - KatanaSheathable
+  - type: Construction
+    graph: ClothingBeltKatanaSheath
+    node: sheath
 
 - type: entity
   parent: ClothingBeltKatanaSheath
@@ -86,6 +91,9 @@
         whitelist:
           tags:
           - KatanaSheathable
+  - type: Construction
+    graph: ClothingBeltDarkKatanaSheath
+    node: sheath
 
 - type: entity
   parent: ClothingBeltDarkKatanaSheath

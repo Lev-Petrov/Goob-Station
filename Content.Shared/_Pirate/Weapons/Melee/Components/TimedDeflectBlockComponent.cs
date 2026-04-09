@@ -95,4 +95,23 @@ public sealed partial class TimedDeflectBlockComponent : Component
     public TimeSpan DeflectWindowEnd = TimeSpan.Zero;
 
     public TimeSpan LastDeflectTime = TimeSpan.Zero;
+
+    /// <summary>
+    /// Scales the effective time counted toward <see cref="PowerDecayDelay"/> while sheathed.
+    /// 0.25 = the delay window is 4× larger (sheathed time counts at 25%).
+    /// </summary>
+    [DataField]
+    public float SheathWindowMultiplier = 0.25f;
+
+    /// <summary>
+    /// Scales <see cref="PowerDecayPerSecond"/> while the weapon is inside a
+    /// <see cref="SheathPreservesEnergyComponent"/> container.
+    /// 0.5 = decay is 2× slower than normal.
+    /// </summary>
+    [DataField]
+    public float SheathDecayMultiplier = 0.5f;
+
+    // Runtime sheath-tracking — not networked, server only.
+    public bool IsSheathed;
+    public TimeSpan SheathStartTime;
 }
