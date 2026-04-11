@@ -9,7 +9,5 @@
     back: ClothingBackpackHoldingInvisible
     belt: BoxFolderCentComClipboardDeath
     ears: ClothingHeadsetAltCentCom
-  storage:
-    outerClothing:
+  inhand:
     - WeaponScytheDeath
-      
