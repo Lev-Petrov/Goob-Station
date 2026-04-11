@@ -986,3 +986,15 @@ Entries:
       message: катана як варіант спорядження на тандердромі
   id: 81
   time: '2026-04-11T12:33:14.0000000+00:00'
+- author: AgentMaper
+  changes:
+    - type: Add
+      message: Доданий новий паралакс з Trieste Port
+    - type: Add
+      message: Доданий наш власний маппул
+    - type: Tweak
+      message: Оновлені мапи GateTP та GlacierTP
+    - type: Fix
+      message: Прототипи наших мап перенесені в папку _Pirate
+  id: 82
+  time: '2026-04-11T12:39:08.0000000+00:00'
