@@ -65,14 +65,20 @@ gs-balanceui-shop-token-label = Tokens
 gs-balanceui-shop-tittle-label = Titles
 
 gs-balanceui-shop-buy-token-antag = Buy an Antag Token - {$price} Goob Coins
+gs-balanceui-shop-buy-major-token-antag = Buy an Major Antag Token - {$price} Goob Coins
+gs-balanceui-shop-buy-minor-token-antag = Buy an Minor Antag Token - {$price} Goob Coins
 gs-balanceui-shop-buy-token-admin-abuse = Buy an Admin Abuse Token - {$price} Goob Coins
 gs-balanceui-shop-buy-token-hat = Buy a Hat Token - {$price} Goob Coins
 
 gs-balanceui-shop-token-antag = High Tier Antag Token
+gs-balanceui-shop-major-token-antag = Major Tier Antag Token
+gs-balanceui-shop-minor-token-antag = Minor Tier Antag Token
 gs-balanceui-shop-token-admin-abuse = Admin Abuse Token
 gs-balanceui-shop-token-hat = Hat Token
 
 gs-balanceui-shop-buy-token-antag-desc = Allows you become any antag. (Excluding Wizards)
+gs-balanceui-shop-buy-major-token-antag-desc = Allows you become major antag.
+gs-balanceui-shop-buy-minor-token-antag-desc = Allows you become minor antag.
 gs-balanceui-shop-buy-token-admin-abuse-desc = Allows you to request an admin to abuse their powers against you. Admins are encouraged to go wild.
 gs-balanceui-shop-buy-token-hat-desc = An admin will give you a random hat.
 
@@ -81,6 +87,8 @@ gs-balanceui-admin-add-player = Player name
 gs-balanceui-admin-add-value = Value
 
 gs-balanceui-remark-token-antag = Bought an antag token.
+gs-balanceui-remark-major-token-antag = Bought an major antag token.
+gs-balanceui-remark-minor-token-antag = Bought an minor antag token.
 gs-balanceui-remark-token-admin-abuse = Bought an admin abuse token.
 gs-balanceui-remark-token-hat = Bought a hat token.
 gs-balanceui-shop-click-confirm = Click again to confirm
