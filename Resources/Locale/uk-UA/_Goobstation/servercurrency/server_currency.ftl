@@ -65,14 +65,20 @@ gs-balanceui-shop-token-label = Жетони
 gs-balanceui-shop-tittle-label = Титули
 
 gs-balanceui-shop-buy-token-antag = Купити жетон антагоніста - {$price} губкоїнів
+gs-balanceui-shop-buy-major-token-antag = Купити жетон мажорного антагоніста - {$price} губкоїнів
+gs-balanceui-shop-buy-minor-token-antag = Купити жетон мінорного антагоніста - {$price} губкоїнів
 gs-balanceui-shop-buy-token-admin-abuse = Купити жетон зловживання адміна - {$price} губкоїнів
 gs-balanceui-shop-buy-token-hat = Купити жетон капелюха - {$price} губкоїнів
 
 gs-balanceui-shop-token-antag = Жетон антагоніста високого рівня
+gs-balanceui-shop-major-token-antag = Жетон мажорного антагоніста
+gs-balanceui-shop-minor-token-antag = Жетон мінорного антагоніста
 gs-balanceui-shop-token-admin-abuse = Жетон зловживання адміна
 gs-balanceui-shop-token-hat = Жетон капелюха
 
 gs-balanceui-shop-buy-token-antag-desc = Дозволяє стати будь-яким антагоністом (окрім чарівників)
+gs-balanceui-shop-buy-major-token-antag-desc = Дозволяє стати мажорним антагоністом
+gs-balanceui-shop-buy-minor-token-antag-desc = Дозволяє стати мінорним антагоністом
 gs-balanceui-shop-buy-token-admin-abuse-desc = Дозволяє вам попросити адміна зловживати своїми повноваженнями проти вас. Адмінам рекомендується не стримуватися.
 gs-balanceui-shop-buy-token-hat-desc = Адмін видасть вам випадковий капелюх.
 
@@ -81,6 +87,8 @@ gs-balanceui-admin-add-player = Ім'я гравця
 gs-balanceui-admin-add-value = Сума
 
 gs-balanceui-remark-token-antag = Куплено жетон антагоніста.
+gs-balanceui-remark-major-token-antag = Куплено жетон мажорного антагоніста.
+gs-balanceui-remark-minor-token-antag = Куплено жетон мінорного антагоніста.
 gs-balanceui-remark-token-admin-abuse = Куплено жетон зловживання адміна.
 gs-balanceui-remark-token-hat = Куплено жетон капелюха.
 gs-balanceui-shop-click-confirm = Натисніть ще раз для підтвердження
