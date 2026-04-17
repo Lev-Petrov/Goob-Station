@@ -1,0 +1,6 @@
+stock-trading-company-nanotrasen = NanoTrasen [NT]
+stock-trading-company-einstein = Einstein Engines [EE]
+stock-trading-company-idris = Idris Incorporated [IDR]
+stock-trading-company-zavodskiy = Zavodskiy Interstellar [ZI]
+stock-trading-company-hephaestus = Hephaestus Industries [HI]
+stock-trading-company-zenghu = Zeng-Hu Pharmaceuticals [ZH]
