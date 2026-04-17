@@ -13,6 +13,8 @@ namespace Content.Client._Pirate.Projectiles;
 
 public sealed class PredictedProjectileSystem : EntitySystem
 {
+    private static readonly TimeSpan PendingPairTtl = TimeSpan.FromSeconds(0.5);
+
     [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly SharedPhysicsSystem _physics = default!;
     [Dependency] private readonly SpriteSystem _sprite = default!;
@@ -32,10 +34,13 @@ public sealed class PredictedProjectileSystem : EntitySystem
         public Angle Rotation;
     }
 
+    private readonly record struct PendingPromoted(EntityUid Projectile, TimeSpan ExpiresAt);
+    private readonly record struct PendingAuthoritativeLink(EntityUid Promoted, TimeSpan ExpiresAt);
+
     private readonly Dictionary<EntityUid, PromotedData> _promoted = new();
-    private readonly Queue<EntityUid> _pendingPromoted = new();
+    private readonly Queue<PendingPromoted> _pendingPromoted = new();
     private readonly HashSet<NetEntity> _pendingHide = new();
-    private readonly Dictionary<NetEntity, EntityUid> _pendingAuthoritativeLinks = new();
+    private readonly Dictionary<NetEntity, PendingAuthoritativeLink> _pendingAuthoritativeLinks = new();
     private readonly Dictionary<EntityUid, EntityUid> _authoritativeToPromoted = new();
     private readonly Dictionary<EntityUid, EntityUid> _promotedToAuthoritative = new();
     private readonly HashSet<EntityUid> _hiddenAuthoritative = new();
@@ -53,6 +58,9 @@ public sealed class PredictedProjectileSystem : EntitySystem
     public override void Update(float frameTime)
     {
         base.Update(frameTime);
+
+        PrunePendingPromoted();
+        PrunePendingAuthoritativeLinks();
 
         // Advance promoted entities only during the main tick, not during re-simulation.
         if (_timing.IsFirstTimePredicted)
@@ -104,11 +112,8 @@ public sealed class PredictedProjectileSystem : EntitySystem
             if (!uid.IsValid())
                 continue;
 
-            _hiddenAuthoritative.Add(uid);
-            HideProjectile(uid);
-
-            if (_pendingAuthoritativeLinks.Remove(netEnt, out var promoted))
-                LinkAuthoritativeProjectile(uid, promoted);
+            var promoted = ConsumePendingAuthoritativeLink(netEnt);
+            HideAndLinkAuthoritative(uid, promoted);
 
             resolved.Add(netEnt);
         }
@@ -151,7 +156,7 @@ public sealed class PredictedProjectileSystem : EntitySystem
                 Velocity = localVel,
                 Rotation = _transform.GetWorldRotation(xform),
             };
-            _pendingPromoted.Enqueue(args.Projectile);
+            _pendingPromoted.Enqueue(new PendingPromoted(args.Projectile, GetPendingPairExpiry()));
         }
         else
         {
@@ -162,24 +167,18 @@ public sealed class PredictedProjectileSystem : EntitySystem
 
     private void OnShotPredictedProjectile(ShotPredictedProjectileEvent args)
     {
-        EntityUid? promoted = null;
-        if (_pendingPromoted.Count > 0)
-            promoted = _pendingPromoted.Dequeue();
+        var promoted = DequeuePendingPromoted();
 
         var uid = GetEntity(args.Projectile);
         if (uid.IsValid())
         {
-            _hiddenAuthoritative.Add(uid);
-            HideProjectile(uid);
-
-            if (promoted is { } promotedUid)
-                LinkAuthoritativeProjectile(uid, promotedUid);
+            HideAndLinkAuthoritative(uid, promoted);
         }
         else
         {
             _pendingHide.Add(args.Projectile);
             if (promoted is { } promotedUid)
-                _pendingAuthoritativeLinks[args.Projectile] = promotedUid;
+                _pendingAuthoritativeLinks[args.Projectile] = new PendingAuthoritativeLink(promotedUid, GetPendingPairExpiry());
         }
     }
 
@@ -205,7 +204,9 @@ public sealed class PredictedProjectileSystem : EntitySystem
 
     private void LinkAuthoritativeProjectile(EntityUid authoritative, EntityUid promoted)
     {
-        if (TerminatingOrDeleted(authoritative) || TerminatingOrDeleted(promoted))
+        if (TerminatingOrDeleted(authoritative) ||
+            TerminatingOrDeleted(promoted) ||
+            !_promoted.ContainsKey(promoted))
             return;
 
         if (_authoritativeToPromoted.TryGetValue(authoritative, out var existingPromoted))
@@ -216,6 +217,79 @@ public sealed class PredictedProjectileSystem : EntitySystem
 
         _authoritativeToPromoted[authoritative] = promoted;
         _promotedToAuthoritative[promoted] = authoritative;
+    }
+
+    private void HideAndLinkAuthoritative(EntityUid uid, EntityUid? promoted = null)
+    {
+        _hiddenAuthoritative.Add(uid);
+        HideProjectile(uid);
+
+        if (promoted is { } promotedUid)
+            LinkAuthoritativeProjectile(uid, promotedUid);
+    }
+
+    private TimeSpan GetPendingPairExpiry()
+    {
+        return _timing.CurTime + PendingPairTtl;
+    }
+
+    private EntityUid? DequeuePendingPromoted()
+    {
+        PrunePendingPromoted();
+
+        if (_pendingPromoted.Count == 0)
+            return null;
+
+        return _pendingPromoted.Dequeue().Projectile;
+    }
+
+    private EntityUid? ConsumePendingAuthoritativeLink(NetEntity netEnt)
+    {
+        PrunePendingAuthoritativeLinks();
+
+        if (!_pendingAuthoritativeLinks.Remove(netEnt, out var pending) ||
+            IsStalePendingPromoted(pending.Promoted, pending.ExpiresAt))
+        {
+            return null;
+        }
+
+        return pending.Promoted;
+    }
+
+    private void PrunePendingPromoted()
+    {
+        while (_pendingPromoted.Count > 0)
+        {
+            var pending = _pendingPromoted.Peek();
+            if (!IsStalePendingPromoted(pending.Projectile, pending.ExpiresAt))
+                break;
+
+            _pendingPromoted.Dequeue();
+        }
+    }
+
+    private void PrunePendingAuthoritativeLinks()
+    {
+        if (_pendingAuthoritativeLinks.Count == 0)
+            return;
+
+        var stale = new ValueList<NetEntity>();
+        foreach (var (netEnt, pending) in _pendingAuthoritativeLinks)
+        {
+            if (IsStalePendingPromoted(pending.Promoted, pending.ExpiresAt))
+                stale.Add(netEnt);
+        }
+
+        foreach (var netEnt in stale)
+            _pendingAuthoritativeLinks.Remove(netEnt);
+    }
+
+    private bool IsStalePendingPromoted(EntityUid promoted, TimeSpan expiresAt)
+    {
+        return _timing.CurTime >= expiresAt ||
+               TerminatingOrDeleted(promoted) ||
+               !_promoted.ContainsKey(promoted) ||
+               _promotedToAuthoritative.ContainsKey(promoted);
     }
 
     private void HideProjectile(EntityUid uid)
