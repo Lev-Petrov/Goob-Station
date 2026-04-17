@@ -77,7 +77,6 @@ public sealed class StockMarketSystem : EntitySystem
         }
 
         stockMarket.NextUpdate = _timing.CurTime + stockMarket.UpdateInterval;
-        Dirty(args.Station, stockMarket);
         UpdateStockMarket(args.Station);
     }
 
