@@ -5,22 +5,22 @@ character-employer-requirement = Ви повинні{$inverted ->
     *[other]{""}
 } бути працевлаштованим в одній з цих організацій: {$employers}
 
-employer_name_nanotrasen = NanoTrasen
+employer_name_nanotrasen = НаноТрейзен
 
 employer_name_unemployed = Безробітний
 
-employer_name_hephaestusindustries = Hephaestus Industries
+employer_name_hephaestusindustries = Гефест Індастріз
 
-employer_name_einsteinengines = Einstein Engines
+employer_name_einsteinengines = Двигуни Ейнштейна
 
-employer_name_zenghupharmaceuticals = Zeng-Hu Pharmaceuticals
+employer_name_zenghupharmaceuticals = Зенг-Ху Фармасьютікалз
 
-employer_name_idrisincorporated = Idris Incorporated
+employer_name_idrisincorporated = Ідріс Інкорпорейтед
 
-employer_name_zavodskiyinterstellar = Zavodskiy Interstellar
+employer_name_zavodskiyinterstellar = Заводський Інтерстеллар
 
-employer_name_orionexpress = Orion Express
+employer_name_orionexpress = Оріон Експрес
 
-employer_name_pmcg = PMCG
+employer_name_pmcg = ПВКГ
 
-employer_name_interdyne = Interdyne
+employer_name_interdyne = Інтердайн
