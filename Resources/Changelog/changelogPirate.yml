@@ -1105,3 +1105,13 @@ Entries:
       message: Дезертири Солу
   id: 93
   time: '2026-04-19T19:16:23.0000000+00:00'
+- author: The-Devils-Luck
+  changes:
+    - type: Tweak
+      message: Змінив шанси спавна антагів
+    - type: Tweak
+      message: Додав диявола в секрет+
+    - type: Tweak
+      message: Збільшив шанс на спавн контрактора
+  id: 94
+  time: '2026-04-20T16:00:58.0000000+00:00'
