@@ -562,16 +562,16 @@
   id: ContractorSpawnMidround
   components:
   - type: GameRule
-    chaosScore: 400
+    chaosScore: 300
   - type: RuleGrids
   - type: LoadMapRule
     gridPath: /Maps/_Goobstation/Shuttles/ShuttleEvent/Legionnaire.yml
   - type: StationEvent
     startAnnouncement: null
-    weight: 1
+    weight: 2
     duration: null
-    earliestStart: 30
-    minimumPlayers: 30
+    earliestStart: 20
+    minimumPlayers: 25
     chaos:
       Hostile: 40
       Combat: 40
