@@ -16,6 +16,9 @@ using Robust.Shared.Random;
 using Robust.Shared.Physics.Components;
 using Robust.Shared.Timing;
 using Content.Shared.Alert;
+using Content.Shared.Examine;
+using Content.Shared.Stunnable;
+using Content.Shared.Standing;
 
 namespace Content.Pirate.Server.Traits.PhysicalPotential
 {
@@ -33,11 +36,13 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             base.Initialize();
             SubscribeLocalEvent<MeleeHitEvent>(OnMeleeHit);
             SubscribeLocalEvent<PhysicalPotentialComponent, DamageModifyEvent>(OnDamageModify);
-            SubscribeLocalEvent<PhysicalPotentialComponent, ForcedStandSucceededEvent>(OnForcedStandSucceeded);
+            SubscribeLocalEvent<PhysicalPotentialComponent, StoodEvent>(OnStood);
 
             SubscribeLocalEvent<PhysicalPotentialComponent, ComponentInit>(OnComponentInit);
 
             SubscribeLocalEvent<PhysicalPotentialComponent, CloningEvent>(OnClone);
+
+            SubscribeLocalEvent<PhysicalPotentialComponent, ExaminedEvent>(OnExamine);
         }
 
         private void OnComponentInit(EntityUid uid, PhysicalPotentialComponent comp, ComponentInit args)
@@ -168,7 +173,7 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
         }
 
         // -- PUSH-UP --
-        private void OnForcedStandSucceeded(EntityUid uid, PhysicalPotentialComponent comp, ForcedStandSucceededEvent args)
+        private void OnStood(EntityUid uid, PhysicalPotentialComponent comp,StoodEvent args)
         {
             if (!TryComp<MeleeWeaponComponent>(uid, out var melee)) return;
 
@@ -247,9 +252,6 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             comp.IsResting = true;
         }
 
-
-
-
         private void HandleRecovery(EntityUid uid, PhysicalPotentialComponent comp)
         {
             if (!TryComp<MobStateComponent>(uid, out var mob) || mob.CurrentState != MobState.Alive) return;
@@ -292,7 +294,7 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             }
 
             // Update stamina bonus
-            if (TryComp<StaminaComponent>(uid, out var stamina))
+            if (TryComp<StaminaComponent>(uid, out var stamina) && comp.StaminaBonus < comp.MaxStamina)
             {
                 var staminaIncrease = MathF.Min(strain.Stamina, comp.MaxStamina - stamina.CritThreshold);
                 if (staminaIncrease > 0f)
@@ -318,19 +320,13 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
         }
         #endregion
 
-        #region Alert
         private void UpdateAlert(EntityUid uid, PhysicalPotentialComponent comp)
         {
-            short stateIndex = (short) Math.Clamp(Math.Round(comp.PowerLevel / 10f * 9f), 0, 9);
+            short stateIndex = (short) Math.Clamp(Math.Round(comp.PowerLevel * 1.8f), 0, 9);
 
             _alertsSystem.ShowAlert(uid, "PhysicalPotential", stateIndex);
         }
 
-
-
-
-
-        #endregion
 
         private void OnClone(Entity<PhysicalPotentialComponent> ent, ref CloningEvent args)
         {
@@ -377,6 +373,21 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             }
 
             Dirty(args.CloneUid, clone);
+        }
+
+        private void OnExamine(EntityUid uid, PhysicalPotentialComponent comp, ExaminedEvent args)
+        {
+            if (comp.PowerLevel < 1.4f) return;
+
+            string key = comp.PowerLevel switch
+            {
+                >= 4 => "system-physical-potential-examine-level3",
+                >= 3 => "system-physical-potential-examine-level2",
+                _ => "system-physical-potential-examine-level1",
+            };
+
+            // Додаємо текст з невеликим відступом або кольором для помітності
+            args.PushMarkup(Loc.GetString(key));
         }
     }
 }
