@@ -1,6 +1,5 @@
 using Content.Goobstation.Maths.FixedPoint;
 using Content.Goobstation.Shared.Sprinting;
-using Content.Shared._Pirate.Stunnable;
 using Content.Shared.Damage;
 using Content.Shared.Damage.Components;
 using Content.Shared.Cloning.Events;
@@ -17,8 +16,12 @@ using Robust.Shared.Physics.Components;
 using Robust.Shared.Timing;
 using Content.Shared.Alert;
 using Content.Shared.Examine;
-using Content.Shared.Stunnable;
 using Content.Shared.Standing;
+using Content.Shared.IdentityManagement;
+using Robust.Shared.Enums;
+using Content.Shared.Humanoid;
+using Robust.Shared.GameObjects;
+using Robust.Shared.GameObjects.Components.Localization;
 
 namespace Content.Pirate.Server.Traits.PhysicalPotential
 {
@@ -377,13 +380,26 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
 
             string key = comp.PowerLevel switch
             {
-                >= 4 => "system-physical-potential-examine-level3",
-                >= 3 => "system-physical-potential-examine-level2",
+                >= 4f => "system-physical-potential-examine-level3",
+                >= 3f => "system-physical-potential-examine-level2",
                 _ => "system-physical-potential-examine-level1",
             };
 
-            // Додаємо текст з невеликим відступом або кольором для помітності
-            args.PushMarkup(Loc.GetString(key));
+            // Використовуємо логіку, яку ти знайшов:
+            var entityGender = Gender.Neuter; // за замовчуванням
+
+            if (TryComp<HumanoidAppearanceComponent>(uid, out var humanoid))
+            {
+                entityGender = humanoid.Gender;
+            }
+            else if (TryComp<GrammarComponent>(uid, out var grammar))
+            {
+                entityGender = grammar.Gender ?? Gender.Neuter;
+            }
+
+            // Передаємо об'єкт Gender безпосередньо. 
+            // Fluent сам зрозуміє його як male/female/neuter/epicene.
+            args.PushMarkup(Loc.GetString(key, ("gender", (object) entityGender)));
         }
     }
 }
