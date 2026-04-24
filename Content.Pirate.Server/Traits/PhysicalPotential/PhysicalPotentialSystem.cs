@@ -296,13 +296,9 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             // Update stamina bonus
             if (TryComp<StaminaComponent>(uid, out var stamina) && comp.StaminaBonus < comp.MaxStamina)
             {
-                var staminaIncrease = MathF.Min(strain.Stamina, comp.MaxStamina - stamina.CritThreshold);
-                if (staminaIncrease > 0f)
-                {
-                    stamina.CritThreshold += staminaIncrease;
-                    comp.StaminaBonus += staminaIncrease;
-                    Dirty(uid, stamina);
-                }
+                stamina.CritThreshold += strain.Stamina;
+                comp.StaminaBonus += strain.Stamina;
+                Dirty(uid, stamina);
             }
 
             comp.Strains.RemoveAt(comp.Strains.Count - 1);
