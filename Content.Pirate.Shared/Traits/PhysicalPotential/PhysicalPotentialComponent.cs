@@ -76,7 +76,7 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
 
         #region Physical
         [DataField("physicalTrainingEfficiency"), ViewVariables(VVAccess.ReadWrite)]
-        public float PhysicalTrainingEfficiency = 1f;
+        public float PhysicalTrainingEfficiency = 0.01f;
 
         [DataField("physicalStrain")]
         public List<float> PhysicalStrains = new List<float>();
@@ -90,8 +90,14 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
         [DataField("maxMuscleMass"), ViewVariables(VVAccess.ReadWrite)]
         public float MaxMuscleMass = 1f;
 
+//Push-Ups
         [DataField("pushUpsEfficiency"), ViewVariables(VVAccess.ReadWrite)]
         public float PushUpsEfficiency = 0.2f;
+
+        [DataField("pushUpWindow")]
+        public float PushUpWindow = 0.2f;
+
+        public TimeSpan LastStandTime;
         #endregion
 
         #region Rest

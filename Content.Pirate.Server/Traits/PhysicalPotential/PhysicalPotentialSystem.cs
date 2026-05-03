@@ -39,7 +39,9 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             base.Initialize();
             SubscribeLocalEvent<MeleeHitEvent>(OnMeleeHit);
             SubscribeLocalEvent<PhysicalPotentialComponent, DamageModifyEvent>(OnDamageModify);
+
             SubscribeLocalEvent<PhysicalPotentialComponent, StoodEvent>(OnStood);
+            SubscribeLocalEvent<PhysicalPotentialComponent, DownedEvent>(OnDowned);
 
             SubscribeLocalEvent<SolutionComponent, SolutionChangedEvent>(OnSolutionChanged);
 
@@ -235,8 +237,16 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
         // -- PUSH-UP --
         private void OnStood(EntityUid uid, PhysicalPotentialComponent comp, StoodEvent args)
         {
-           AddPhysicalStrain(comp, comp.PushUpsEfficiency * comp.PhysicalTrainingEfficiency);
-           _popup.PopupEntity("віджався", uid, uid);
+           comp.LastStandTime = _timing.CurTime;
+        }
+
+        private void OnDowned(EntityUid uid, PhysicalPotentialComponent comp, DownedEvent args)
+        {
+            if ((_timing.CurTime - comp.LastStandTime).TotalSeconds < comp.PushUpWindow)
+            {
+                AddPhysicalStrain(comp, comp.PushUpsEfficiency * comp.PhysicalTrainingEfficiency);
+                _popup.PopupEntity("віджався", uid, uid);
+            }
         }
         #endregion
 
@@ -338,7 +348,6 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
                 stamina.CritThreshold -= comp.CurrentStaminaBonus;
                 comp.CurrentStaminaBonus = comp.StaminaBonus * comp.MuscleMass;
                 stamina.CritThreshold += comp.CurrentStaminaBonus;
-                Logger.Info("витривалість" + stamina.CritThreshold);
                 Dirty(uid, stamina);
             }
 
@@ -377,8 +386,6 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
                 comp.MuscleMass += comp.PhysicalTrainingEfficiency;
 
                 if(comp.MuscleMass > comp.MaxMuscleMass) comp.MuscleMass = comp.MaxMuscleMass;
-
-                Logger.Info("Білки витрачені");
             }
 
             UpdateAlert(uid, comp);
@@ -388,9 +395,16 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
 
         private void UpdateAlert(EntityUid uid, PhysicalPotentialComponent comp)
         {
-            short stateIndex = (short)(comp.MuscleMass /  comp.MaxMuscleMass * 9);
+            if(comp.MuscleMass >= 0.025f)
+            {
+                short stateIndex = (short) (comp.MuscleMass / comp.MaxMuscleMass * 9);
 
-            _alertsSystem.ShowAlert(uid, "PhysicalPotential", stateIndex);
+                _alertsSystem.ShowAlert(uid, "PhysicalPotential", stateIndex);
+            }
+            else
+            {
+                _alertsSystem.ClearAlert(uid, "PhysicalPotential");
+            }
         }
 
 
@@ -443,12 +457,12 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
 
         private void OnExamine(EntityUid uid, PhysicalPotentialComponent comp, ExaminedEvent args)
         {
-            if (comp.PowerLevel < 1.4f) return;
+            if (comp.PowerLevel < 0.3f) return;
 
             string key = comp.PowerLevel switch
             {
-                >= 4f => "system-physical-potential-examine-level3",
-                >= 3f => "system-physical-potential-examine-level2",
+                >= 0.8f => "system-physical-potential-examine-level3",
+                >= 0.5f => "system-physical-potential-examine-level2",
                 _ => "system-physical-potential-examine-level1",
             };
 
