@@ -6,9 +6,6 @@ using Content.Shared.Cloning.Events;
 using Content.Shared.Movement.Components;
 using Content.Shared.Mobs;
 using Content.Shared.Mobs.Components;
-using Content.Shared.Nutrition.Components;
-using Content.Shared.Nutrition.EntitySystems;
-using Content.Shared.Weapons.Melee;
 using Content.Shared.Weapons.Melee.Events;
 using Content.Pirate.Shared.Traits.PhysicalPotential;
 using Robust.Shared.Random;
@@ -17,11 +14,13 @@ using Robust.Shared.Timing;
 using Content.Shared.Alert;
 using Content.Shared.Examine;
 using Content.Shared.Standing;
-using Content.Shared.IdentityManagement;
 using Robust.Shared.Enums;
 using Content.Shared.Humanoid;
-using Robust.Shared.GameObjects;
 using Robust.Shared.GameObjects.Components.Localization;
+using Content.Shared.Chemistry.EntitySystems;
+using Content.Shared.Chemistry.Components;
+using Content.Shared.Popups;
+using static Content.Shared.Administration.Notes.AdminMessageEuiState;
 
 namespace Content.Pirate.Server.Traits.PhysicalPotential
 {
@@ -30,9 +29,10 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
         private static readonly string[] PhysicalDamageTypes = { "Blunt", "Slash", "Piercing" };
 
         [Dependency] private readonly IGameTiming _timing = default!;
-        [Dependency] private readonly HungerSystem _hungerSystem = default!;
         [Dependency] private readonly IRobustRandom _random = default!;
         [Dependency] private readonly AlertsSystem _alertsSystem = default!;
+        [Dependency] private readonly SharedPopupSystem _popup = default!;
+
 
         public override void Initialize()
         {
@@ -40,6 +40,8 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             SubscribeLocalEvent<MeleeHitEvent>(OnMeleeHit);
             SubscribeLocalEvent<PhysicalPotentialComponent, DamageModifyEvent>(OnDamageModify);
             SubscribeLocalEvent<PhysicalPotentialComponent, StoodEvent>(OnStood);
+
+            SubscribeLocalEvent<SolutionComponent, SolutionChangedEvent>(OnSolutionChanged);
 
             SubscribeLocalEvent<PhysicalPotentialComponent, ComponentInit>(OnComponentInit);
 
@@ -64,14 +66,14 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             }
         }
 
-        #region Calculate strains
+        #region Technical strains
         // -- HITS --
         private void OnMeleeHit(MeleeHitEvent args)
         {
             if (!TryComp<PhysicalPotentialComponent>(args.User, out var comp))
                 return;
 
-            args.BonusDamage += comp.DamageBonus;
+            args.BonusDamage += comp.DamageBonus * comp.MuscleMass;
 
             var resolvedDamage = new DamageSpecifier(args.BaseDamage);
             resolvedDamage += args.BonusDamage;
@@ -87,8 +89,8 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
                 if (mob.CurrentState != MobState.Alive) continue;
 
                 // Create and queue a new training strain
-                var newStrain = new TrainingStrain { Damage = damageStrain };
-                AddStrain(comp, newStrain);
+                var newStrain = new TechnicalStrain { Damage = damageStrain };
+                AddTechnicalStrain(comp, newStrain);
             }
         }
 
@@ -116,24 +118,38 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             return damageStrain;
         }
 
-        // -- DAMAGE --
+        // --DEFENSE--
         private void OnDamageModify(EntityUid uid, PhysicalPotentialComponent comp, DamageModifyEvent args)
         {
-            var trainsDefense = ApplyDefenseReduction(args.Damage, comp.DefenseBonus);
+            // Try to reduce incoming physical damage by the entity's defense bonus.
+            var trainsDefense = ApplyDefenseReduction(args.Damage, comp.DefenseBonus * comp.MuscleMass);
+
+            // Check if the damaged entity is still alive.
             var isAlive = TryComp<MobStateComponent>(uid, out var mob) && mob.CurrentState == MobState.Alive;
 
+            // Add strain
             if (args.Origin != null && trainsDefense && isAlive && args.Damage.GetTotal() > 0)
             {
-                var newStrain = new TrainingStrain { Defense = comp.DefenseRisingSpeed };
-                AddStrain(comp, newStrain);
+                var newStrain = new TechnicalStrain
+                {
+                    // Defense strain gained per successful physical hit.
+                    Defense = comp.DefenseRisingSpeed
+                };
+
+                AddTechnicalStrain(comp, newStrain);
             }
         }
 
         private static bool ApplyDefenseReduction(DamageSpecifier damage, FixedPoint2 defenseBonus)
         {
             var totalPhysicalDamage = FixedPoint2.Zero;
+
+            // Stores the last valid physical damage type.
+            // This is used to dump all rounding leftovers into the final type
+            // so that the full defenseBonus is consumed accurately.
             string? lastPositiveType = null;
 
+            // First pass: calculate total physical damage only.
             foreach (var type in PhysicalDamageTypes)
             {
                 if (!damage.DamageDict.TryGetValue(type, out var amount) || amount <= FixedPoint2.Zero)
@@ -146,50 +162,46 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             if (totalPhysicalDamage <= FixedPoint2.Zero)
                 return false;
 
+            // Defense cannot reduce more than total available physical damage.
             var remainingReduction = FixedPoint2.Min(defenseBonus, totalPhysicalDamage);
+
+            // If defense bonus is zero or something went wrong, exit.
             if (remainingReduction <= FixedPoint2.Zero || lastPositiveType == null)
                 return true;
 
+            // Second pass: distribute defense reduction proportionally
+            // across all physical damage types.
             foreach (var type in PhysicalDamageTypes)
             {
                 if (!damage.DamageDict.TryGetValue(type, out var amount) || amount <= FixedPoint2.Zero)
                     continue;
 
                 FixedPoint2 reduction;
+
                 if (type == lastPositiveType)
                 {
+                    // The final damage type receives all remaining reduction.
                     reduction = FixedPoint2.Min(amount, remainingReduction);
                 }
                 else
                 {
-                    reduction = FixedPoint2.Min(amount, totalPhysicalDamage == FixedPoint2.Zero
-                        ? FixedPoint2.Zero
-                        : remainingReduction * amount / totalPhysicalDamage);
+                    // Apply proportional reduction based on this type's share
+                    // of the current total physical damage.
+                    reduction = FixedPoint2.Min(amount, totalPhysicalDamage == FixedPoint2.Zero? FixedPoint2.Zero: remainingReduction * amount / totalPhysicalDamage);
                 }
 
+                // Apply the calculated reduction.
                 damage.DamageDict[type] = amount - reduction;
+
+                // Consume used reduction from the pool.
                 remainingReduction -= reduction;
+
+                // Remove this full original amount from the running total
+                // so later proportional calculations remain correct.
                 totalPhysicalDamage -= amount;
             }
 
             return true;
-        }
-
-        // -- PUSH-UP --
-        private void OnStood(EntityUid uid, PhysicalPotentialComponent comp,StoodEvent args)
-        {
-            if (!TryComp<MeleeWeaponComponent>(uid, out var melee)) return;
-
-            // Create and queue a new training strain 
-            var newStrain = new TrainingStrain
-            {
-                Damage = GetDamageStain(comp, melee.Damage),
-                Defense = comp.DefenseRisingSpeed,
-                Stamina = comp.StaminaRisingSpeed
-            };
-
-            float effectivenes = comp.trainingEffectiveness * comp.PushUpsEfficiency;
-            AddStrain(comp, newStrain, effectivenes);
         }
 
         // -- STAMINA AND SPRINT --
@@ -213,43 +225,65 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             {
                 comp.SprintTimer = 0;
 
-                var newStrain = new TrainingStrain { Stamina = comp.StaminaRisingSpeed };
-                AddStrain(comp, newStrain);
+                var newStrain = new TechnicalStrain { Stamina = comp.StaminaRisingSpeed };
+                AddTechnicalStrain(comp, newStrain);
             }
         }
-
         #endregion
 
-        #region Strain Handling 
-        public void AddStrain(PhysicalPotentialComponent comp, TrainingStrain strain, float? effectivenes = null)
+        #region Physical strains
+        // -- PUSH-UP --
+        private void OnStood(EntityUid uid, PhysicalPotentialComponent comp, StoodEvent args)
         {
-            // Use the provided effectiveness value or fall back to the component's default
-            float currentEffectiveness = effectivenes ?? comp.trainingEffectiveness;
+           AddPhysicalStrain(comp, comp.PushUpsEfficiency * comp.PhysicalTrainingEfficiency);
+           _popup.PopupEntity("віджався", uid, uid);
+        }
+        #endregion
+
+        #region Calculate strains
+        public void AddTechnicalStrain(PhysicalPotentialComponent comp, TechnicalStrain strain)
+        {
+            float efficiency = comp.TechnicalTrainingEfficiency;
 
             // Calculate the number of guaranteed additions (integer part)
-            int fullExecutions = (int) MathF.Floor(currentEffectiveness);
+            int fullExecutions = (int) MathF.Floor(efficiency);
 
             // Add strains as many times as the integer part allows
             for (int i = 0; i < fullExecutions; i++)
             {
                 // Stop adding if the maximum strain limit is reached
-                if (comp.Strains.Count >= comp.MaxStrainsNumber) break;
-                comp.Strains.Add(strain);
+                if (comp.TechnicalStrains.Count >= comp.MaxStrainsNumber) break;
+                comp.TechnicalStrains.Add(strain);
             }
 
             // If there is still room in the list, process the fractional part
-            if (comp.Strains.Count < comp.MaxStrainsNumber)
+            if (comp.TechnicalStrains.Count < comp.MaxStrainsNumber)
             {
                 // Calculate the remainder (e.g., 0.3 from 1.3)
-                float remainder = currentEffectiveness - (float) MathF.Floor(currentEffectiveness);
+                float remainder = comp.TechnicalTrainingEfficiency - (float) MathF.Floor(efficiency);
 
                 // Add a "bonus" strain based on the probability of the remainder
                 if (remainder > 0 && _random.Prob(remainder))
                 {
-                    comp.Strains.Add(strain);
+                    comp.TechnicalStrains.Add(strain);
                 }
             }
 
+            ResetRestingTimer(comp);
+        }
+
+        public void AddPhysicalStrain(PhysicalPotentialComponent comp, float strain)
+        {
+            if(comp.PhysicalStrains.Count < comp.MaxStrainsNumber)
+            {
+                comp.PhysicalStrains.Add(strain * comp.PhysicalTrainingEfficiency);
+            }
+
+            ResetRestingTimer(comp);
+        }
+
+        public void ResetRestingTimer(PhysicalPotentialComponent comp)
+        {
             // Reset the rest timer and set the cooldown period
             comp.EndRestTime = _timing.CurTime + TimeSpan.FromSeconds(comp.TimeForRest);
             comp.IsResting = true;
@@ -266,23 +300,23 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             }
 
             // Gradually process the strain queue if the player is resting 
-            if (!comp.IsResting && comp.Strains.Count > 0)
+            if (!comp.IsResting && comp.TechnicalStrains.Count > 0)
             {
                 // Introduce a delay between iterations for smooth bonus progression 
                 if (comp.NextStrainTime < _timing.CurTime)
                 {
-                    ApplyStrain(uid, comp);
+                    ApplyTechnicalStrain(uid, comp);
                     comp.NextStrainTime = _timing.CurTime + TimeSpan.FromSeconds(comp.StrainsApplyingDelay);
                 }
             }
         }
 
         // Apply a specific strain point to the character's stats 
-        private void ApplyStrain(EntityUid uid, PhysicalPotentialComponent comp)
+        private void ApplyTechnicalStrain(EntityUid uid, PhysicalPotentialComponent comp)
         {
-            if (comp.Strains.Count == 0) return;
+            if (comp.TechnicalStrains.Count == 0) return;
 
-            var strain = comp.Strains[comp.Strains.Count - 1];
+            var strain = comp.TechnicalStrains[comp.TechnicalStrains.Count - 1];
 
             // Update damage bonus
             if (comp.DamageBonus.GetTotal() < comp.MaxDamageBonus)
@@ -297,31 +331,64 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             }
 
             // Update stamina bonus
-            if (TryComp<StaminaComponent>(uid, out var stamina) && comp.StaminaBonus < comp.MaxStamina)
+            if (TryComp<StaminaComponent>(uid, out var stamina) && comp.StaminaBonus < comp.MaxStaminaBonus)
             {
-                stamina.CritThreshold += strain.Stamina;
-                comp.StaminaBonus += strain.Stamina;
+                comp.StaminaBonus += comp.StaminaRisingSpeed;
+
+                stamina.CritThreshold -= comp.CurrentStaminaBonus;
+                comp.CurrentStaminaBonus = comp.StaminaBonus * comp.MuscleMass;
+                stamina.CritThreshold += comp.CurrentStaminaBonus;
+                Logger.Info("витривалість" + stamina.CritThreshold);
                 Dirty(uid, stamina);
             }
 
-            comp.Strains.RemoveAt(comp.Strains.Count - 1);
+            comp.TechnicalStrains.RemoveAt(comp.TechnicalStrains.Count - 1);
+
+            Dirty(uid, comp);
+        }
+
+        private void OnSolutionChanged(Entity<SolutionComponent> ent, ref SolutionChangedEvent args)
+        {
+            // Get the owner uid
+            var uid = Transform(ent).ParentUid;
+
+            if (!TryComp<PhysicalPotentialComponent>(uid, out var comp))
+                return;
+
+            if (comp.PhysicalStrains.Count == 0 && comp.MuscleMass < comp.MaxMuscleMass)
+                return;
+
+            // Get the last recorded strain
+            var strain = comp.PhysicalStrains[^1];
+
+            // Access the solution that changed
+            var solution = ent.Comp.Solution;
+
+            // Get total amount of Protein reagent in the solution
+            var protein = solution.GetTotalPrototypeQuantity("Protein");
+
+            // Check if there is enough protein to trigger muscle growth
+            if (protein >= comp.ProteinsCost)
+            {
+                // Remove the consumed protein from the solution
+                solution.RemoveReagent("Protein", FixedPoint2.New(comp.ProteinsCost));
+
+                // Increase muscle mass based on training efficiency
+                comp.MuscleMass += comp.PhysicalTrainingEfficiency;
+
+                if(comp.MuscleMass > comp.MaxMuscleMass) comp.MuscleMass = comp.MaxMuscleMass;
+
+                Logger.Info("Білки витрачені");
+            }
 
             UpdateAlert(uid, comp);
-
-            // Mark component as dirty to sync data with the client 
             Dirty(uid, comp);
-
-            // Deduct hunger/calories for training 
-            if (TryComp<HungerComponent>(uid, out var hunger))
-            {
-                _hungerSystem.ModifyHunger(uid, -comp.HungerCost, hunger);
-            }
         }
         #endregion
 
         private void UpdateAlert(EntityUid uid, PhysicalPotentialComponent comp)
         {
-            short stateIndex = (short) Math.Clamp(Math.Round(comp.PowerLevel * 1.8f), 0, 9);
+            short stateIndex = (short)(comp.MuscleMass /  comp.MaxMuscleMass * 9);
 
             _alertsSystem.ShowAlert(uid, "PhysicalPotential", stateIndex);
         }
@@ -333,11 +400,11 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
                 return;
 
             var clone = EnsureComp<PhysicalPotentialComponent>(args.CloneUid);
-            clone.trainingEffectiveness = ent.Comp.trainingEffectiveness;
-            clone.Strains = new List<TrainingStrain>(ent.Comp.Strains.Count);
-            foreach (var strain in ent.Comp.Strains)
+            clone.TechnicalTrainingEfficiency = ent.Comp.TechnicalTrainingEfficiency;
+            clone.TechnicalStrains = new List<TechnicalStrain>(ent.Comp.TechnicalStrains.Count);
+            foreach (var strain in ent.Comp.TechnicalStrains)
             {
-                clone.Strains.Add(new TrainingStrain
+                clone.TechnicalStrains.Add(new TechnicalStrain
                 {
                     Damage = new DamageSpecifier(strain.Damage),
                     Defense = strain.Defense,
@@ -352,7 +419,7 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             clone.DefenseBonus = ent.Comp.DefenseBonus;
             clone.MaxDefenseBonus = ent.Comp.MaxDefenseBonus;
             clone.StaminaRisingSpeed = ent.Comp.StaminaRisingSpeed;
-            clone.MaxStamina = ent.Comp.MaxStamina;
+            clone.MaxStaminaBonus = ent.Comp.MaxStaminaBonus;
             clone.StaminaBonus = ent.Comp.StaminaBonus;
             clone.SprintTimer = ent.Comp.SprintTimer;
             clone.SprintInterval = ent.Comp.SprintInterval;
@@ -363,7 +430,7 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             clone.NextStrainTime = ent.Comp.NextStrainTime;
             clone.MaxStrainsNumber = ent.Comp.MaxStrainsNumber;
             clone.StrainsApplyingDelay = ent.Comp.StrainsApplyingDelay;
-            clone.HungerCost = ent.Comp.HungerCost;
+            clone.ProteinsCost = ent.Comp.ProteinsCost;
 
             if (TryComp<StaminaComponent>(args.CloneUid, out var stamina))
             {
@@ -385,8 +452,7 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
                 _ => "system-physical-potential-examine-level1",
             };
 
-            // Використовуємо логіку, яку ти знайшов:
-            var entityGender = Gender.Neuter; // за замовчуванням
+            var entityGender = Gender.Neuter;
 
             if (TryComp<HumanoidAppearanceComponent>(uid, out var humanoid))
             {
@@ -397,8 +463,6 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
                 entityGender = grammar.Gender ?? Gender.Neuter;
             }
 
-            // Передаємо об'єкт Gender безпосередньо. 
-            // Fluent сам зрозуміє його як male/female/neuter/epicene.
             args.PushMarkup(Loc.GetString(key, ("gender", (object) entityGender)));
         }
     }

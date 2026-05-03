@@ -8,7 +8,7 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
     /// Represents a single unit of training progress to be processed. 
     /// </summary> 
     [DataDefinition]
-    public sealed partial class TrainingStrain
+    public sealed partial class TechnicalStrain
     {
         [DataField("damage")]
         public DamageSpecifier Damage { get; set; } = new();
@@ -29,13 +29,14 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
     [RegisterComponent, NetworkedComponent]
     public sealed partial class PhysicalPotentialComponent : Component
     {
-        [DataField("trainingEffectiveness"), ViewVariables(VVAccess.ReadWrite)]
-        public float trainingEffectiveness = 1f;
+        #region Technical
+        [DataField("technicalTrainingEfficiency"), ViewVariables(VVAccess.ReadWrite)]
+        public float TechnicalTrainingEfficiency = 1f;
 
-        #region Damage
         [DataField("strains")]
-        public List<TrainingStrain> Strains = new();
+        public List<TechnicalStrain> TechnicalStrains = new();
 
+//Damage
         [DataField("damageBonus")]
         public DamageSpecifier DamageBonus = new();
 
@@ -44,9 +45,8 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
 
         [DataField("damageRisingSpeed"), ViewVariables(VVAccess.ReadWrite)]
         public FixedPoint2 DamageRisingSpeed = 0.02f;
-        #endregion
 
-        #region Defense
+//Defense
         [DataField("defenseRisingSpeed"), ViewVariables(VVAccess.ReadWrite)]
         public FixedPoint2 DefenseRisingSpeed = 0.02f;
 
@@ -55,30 +55,48 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
 
         [DataField("maxDefenseBonus"), ViewVariables(VVAccess.ReadWrite)]
         public float MaxDefenseBonus = 5f;
-        #endregion
 
-        #region Stamina and Sprint
+//Stamina and Sprint
         [DataField("staminaRisingSpeed"), ViewVariables(VVAccess.ReadWrite)]
-        public float StaminaRisingSpeed = 0.1f;
+        public float StaminaRisingSpeed = 0.2f;
+
+        [DataField("maxStamina")]
+        public float MaxStaminaBonus = 200;
+
+        [DataField("staminaBonus")]
+        public float StaminaBonus = 0;
+
+        [DataField("sprintInterval"), ViewVariables(VVAccess.ReadWrite)]
+        public float SprintInterval = 2;
 
         public float SprintTimer;
 
-        [DataField("maxStamina")]
-        public float MaxStamina = 200;
-
-        [DataField("staminaBonus")]
-        public float StaminaBonus;
-
-        [DataField("sprintInterval"), ViewVariables(VVAccess.ReadWrite)]
-        public float SprintInterval = 1;
+        public float CurrentStaminaBonus = 0;
         #endregion
+
+        #region Physical
+        [DataField("physicalTrainingEfficiency"), ViewVariables(VVAccess.ReadWrite)]
+        public float PhysicalTrainingEfficiency = 1f;
+
+        [DataField("physicalStrain")]
+        public List<float> PhysicalStrains = new List<float>();
+
+        [DataField("hungerCost"), ViewVariables(VVAccess.ReadWrite)]
+        public float ProteinsCost = 1f;
+
+        [DataField("muscleMass"), ViewVariables(VVAccess.ReadWrite)]
+        public float MuscleMass = 0f;
+
+        [DataField("maxMuscleMass"), ViewVariables(VVAccess.ReadWrite)]
+        public float MaxMuscleMass = 1f;
 
         [DataField("pushUpsEfficiency"), ViewVariables(VVAccess.ReadWrite)]
         public float PushUpsEfficiency = 0.2f;
+        #endregion
 
         #region Rest
         [DataField("timeForRest"), ViewVariables(VVAccess.ReadWrite)]
-        public float TimeForRest = 180f;
+        public float TimeForRest = 90f;
 
         public TimeSpan EndRestTime;
         public bool IsResting;
@@ -91,9 +109,6 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
 
         [DataField("strainsApplyingDelay"), ViewVariables(VVAccess.ReadWrite)]
         public float StrainsApplyingDelay = 0.5f;
-
-        [DataField("hungerCost"), ViewVariables(VVAccess.ReadWrite)]
-        public float HungerCost = 1f;
         #endregion
 
         [ViewVariables(VVAccess.ReadOnly)]
@@ -101,7 +116,6 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
         {
             get
             {
-                // Перетворюємо кожну частину у float перед додаванням
                 float damage = DamageBonus.GetTotal().Float();
                 float defense = DefenseBonus.Float();
                 float stamina = (StaminaBonus / 40f);
