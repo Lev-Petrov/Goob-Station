@@ -3,6 +3,13 @@ trait-physical-potential-desc = Ти можеш тренуватися та ст
 
 alerts-physical-potential-name = Твоя фізична форма
 
+system-physical-potential-push-up = { $gender ->
+    [male] віджався
+    [female] віджалась
+    [opicene] віджались
+    [neuter] віджалося
+    *[other] віджалися
+}
 
 system-physical-potential-examine-level1 = в гарній формі
 

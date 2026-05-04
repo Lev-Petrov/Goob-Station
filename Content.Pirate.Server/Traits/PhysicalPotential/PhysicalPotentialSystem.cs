@@ -245,7 +245,7 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             if ((_timing.CurTime - comp.LastStandTime).TotalSeconds < comp.PushUpWindow)
             {
                 AddPhysicalStrain(comp, comp.PushUpsEfficiency * comp.PhysicalTrainingEfficiency);
-                _popup.PopupEntity("віджався", uid, uid);
+                _popup.PopupEntity(Loc.GetString("system-physical-potential-push-up", ("gender", (object) GetGender(uid))), uid, uid);
             }
         }
         #endregion
@@ -466,6 +466,11 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
                 _ => "system-physical-potential-examine-level1",
             };
 
+            args.PushMarkup(Loc.GetString(key, ("gender", (object) GetGender(uid))));
+        }
+
+        private Gender GetGender(EntityUid uid)
+        {
             var entityGender = Gender.Neuter;
 
             if (TryComp<HumanoidAppearanceComponent>(uid, out var humanoid))
@@ -477,7 +482,8 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
                 entityGender = grammar.Gender ?? Gender.Neuter;
             }
 
-            args.PushMarkup(Loc.GetString(key, ("gender", (object) entityGender)));
+            return entityGender;
         }
+
     }
 }

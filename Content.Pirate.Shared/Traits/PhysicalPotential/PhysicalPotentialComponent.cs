@@ -31,7 +31,7 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
     {
         #region Technical
         [DataField("technicalTrainingEfficiency"), ViewVariables(VVAccess.ReadWrite)]
-        public float TechnicalTrainingEfficiency = 1f;
+        public float TechnicalTrainingEfficiency = 1.5f;
 
         [DataField("strains")]
         public List<TechnicalStrain> TechnicalStrains = new();
@@ -114,7 +114,7 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
         public float MaxStrainsNumber = 150;
 
         [DataField("strainsApplyingDelay"), ViewVariables(VVAccess.ReadWrite)]
-        public float StrainsApplyingDelay = 0.5f;
+        public float StrainsApplyingDelay = 0.1f;
         #endregion
 
         [ViewVariables(VVAccess.ReadOnly)]

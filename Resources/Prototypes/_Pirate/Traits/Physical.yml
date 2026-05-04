@@ -201,5 +201,4 @@
      - BorgChassis
   components:
     - type: PhysicalPotential
-      technicalTrainingEfficiency: 1
 #endregion
