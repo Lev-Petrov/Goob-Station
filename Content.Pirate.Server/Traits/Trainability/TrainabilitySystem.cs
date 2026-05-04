@@ -7,7 +7,7 @@ using Content.Shared.Movement.Components;
 using Content.Shared.Mobs;
 using Content.Shared.Mobs.Components;
 using Content.Shared.Weapons.Melee.Events;
-using Content.Pirate.Shared.Traits.PhysicalPotential;
+using Content.Pirate.Shared.Traits.Trainability;
 using Robust.Shared.Random;
 using Robust.Shared.Physics.Components;
 using Robust.Shared.Timing;
@@ -20,11 +20,11 @@ using Robust.Shared.GameObjects.Components.Localization;
 using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.Chemistry.Components;
 using Content.Shared.Popups;
-using static Content.Shared.Administration.Notes.AdminMessageEuiState;
+using Content.Pirate.Shared.Traits.Trainability;
 
-namespace Content.Pirate.Server.Traits.PhysicalPotential
+namespace Content.Pirate.Server.Traits.Trainability
 {
-    public sealed class PhysicalPotentialSystem : EntitySystem
+    public sealed class TrainabilitySystem : EntitySystem
     {
         private static readonly string[] PhysicalDamageTypes = { "Blunt", "Slash", "Piercing" };
 
@@ -38,21 +38,21 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
         {
             base.Initialize();
             SubscribeLocalEvent<MeleeHitEvent>(OnMeleeHit);
-            SubscribeLocalEvent<PhysicalPotentialComponent, DamageModifyEvent>(OnDamageModify);
+            SubscribeLocalEvent<TrainabilityComponent, DamageModifyEvent>(OnDamageModify);
 
-            SubscribeLocalEvent<PhysicalPotentialComponent, StoodEvent>(OnStood);
-            SubscribeLocalEvent<PhysicalPotentialComponent, DownedEvent>(OnDowned);
+            SubscribeLocalEvent<TrainabilityComponent, StoodEvent>(OnStood);
+            SubscribeLocalEvent<TrainabilityComponent, DownedEvent>(OnDowned);
 
             SubscribeLocalEvent<SolutionComponent, SolutionChangedEvent>(OnSolutionChanged);
 
-            SubscribeLocalEvent<PhysicalPotentialComponent, ComponentInit>(OnComponentInit);
+            SubscribeLocalEvent<TrainabilityComponent, ComponentInit>(OnComponentInit);
 
-            SubscribeLocalEvent<PhysicalPotentialComponent, CloningEvent>(OnClone);
+            SubscribeLocalEvent<TrainabilityComponent, CloningEvent>(OnClone);
 
-            SubscribeLocalEvent<PhysicalPotentialComponent, ExaminedEvent>(OnExamine);
+            SubscribeLocalEvent<TrainabilityComponent, ExaminedEvent>(OnExamine);
         }
 
-        private void OnComponentInit(EntityUid uid, PhysicalPotentialComponent comp, ComponentInit args)
+        private void OnComponentInit(EntityUid uid, TrainabilityComponent comp, ComponentInit args)
         {
             UpdateAlert(uid, comp);
         }
@@ -60,7 +60,7 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
         public override void Update(float frameTime)
         {
             base.Update(frameTime);
-            var query = EntityQueryEnumerator<PhysicalPotentialComponent>();
+            var query = EntityQueryEnumerator<TrainabilityComponent>();
             while (query.MoveNext(out var uid, out var comp))
             {
                 UpdateSprintProgress(frameTime, uid, comp);
@@ -72,7 +72,7 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
         // -- HITS --
         private void OnMeleeHit(MeleeHitEvent args)
         {
-            if (!TryComp<PhysicalPotentialComponent>(args.User, out var comp))
+            if (!TryComp<TrainabilityComponent>(args.User, out var comp))
                 return;
 
             args.BonusDamage += comp.DamageBonus * comp.MuscleMass;
@@ -96,7 +96,7 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             }
         }
 
-        public DamageSpecifier GetDamageStain(PhysicalPotentialComponent comp, DamageSpecifier damage)
+        public DamageSpecifier GetDamageStain(TrainabilityComponent comp, DamageSpecifier damage)
         {
             var damageStrain = new DamageSpecifier();
             var totalDamage = FixedPoint2.Zero;
@@ -121,7 +121,7 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
         }
 
         // --DEFENSE--
-        private void OnDamageModify(EntityUid uid, PhysicalPotentialComponent comp, DamageModifyEvent args)
+        private void OnDamageModify(EntityUid uid, TrainabilityComponent comp, DamageModifyEvent args)
         {
             // Try to reduce incoming physical damage by the entity's defense bonus.
             var trainsDefense = ApplyDefenseReduction(args.Damage, comp.DefenseBonus * comp.MuscleMass);
@@ -207,7 +207,7 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
         }
 
         // -- STAMINA AND SPRINT --
-        private void UpdateSprintProgress(float frameTime, EntityUid uid, PhysicalPotentialComponent comp)
+        private void UpdateSprintProgress(float frameTime, EntityUid uid, TrainabilityComponent comp)
         {
             if (!TryComp<SprinterComponent>(uid, out var sprinter)
                 || !sprinter.IsSprinting
@@ -235,23 +235,23 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
 
         #region Physical strains
         // -- PUSH-UP --
-        private void OnStood(EntityUid uid, PhysicalPotentialComponent comp, StoodEvent args)
+        private void OnStood(EntityUid uid, TrainabilityComponent comp, StoodEvent args)
         {
            comp.LastStandTime = _timing.CurTime;
         }
 
-        private void OnDowned(EntityUid uid, PhysicalPotentialComponent comp, DownedEvent args)
+        private void OnDowned(EntityUid uid, TrainabilityComponent comp, DownedEvent args)
         {
             if ((_timing.CurTime - comp.LastStandTime).TotalSeconds < comp.PushUpWindow)
             {
                 AddPhysicalStrain(comp, comp.PushUpsEfficiency * comp.PhysicalTrainingEfficiency);
-                _popup.PopupEntity(Loc.GetString("system-physical-potential-push-up", ("gender", (object) GetGender(uid))), uid, uid);
+                _popup.PopupEntity(Loc.GetString("system-trainability-push-up", ("gender", (object) GetGender(uid))), uid, uid);
             }
         }
         #endregion
 
         #region Calculate strains
-        public void AddTechnicalStrain(PhysicalPotentialComponent comp, TechnicalStrain strain)
+        public void AddTechnicalStrain(TrainabilityComponent comp, TechnicalStrain strain)
         {
             float efficiency = comp.TechnicalTrainingEfficiency;
 
@@ -282,7 +282,7 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             ResetRestingTimer(comp);
         }
 
-        public void AddPhysicalStrain(PhysicalPotentialComponent comp, float strain)
+        public void AddPhysicalStrain(TrainabilityComponent comp, float strain)
         {
             if(comp.PhysicalStrains.Count < comp.MaxStrainsNumber)
             {
@@ -292,14 +292,14 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             ResetRestingTimer(comp);
         }
 
-        public void ResetRestingTimer(PhysicalPotentialComponent comp)
+        public void ResetRestingTimer(TrainabilityComponent comp)
         {
             // Reset the rest timer and set the cooldown period
             comp.EndRestTime = _timing.CurTime + TimeSpan.FromSeconds(comp.TimeForRest);
             comp.IsResting = true;
         }
 
-        private void HandleRecovery(EntityUid uid, PhysicalPotentialComponent comp)
+        private void HandleRecovery(EntityUid uid, TrainabilityComponent comp)
         {
             if (!TryComp<MobStateComponent>(uid, out var mob) || mob.CurrentState != MobState.Alive) return;
 
@@ -322,7 +322,7 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
         }
 
         // Apply a specific strain point to the character's stats 
-        private void ApplyTechnicalStrain(EntityUid uid, PhysicalPotentialComponent comp)
+        private void ApplyTechnicalStrain(EntityUid uid, TrainabilityComponent comp)
         {
             if (comp.TechnicalStrains.Count == 0) return;
 
@@ -361,7 +361,7 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             // Get the owner uid
             var uid = Transform(ent).ParentUid;
 
-            if (!TryComp<PhysicalPotentialComponent>(uid, out var comp))
+            if (!TryComp<TrainabilityComponent>(uid, out var comp))
                 return;
 
             if (comp.PhysicalStrains.Count == 0 && comp.MuscleMass < comp.MaxMuscleMass)
@@ -393,27 +393,25 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
         }
         #endregion
 
-        private void UpdateAlert(EntityUid uid, PhysicalPotentialComponent comp)
+        private void UpdateAlert(EntityUid uid, TrainabilityComponent comp)
         {
             if(comp.MuscleMass >= 0.025f)
             {
                 short stateIndex = (short) (comp.MuscleMass / comp.MaxMuscleMass * 9);
 
-                _alertsSystem.ShowAlert(uid, "PhysicalPotential", stateIndex);
+                _alertsSystem.ShowAlert(uid, "Trainability", stateIndex);
             }
             else
             {
-                _alertsSystem.ClearAlert(uid, "PhysicalPotential");
+                _alertsSystem.ClearAlert(uid, "Trainability");
             }
         }
-
-
-        private void OnClone(Entity<PhysicalPotentialComponent> ent, ref CloningEvent args)
+        private void OnClone(Entity<TrainabilityComponent> ent, ref CloningEvent args)
         {
             if (!args.Settings.EventComponents.Contains(Factory.GetRegistration(ent.Comp.GetType()).Name))
                 return;
 
-            var clone = EnsureComp<PhysicalPotentialComponent>(args.CloneUid);
+            var clone = EnsureComp<TrainabilityComponent>(args.CloneUid);
             clone.TechnicalTrainingEfficiency = ent.Comp.TechnicalTrainingEfficiency;
             clone.TechnicalStrains = new List<TechnicalStrain>(ent.Comp.TechnicalStrains.Count);
             foreach (var strain in ent.Comp.TechnicalStrains)
@@ -455,15 +453,15 @@ namespace Content.Pirate.Server.Traits.PhysicalPotential
             Dirty(args.CloneUid, clone);
         }
 
-        private void OnExamine(EntityUid uid, PhysicalPotentialComponent comp, ExaminedEvent args)
+        private void OnExamine(EntityUid uid, TrainabilityComponent comp, ExaminedEvent args)
         {
-            if (comp.PowerLevel < 0.3f) return;
+            if (comp.MuscleMass < 0.3f) return;
 
-            string key = comp.PowerLevel switch
+            string key = comp.MuscleMass switch
             {
-                >= 0.8f => "system-physical-potential-examine-level3",
-                >= 0.5f => "system-physical-potential-examine-level2",
-                _ => "system-physical-potential-examine-level1",
+                >= 0.8f => "system-trainability-examine-level3",
+                >= 0.5f => "system-trainability-examine-level2",
+                _ => "system-trainability-examine-level1",
             };
 
             args.PushMarkup(Loc.GetString(key, ("gender", (object) GetGender(uid))));

@@ -2,7 +2,7 @@ using Content.Goobstation.Maths.FixedPoint;
 using Content.Shared.Damage;
 using Robust.Shared.GameStates;
 
-namespace Content.Pirate.Shared.Traits.PhysicalPotential
+namespace Content.Pirate.Shared.Traits.Trainability
 {
     /// <summary> 
     /// Represents a single unit of training progress to be processed. 
@@ -27,7 +27,7 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
     /// Tracks and processes physical training progress for an entity. 
     /// </summary> 
     [RegisterComponent, NetworkedComponent]
-    public sealed partial class PhysicalPotentialComponent : Component
+    public sealed partial class TrainabilityComponent : Component
     {
         #region Technical
         [DataField("technicalTrainingEfficiency"), ViewVariables(VVAccess.ReadWrite)]
@@ -92,7 +92,7 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
 
 //Push-Ups
         [DataField("pushUpsEfficiency"), ViewVariables(VVAccess.ReadWrite)]
-        public float PushUpsEfficiency = 0.2f;
+        public float PushUpsEfficiency = 0.1f;
 
         [DataField("pushUpWindow")]
         public float PushUpWindow = 0.2f;
@@ -116,18 +116,5 @@ namespace Content.Pirate.Shared.Traits.PhysicalPotential
         [DataField("strainsApplyingDelay"), ViewVariables(VVAccess.ReadWrite)]
         public float StrainsApplyingDelay = 0.1f;
         #endregion
-
-        [ViewVariables(VVAccess.ReadOnly)]
-        public float PowerLevel
-        {
-            get
-            {
-                float damage = DamageBonus.GetTotal().Float();
-                float defense = DefenseBonus.Float();
-                float stamina = (StaminaBonus / 40f);
-
-                return (damage + defense + stamina) / 3f;
-            }
-        }
     }
 }
