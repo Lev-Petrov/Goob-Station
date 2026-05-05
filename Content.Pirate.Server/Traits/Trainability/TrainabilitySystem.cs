@@ -364,7 +364,7 @@ namespace Content.Pirate.Server.Traits.Trainability
             if (!TryComp<TrainabilityComponent>(uid, out var comp))
                 return;
 
-            if (comp.PhysicalStrains.Count == 0 && comp.MuscleMass < comp.MaxMuscleMass)
+            if (comp.PhysicalStrains.Count == 0 || comp.MuscleMass >= comp.MaxMuscleMass)
                 return;
 
             // Get the last recorded strain
@@ -382,10 +382,11 @@ namespace Content.Pirate.Server.Traits.Trainability
                 // Remove the consumed protein from the solution
                 solution.RemoveReagent("Protein", FixedPoint2.New(comp.ProteinsCost));
 
-                // Increase muscle mass based on training efficiency
-                comp.MuscleMass += comp.PhysicalTrainingEfficiency;
+                // Apply and consume exactly one queued physical strain
+                comp.MuscleMass += strain;
+                comp.PhysicalStrains.RemoveAt(comp.PhysicalStrains.Count - 1);
 
-                if(comp.MuscleMass > comp.MaxMuscleMass) comp.MuscleMass = comp.MaxMuscleMass;
+                if (comp.MuscleMass > comp.MaxMuscleMass) comp.MuscleMass = comp.MaxMuscleMass;
             }
 
             UpdateAlert(uid, comp);
@@ -435,7 +436,11 @@ namespace Content.Pirate.Server.Traits.Trainability
             clone.StaminaBonus = ent.Comp.StaminaBonus;
             clone.SprintTimer = ent.Comp.SprintTimer;
             clone.SprintInterval = ent.Comp.SprintInterval;
+            clone.PhysicalTrainingEfficiency = ent.Comp.PhysicalTrainingEfficiency;
             clone.PushUpsEfficiency = ent.Comp.PushUpsEfficiency;
+            clone.PushUpWindow = ent.Comp.PushUpWindow;
+            clone.MuscleMass = ent.Comp.MuscleMass;
+            clone.MaxMuscleMass = ent.Comp.MaxMuscleMass;
             clone.TimeForRest = ent.Comp.TimeForRest;
             clone.EndRestTime = ent.Comp.EndRestTime;
             clone.IsResting = ent.Comp.IsResting;
@@ -446,7 +451,8 @@ namespace Content.Pirate.Server.Traits.Trainability
 
             if (TryComp<StaminaComponent>(args.CloneUid, out var stamina))
             {
-                stamina.CritThreshold += clone.StaminaBonus;
+                clone.CurrentStaminaBonus = clone.StaminaBonus * clone.MuscleMass;
+                stamina.CritThreshold += clone.CurrentStaminaBonus;
                 Dirty(args.CloneUid, stamina);
             }
 

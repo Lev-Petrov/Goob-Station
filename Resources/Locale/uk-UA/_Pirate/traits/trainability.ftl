@@ -9,6 +9,8 @@ system-trainability-push-up = { $gender ->
     *[other] віджалися
 }
 
+alerts-trainability-name = Твоя фізична форма
+
 system-trainability-examine-level1 = в гарній формі
 
 system-trainability-examine-level2 = трохи { $gender ->
@@ -18,8 +20,6 @@ system-trainability-examine-level2 = трохи { $gender ->
     [neuter] підкачане
     *[other] підкачані
 }
-
-alerts-trainability-name = Твоя фізична форма
 
 system-trainability-examine-level3 = { $gender ->
     [male] накачаний
