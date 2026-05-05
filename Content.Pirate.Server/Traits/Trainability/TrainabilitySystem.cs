@@ -244,7 +244,7 @@ namespace Content.Pirate.Server.Traits.Trainability
         {
             if ((_timing.CurTime - comp.LastStandTime).TotalSeconds < comp.PushUpWindow)
             {
-                AddPhysicalStrain(comp, comp.PushUpsEfficiency * comp.PhysicalTrainingEfficiency);
+                AddPhysicalStrain(comp, comp.PushUpsEfficiency);
                 _popup.PopupEntity(Loc.GetString("system-trainability-push-up", ("gender", (object) GetGender(uid))), uid, uid);
             }
         }
